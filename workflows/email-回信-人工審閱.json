@@ -1,0 +1,620 @@
+{
+  "id": "5qA8aYH4w2jnp1U3",
+  "name": "email-回信-人工審閱",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "user": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -80,
+        736
+      ],
+      "id": "82f88478-bcb6-4e29-aaf6-e531149bcc44",
+      "name": "Slack",
+      "webhookId": "54c77c5a-c254-417b-9d71-e803ee2edf6a",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleChat",
+      "typeVersion": 1,
+      "position": [
+        368,
+        736
+      ],
+      "id": "84373fe4-dbe9-4f80-b823-4a980f696258",
+      "name": "Google Chat",
+      "webhookId": "7fbaf954-25d0-4d09-8654-076376750ca3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        768,
+        736
+      ],
+      "id": "5261696a-30c6-402e-a113-bb900a9093c5",
+      "name": "Microsoft Outlook",
+      "webhookId": "7c17ee12-635a-4a5d-a3fb-9292928b9baf",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        736
+      ],
+      "id": "4962e3ac-5dd1-4578-b02e-908126c5fe03",
+      "name": "Send Email",
+      "webhookId": "5577a58f-a837-4c4f-8a10-83fcd8ceda4f",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        736
+      ],
+      "id": "3b562368-8862-49d5-b3dc-9cf86038daa6",
+      "name": "Telegram",
+      "webhookId": "1fcbda9b-a612-4d2c-a435-944bbe8d588b",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        736
+      ],
+      "id": "1a1fff54-6d2d-4845-b93d-bab20ce47ba1",
+      "name": "Gmail",
+      "webhookId": "921d1f46-e568-4eca-baed-6d5bccba99f5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Human in the loop nodes ( slack , telegram, email google, microsoft, 一般 )\n",
+        "height": 80,
+        "width": 1303,
+        "color": 7
+      },
+      "id": "7c5e5513-8601-42b3-a13b-c5d8a88429f8",
+      "name": "Sticky Note21",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        608
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "chenghyang2001@gmail.com",
+        "subject": "人工審閱 Approval or Deny",
+        "message": "=I just drafted an email for you - what do you think?\n\n{{ $json.text.replace(/\\n/g, \"<br />\\n\") }}",
+        "responseType": "freeText",
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeAmount": 45,
+              "resumeUnit": "minutes"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        1200
+      ],
+      "id": "0056b6dd-ed09-4148-be56-e96b7da0776d",
+      "name": "HumanFeedback 🙋",
+      "webhookId": "106a84dd-6e87-4a53-a8e3-9b06a06716b2",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Human revision\nWork iteratively with human operator",
+        "height": 273,
+        "width": 503,
+        "color": 7
+      },
+      "id": "1171cbf7-e1f4-4932-b0af-171792ea622b",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        1104
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Draft response\nResponse based on specific instructions for that category of email",
+        "height": 273,
+        "width": 523,
+        "color": 7
+      },
+      "id": "a7858b87-cd02-4f09-ab3e-dc92f4e8c768",
+      "name": "Sticky Note22",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        1104
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $('ReceiveEmail_Trigger1').item.json.subject }}\nMessage: {{ $('ReceiveEmail_Trigger1').item.json.textAsHtml }}\nFeedback: none",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=<電子郵件回覆指南>\n<語氣與風格>\n*使用商務休閒語氣，熱情而專業 - 例如“感謝您的訊息！”\n*簡潔直接\n*與收到的郵件的正式程度一致\n*與收到的郵件的語言保持一致\n*與收到的郵件的緊急程度一致\n\n<結構>\n*以「嗨，[姓名]」開頭\n*對於多點郵件，請使用簡短的段落（每段 2-3 句話）\n*以「Cheers,\\n政憲」結尾\n\n<回覆類型>\n對於是/否問題，請提供兩種選擇：\n[肯定回覆]\n或 - - - - - - -\n[否定回覆]\n\n<內容指南>\n*切勿捏造訊息\n*使用「[佔位符]」取代缺失訊息\n*對於銷售諮詢：請包含後續步驟（例如預約電話、安排簡報）\n*對於投訴：請表達理解，並提供清晰的解決步驟\n*僅使用純文本，無需格式化\n*保持句子簡潔明了\n\n<關鍵回覆原則>\n*一律用繁體中文回應\n*使用專業有禮貌地口吻回應\n*針對特定問題問題/請求\n*提供清晰的後續步驟\n*索取任何缺失的信息\n*設定明確的期望\n*保持專業且熱情的語氣\n*在需要時提供後續計劃\n*如果被問及會員資格或加入社區，請提及社區為企業主和希望銷售 AI 解決方案的人帶來許多好處，包括即插即用的自動化模板。所有問題均未解答，70% 的受訪者是企業主。"
+            }
+          ]
+        }
+      },
+      "id": "779c5b91-c3c1-49a2-9332-287fcce36eec",
+      "name": "DraftEmailReply2",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        32,
+        1200
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "-from:me"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        1200
+      ],
+      "id": "a7e11a75-f973-42b2-a344-558d2db50d26",
+      "name": "ReceiveEmail_Trigger1",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92397ae-cdf3-4077-88ed-2c0dc78ae2fb",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        1200
+      ],
+      "id": "c2f1fb52-8385-4e31-abf3-69b6b1f9eb45",
+      "name": "SetEmail"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.data.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "APPROVED",
+              "description": "=The text to classify suggests the email is good to go. \n\nIt might use phrases similar to \"approved\", \"all good\", \"good to go\"\n\n"
+            },
+            {
+              "category": "DENIED",
+              "description": "=The feedback suggests the email needs updates or changes.\n\nIt might use phrases similar to \"add more about this\", \"change this\", \"don't send\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        800,
+        1200
+      ],
+      "id": "3db04c11-212c-4f95-8786-f0fb4d0a9e2f",
+      "name": "EmailGoodToGo"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('ReceiveEmail_Trigger1').item.json.headers.from }}",
+        "subject": "={{ $('ReceiveEmail_Trigger1').item.json.headers.subject }}",
+        "message": "={{ $('SetEmail').item.json.text.replace(/\\n/g, \"<br />\\n\") }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "e681c2ed-a6e6-4c5c-81bb-0255fec556ed",
+      "name": "SendReply1",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1232,
+        1040
+      ],
+      "typeVersion": 2.1,
+      "webhookId": "ef19ee4d-876e-4cfb-a284-227e013d57dc",
+      "retryOnFail": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Send reply",
+        "height": 80,
+        "width": 243,
+        "color": 7
+      },
+      "id": "2f89a276-dc21-4984-9590-2ccf8a489e23",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        912
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<Original email>\nSubject: {{ $('ReceiveEmail_Trigger1').item.json.subject }}\nMessage: {{ $('ReceiveEmail_Trigger1').item.json.textAsHtml }}\n\n<First response>\n{{ $('SetEmail').item.json.text.replace(/\\n/g, \"<br />\\n\") }}\n\n<Human feedback>\n{{ $json.data.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=你是一位 AI 電子郵件修改助理。你的任務是分析並改進一封包含以下內容的電子郵件：\n\n*原始郵件（主題和正文）\n*首次回覆嘗試\n*人工回覆回饋\n\n你的任務是：\n1. 分析原始郵件的語氣和意圖\n2. 審閱首次回复，並根據人工反饋了解其不足之處\n3. 產生改進的回复，在保持專業和與原始郵件相關性的同時，回應回饋意見。\n5. 確保修改後的回覆符合商業溝通最佳實踐\n6. 撰寫一封修改後的郵件，在首次回覆的基礎上進行改進，並融入人工回饋。僅傳回郵件正文，不包含其他資訊。\n7. 一律用繁體中文回覆"
+            }
+          ]
+        }
+      },
+      "id": "cd366575-ea2e-4a54-bebf-8a1a28528d2a",
+      "name": "ReviseEmail",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1216,
+        1360
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "content": "## Revise email",
+        "height": 81,
+        "width": 207,
+        "color": 7
+      },
+      "id": "7c7a25ea-9a3d-4192-a398-65ead9cabc3c",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1216,
+        1264
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.0-flash-001",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.0-flash-001"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        1408
+      ],
+      "id": "0d1ea7da-22de-4ec9-a7bc-4f7139ee134a",
+      "name": "openrouter - gemini",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        1456
+      ],
+      "id": "51e34cc1-29ce-4d3e-8db6-10eebee0cda0",
+      "name": "openrouter - gpt",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 20250909\n## 1. skoll tutorial : https://www.skool.com/scrapes/classroom/5cb99289?md=faa42b7871074d40a857e4f3275b19e4",
+        "width": 1328,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        400
+      ],
+      "id": "2641663c-1d44-4f25-ac90-f3ae7d18ebb1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1216,
+        1584
+      ],
+      "id": "1289849c-1405-41de-b702-984d1c196b70",
+      "name": "openrouter - gpt1",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "HumanFeedback 🙋": {
+      "main": [
+        [
+          {
+            "node": "EmailGoodToGo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReceiveEmail_Trigger1": {
+      "main": [
+        [
+          {
+            "node": "DraftEmailReply2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DraftEmailReply2": {
+      "main": [
+        [
+          {
+            "node": "SetEmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetEmail": {
+      "main": [
+        [
+          {
+            "node": "HumanFeedback 🙋",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EmailGoodToGo": {
+      "main": [
+        [
+          {
+            "node": "SendReply1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ReviseEmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReviseEmail": {
+      "main": [
+        [
+          {
+            "node": "SetEmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "openrouter - gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "EmailGoodToGo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "openrouter - gpt": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "DraftEmailReply2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "openrouter - gpt1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ReviseEmail",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-09T06:33:54.230Z",
+      "createdAt": "2025-09-09T06:33:54.230Z",
+      "role": "workflow:owner",
+      "workflowId": "5qA8aYH4w2jnp1U3",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-09T08:17:18.686Z",
+      "createdAt": "2025-09-09T08:17:18.686Z",
+      "id": "7CLNAMxgRIj7U2xh",
+      "name": "人工審閱"
+    },
+    {
+      "updatedAt": "2025-09-22T03:04:16.807Z",
+      "createdAt": "2025-09-22T03:04:16.807Z",
+      "id": "95EDB4DKByiy0QKZ",
+      "name": "自動回信"
+    },
+    {
+      "updatedAt": "2025-09-09T08:17:29.585Z",
+      "createdAt": "2025-09-09T08:17:29.585Z",
+      "id": "oMlfOWbZbcI7fGo5",
+      "name": "humanInLoop"
+    },
+    {
+      "updatedAt": "2025-09-22T03:04:47.528Z",
+      "createdAt": "2025-09-22T03:04:47.528Z",
+      "id": "sgPqvlKFNKm8jorU",
+      "name": "回信草稿"
+    },
+    {
+      "updatedAt": "2025-08-13T07:39:32.636Z",
+      "createdAt": "2025-08-13T07:39:32.636Z",
+      "id": "yjiugy6lHwCmZWlH",
+      "name": "AI agent"
+    }
+  ],
+  "activeVersion": null
+}

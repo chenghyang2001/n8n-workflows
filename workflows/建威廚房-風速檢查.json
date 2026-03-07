@@ -1,0 +1,865 @@
+{
+  "id": "6XI97hhSm8S1eMMk",
+  "name": "建威廚房-風速檢查",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2224,
+        1840
+      ],
+      "id": "4c95a9dc-2be4-4067-96c9-e39a1d31140b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    id,\n    house_id,\n    edge_id,\n    fan_speed,\n    type_id,\n    mode,  \n    name,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.mode')) AS mode,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.fan_speed')) AS fan_speed\nFROM rooms \nWHERE edge_id = 7;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1856,
+        2032
+      ],
+      "id": "ef066915-86d3-4256-8924-3b7d9009f93f",
+      "name": "query_中控 ID-7",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1z62_V5L2rVJ2lz8vrgk8bbKV-HZuMX0FvXwdxsvDoK8/edit?gid=1016385485#gid=1016385485",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1z62_V5L2rVJ2lz8vrgk8bbKV-HZuMX0FvXwdxsvDoK8/edit?gid=1016385485#gid=1016385485",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $json.id }}",
+            "house_id": "={{ $json.house_id }}",
+            "edge_id": "={{ $json.edge_id }}",
+            "room_name": "={{ $json.name }}",
+            "建立時間": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+            "最後更新時間": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+            "mode": "={{ $json.mode }}",
+            "type_id": "={{ $json.type_id }}",
+            "fan_speed": "={{ $json.fan_speed }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type_id",
+              "displayName": "type_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1616,
+        2384
+      ],
+      "id": "f655f897-641a-45e5-9c24-e94e650a1aab",
+      "name": "n8n-建威廚房",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1z62_V5L2rVJ2lz8vrgk8bbKV-HZuMX0FvXwdxsvDoK8/edit?gid=1016385485#gid=1016385485",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1z62_V5L2rVJ2lz8vrgk8bbKV-HZuMX0FvXwdxsvDoK8/edit?gid=1016385485#gid=1016385485",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "edge_id",
+              "lookupValue": "7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1872,
+        1664
+      ],
+      "id": "22d8625b-f09e-4f0e-a6ce-dacc366f2352",
+      "name": "n8n-建威廚房1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3123f410-8e5b-47a8-9758-79b5db68feb0",
+              "name": "edge_id",
+              "value": "={{ $json.edge_id }}",
+              "type": "number"
+            },
+            {
+              "id": "7c1f18f0-d561-4542-ae9e-5e6c70f6583a",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "8c886f29-3623-420a-81a1-9e6fc9713bfa",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "cf6269da-a3db-4a74-9b65-50b5e720bd3b",
+              "name": "room_name",
+              "value": "={{ $json.room_name }}",
+              "type": "string"
+            },
+            {
+              "id": "13698757-9834-40f9-a3a7-340f48a4e17b",
+              "name": "fan_speed",
+              "value": "={{ $json.fan_speed }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1664,
+        1664
+      ],
+      "id": "f8103e67-977d-40b8-be9a-ea377f6bf118",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "fan_speed",
+              "renameField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        1664
+      ],
+      "id": "817bea4e-4045-4ad9-a184-b75c29a87e9e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "fan_speed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1584,
+        2032
+      ],
+      "id": "02200cec-f08d-4d9f-a74b-ae5c37d6ae05",
+      "name": "Aggregate-sql"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得輸入資料\nconst items = $input.all();\n\n// 處理每個輸入項目\nconst output = items.map(item => {\n  const fanSpeedArray = item.json.fan_speed;\n  \n  // 將字串陣列轉換為數字並加總\n  const sum = fanSpeedArray.reduce((total, speed) => {\n    return total + Number(speed);\n  }, 0);\n  \n  return {\n    json: {\n      fan_speed_array: fanSpeedArray,  // 保留原始陣列\n      fan_speed_sum: sum,               // 加總結果\n      fan_speed_count: fanSpeedArray.length  // 項目數量\n    }\n  };\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1376,
+        2032
+      ],
+      "id": "26217260-0810-4450-ad5c-848d130898bd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9ebc783-83ac-47b8-8525-7fe9b8d923c0",
+              "name": "fan_speed_sum",
+              "value": "={{ $json.fan_speed_sum }}",
+              "type": "number"
+            },
+            {
+              "id": "89917f5a-20aa-41ee-b8e9-bcbc2f094826",
+              "name": "fan_speed_count",
+              "value": "={{ $json.fan_speed_count }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1168,
+        2032
+      ],
+      "id": "0c6dc3fa-55bf-4376-9f45-02b345d576ff",
+      "name": "config_sql"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得輸入資料\nconst items = $input.all();\n\n// 處理每個輸入項目\nconst output = items.map(item => {\n  const fanSpeedArray = item.json.fan_speed;\n  \n  // 將字串陣列轉換為數字並加總\n  const sum = fanSpeedArray.reduce((total, speed) => {\n    return total + Number(speed);\n  }, 0);\n  \n  return {\n    json: {\n      fan_speed_array: fanSpeedArray,  // 保留原始陣列\n      fan_speed_sum: sum,               // 加總結果\n      fan_speed_count: fanSpeedArray.length  // 項目數量\n    }\n  };\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1184,
+        1664
+      ],
+      "id": "981bfe03-3740-4a29-83ad-bd18cd856a6d",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9ebc783-83ac-47b8-8525-7fe9b8d923c0",
+              "name": "fan_speed_sum",
+              "value": "={{ $json.fan_speed_sum }}",
+              "type": "number"
+            },
+            {
+              "id": "89917f5a-20aa-41ee-b8e9-bcbc2f094826",
+              "name": "fan_speed_count",
+              "value": "={{ $json.fan_speed_count }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -976,
+        1664
+      ],
+      "id": "e6e15abe-8c33-41b2-8689-b9a7ba2f97c5",
+      "name": "config_sheet"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $('config_sql').item.json.fan_speed_sum }}",
+              "rightValue": "={{ $('config_sheet').item.json.fan_speed_sum }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        1856
+      ],
+      "id": "3344a73e-5574-4dd8-a1ac-9f5a81f7111e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "dbcfd7dd-e837-4dd2-aeb9-32fc65b223c1",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -640,
+        1856
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 維持一樣,沒有改變"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        1696
+      ],
+      "id": "270a7078-07bc-49be-95dc-a77947d782dc",
+      "name": "Call 'subFlow-line-n8n-peter-v1'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        1920
+      ],
+      "id": "ba7747db-ec34-4cea-a8ee-9c85dda8731f",
+      "name": "Call 'subFlow-line-n8n-peter-v1'1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        1632
+      ],
+      "id": "ef211bbb-a7d1-4053-9add-8b7257c0beeb",
+      "name": "every 20 s"
+    },
+    {
+      "parameters": {
+        "content": "## step 1. 先取出 sheet 裡 紀錄 10 分鐘前的風速",
+        "height": 80,
+        "width": 944,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        1536
+      ],
+      "id": "737224a9-0227-4bd5-9515-88cda37442e0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## step 2. 用 SQL 取出目前的風速",
+        "height": 80,
+        "width": 576,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        2208
+      ],
+      "id": "a905188e-5e7e-43e1-9323-5d6fa245f5c2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## step 3.  ( 10 分鐘前的風速 vs 現在的風速 ) 2 個數值比較",
+        "height": 80,
+        "width": 720,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        2112
+      ],
+      "id": "9d979f32-acf4-4ae2-bb41-ac9de738b2ef",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## step 4.  把現在的風速 記錄到 Sheet",
+        "height": 80,
+        "width": 720,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        2560
+      ],
+      "id": "4ab062b5-ab60-4b74-89e3-678d74966649",
+      "name": "Sticky Note3"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "n8n-建威廚房1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "query_中控 ID-7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_中控 ID-7": {
+      "main": [
+        [
+          {
+            "node": "Aggregate-sql",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "n8n-建威廚房",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n-建威廚房1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate-sql": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "config_sql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "config_sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_sql": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "every 20 s": {
+      "main": [
+        [
+          {
+            "node": "n8n-建威廚房1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "query_中控 ID-7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:1:35AM1": {
+      "recurrenceRules": []
+    },
+    "node:1:45AM": {
+      "recurrenceRules": []
+    },
+    "node:1:40AM": {
+      "recurrenceRules": []
+    },
+    "node:Test": {
+      "recurrenceRules": []
+    },
+    "node:3:00AM": {
+      "recurrenceRules": []
+    },
+    "node:4:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:30AM": {
+      "recurrenceRules": []
+    },
+    "node:7:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:20AM": {
+      "recurrenceRules": []
+    },
+    "node:7:50AM": {
+      "recurrenceRules": []
+    },
+    "node:every 1 hour": {
+      "recurrenceRules": []
+    },
+    "node:9:00AM": {
+      "recurrenceRules": []
+    },
+    "node:5:00 PM": {
+      "recurrenceRules": []
+    },
+    "node:every 10 s": {
+      "recurrenceRules": []
+    },
+    "node:every 20 s": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 174,
+  "shared": [
+    {
+      "updatedAt": "2025-12-04T00:25:57.457Z",
+      "createdAt": "2025-12-04T00:25:57.457Z",
+      "role": "workflow:owner",
+      "workflowId": "6XI97hhSm8S1eMMk",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-12-05T00:19:41.163Z",
+      "createdAt": "2025-12-05T00:19:41.163Z",
+      "id": "CyPs1oHzrZoyTmF0",
+      "name": "建威廚房-風速檢查"
+    }
+  ],
+  "activeVersion": null
+}

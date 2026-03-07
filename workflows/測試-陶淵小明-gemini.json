@@ -1,0 +1,532 @@
+{
+  "id": "2UyCEGmEyg8sVdYn",
+  "name": "測試-陶淵小明-gemini",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        80
+      ],
+      "id": "2a2eb207-a54e-4a9b-b22c-21ede4b6b095",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "20ad5bf0-19a8-45c4-9d51-3877e9fdd94f",
+              "name": "=url",
+              "value": "https://youtube.com/shorts/y44eP5-Qr9k?si=nltWwMOXJyrvCE2F",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        80
+      ],
+      "id": "52acca58-c244-4ef8-9c60-c01e628a8e81",
+      "name": "config_url"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "text": "描述视频中的内容，列出影片中使用的運動器材名稱, 用繁體中文回复",
+        "videoUrls": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        96
+      ],
+      "id": "a3f3e5cf-f660-4252-8854-6d93dbbf6da6",
+      "name": "Analyze video1",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "audioUrls": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        304
+      ],
+      "id": "be2b5965-e51d-4198-9f16-e655731c2ebf",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=analyze video : \n{{ $json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        96
+      ],
+      "id": "93a8dab0-f8fb-4a8e-b3f2-2c4e0c01049b",
+      "name": "Call 'subFlow-line-n8n-peter-v1'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=transcribe recording :\n{{ $json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        304
+      ],
+      "id": "b8e9d677-8864-454c-bf04-53b47933eb18",
+      "name": "Call 'subFlow-line-n8n-peter-v1'1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "这个音频文件包含什么内容，用繁體中文回复",
+        "audioUrls": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -144
+      ],
+      "id": "3080a590-371c-4c33-ad8a-5e4ec5322685",
+      "name": "Analyze audio1",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=analyze audio : \n{{ $json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        -144
+      ],
+      "id": "0a3f28bf-0983-4df8-8b26-633fb563af4e",
+      "name": "Call 'subFlow-line-n8n-peter-v1'2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "视频中的内容是一場簡報的內容，幫我把每一張簡報的Slide 內容截圖,把所有截圖壓縮成一個檔案,讓我下載.",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        528
+      ],
+      "id": "269a52be-be9e-4267-92d9-e221e45c792e",
+      "name": "Analyze video",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "kOFTVVCtCv4URnLI",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kOFTVVCtCv4URnLI",
+          "cachedResultName": "subFlow-line-4-methods"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.candidates[0].content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        528
+      ],
+      "id": "c5598373-1cfe-48d0-8e0c-4cd190859b80",
+      "name": "Call 'subFlow-line-4-methods'"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/file/d/1dNKUVXXG-3b7u5-TsocZ7hB93RI9pwT5/view?usp=drive_link",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        528
+      ],
+      "id": "f250b330-09ad-4b1d-a250-07cdf5f520a3",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "视频中的内容是一本中文雜誌的內容，用OCR 把每一頁的文字擷取出來",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        416,
+        288
+      ],
+      "id": "8c219163-327b-48c0-97b4-990eeb4b299c",
+      "name": "Analyze video2",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "config_url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_url": {
+      "main": [
+        [
+          {
+            "node": "Analyze video1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Transcribe a recording1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze audio1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-4-methods'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Analyze video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-23T01:56:00.805Z",
+      "createdAt": "2025-09-23T01:56:00.805Z",
+      "role": "workflow:owner",
+      "workflowId": "2UyCEGmEyg8sVdYn",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-08-06T05:25:23.989Z",
+      "createdAt": "2025-08-06T05:25:23.989Z",
+      "id": "2ZVmibkkFEAxCyOx",
+      "name": "google-doc"
+    },
+    {
+      "updatedAt": "2025-07-31T06:04:17.488Z",
+      "createdAt": "2025-07-31T06:04:17.488Z",
+      "id": "9pPluGfXfknhnccL",
+      "name": "gemini-node"
+    },
+    {
+      "updatedAt": "2025-08-25T02:48:56.759Z",
+      "createdAt": "2025-08-25T02:48:56.759Z",
+      "id": "GJsbvStKOGRpQArw",
+      "name": "openai-tts"
+    },
+    {
+      "updatedAt": "2025-09-22T06:33:03.622Z",
+      "createdAt": "2025-09-22T06:33:03.622Z",
+      "id": "SFDZyPAjCdi7vTEV",
+      "name": "form-選擇器"
+    },
+    {
+      "updatedAt": "2025-09-15T05:31:04.911Z",
+      "createdAt": "2025-09-15T05:31:04.911Z",
+      "id": "eHIKpUFoZwulFeoT",
+      "name": "on-form"
+    }
+  ],
+  "activeVersion": null
+}

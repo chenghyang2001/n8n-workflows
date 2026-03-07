@@ -1,0 +1,284 @@
+{
+  "id": "8OxKuDzSx89oe6AK",
+  "name": "simon-apify-youtube-transcript-20250724-v2",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -40
+      ],
+      "id": "406b49bb-23fe-4238-a39c-2d5c7ca354e0",
+      "name": "手動觸發"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "url-field",
+              "name": "url",
+              "value": "https://www.youtube.com/watch?v=l-7IKXu9qKg",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        -40
+      ],
+      "id": "9d34cb4a-46af-4f69-bad7-161e49c734eb",
+      "name": "設定影片網址"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/xXOR6XE5SNC1QD138/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=video_url",
+              "value": "={{ $json.url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "73349536-36c9-4cd6-9452-c7d6a086165d",
+      "name": "啟動 Apify Actor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        -40
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify Authorization Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $json.data.id}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6748adf1-fc4f-402e-9c0b-007979601745",
+      "name": "取得 Actor 執行結果",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1160,
+        -40
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify Authorization Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/datasets/{{$json.data.defaultDatasetId}}/items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "34cca2c4-23cb-4672-ba1d-5381e3d9697a",
+      "name": "取得資料集",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        -40
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify Authorization Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "23aca842-df05-8020-b47c-c5eb024a02a1",
+          "mode": "list",
+          "cachedResultName": "zap_youtube_transcript_summary",
+          "cachedResultUrl": "https://www.notion.so/23aca842df058020b47cc5eb024a02a1"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Video名稱|title",
+              "title": "={{ $json.title }}"
+            },
+            {
+              "key": "video_url|url",
+              "urlValue": "={{ $('設定影片網址').item.json.url }}"
+            },
+            {
+              "key": "全文|rich_text",
+              "textContent": "={{ $json.text.substring(0, 2000) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1560,
+        -40
+      ],
+      "id": "74f56487-ec41-4d8b-86aa-65ec154afb39",
+      "name": "創建 Notion 頁面",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "手動觸發": {
+      "main": [
+        [
+          {
+            "node": "設定影片網址",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "設定影片網址": {
+      "main": [
+        [
+          {
+            "node": "啟動 Apify Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "啟動 Apify Actor": {
+      "main": [
+        [
+          {
+            "node": "取得 Actor 執行結果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "取得 Actor 執行結果": {
+      "main": [
+        [
+          {
+            "node": "取得資料集",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "取得資料集": {
+      "main": [
+        [
+          {
+            "node": "創建 Notion 頁面",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-24T08:40:04.597Z",
+      "createdAt": "2025-07-24T08:40:04.597Z",
+      "role": "workflow:owner",
+      "workflowId": "8OxKuDzSx89oe6AK",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-07-01T08:20:56.845Z",
+      "createdAt": "2025-07-01T08:20:56.845Z",
+      "id": "XU5cBDVbSwYMc37h",
+      "name": "apify"
+    }
+  ],
+  "activeVersion": null
+}

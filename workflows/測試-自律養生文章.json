@@ -1,0 +1,1119 @@
+{
+  "id": "3BxiPFgrGLctmMnx",
+  "name": "測試-自律養生文章",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "624c4468-652d-48e0-8fb4-ee65eb1cb786",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "name": "file_extension",
+              "value": "={{ $json.name.split('.').pop().toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e8f13b8-f11d-4392-8630-c4a45a713927",
+      "name": "Set File Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "doc-condition-1",
+              "leftValue": "={{ $json.file_type }}",
+              "rightValue": "application/vnd.google-apps.document",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "35d0c9d5-d772-40af-bc63-f00764fd399e",
+      "name": "If Google Document",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "documentURL": "={{ $json.file_id }}"
+      },
+      "id": "ac0448d0-08ae-40e7-86d7-3d2a900446bb",
+      "name": "Read Google Doc",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -256
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-doc-content-1",
+              "name": "document_title",
+              "value": "={{ $('If Google Document').item.json.file_name }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-doc-content-2",
+              "name": "document_content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-doc-content-3",
+              "name": "content_type",
+              "value": "={{ $('If Google Document').item.json.file_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "27a7690f-05a9-4beb-acdb-25ae9cd6690a",
+      "name": "Extract Document Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1328,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw",
+          "mode": "list",
+          "cachedResultName": "自律養生陳老師",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "1a8cc7d5-0208-41de-beea-fcd78767ab7a",
+      "name": "File Created1",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -240
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/nXpwpswrlUdg3EFKKuww",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": " sk_2863c46dd20e30bb5066dfd1532001349e62b69fd4dda4c5"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.document_content.slice(0, 7000) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1552,
+        0
+      ],
+      "id": "0772fcbe-ab3a-4194-b607-535c910d3c72",
+      "name": "ElevenLabs Audio",
+      "executeOnce": false,
+      "credentials": {
+        "httpCustomAuth": {
+          "name": "Custom Auth account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1177472123,
+          "mode": "list",
+          "cachedResultName": "elevenLabs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit#gid=1177472123"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.webContentLink }}",
+            "timestamp": "={{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b77e0c7f-7b4b-46ca-8e60-ee1a5a5dd92a",
+      "name": "Sheets ElevenLabs",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1984,
+        -240
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $('Upload Audio').item.json.webContentLink }} {{ $('Set File Info').item.json.file_name }}  (全文) ElevenLabs 產生音頻 : {{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }} \"\n    }\n\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "ee96540a-030e-413a-9d9d-2c29138e03ad",
+      "name": "Line : 推送訊息 Line使用者n8n-peter5",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2208,
+        -240
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "name": "={{ \"全文-ElevenLabs-\" + $('Set File Info').item.json.file_name }}",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1p_i4dl7eeIxyJkcd4PI4GlidK6xAOtk8",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1p_i4dl7eeIxyJkcd4PI4GlidK6xAOtk8",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        -240
+      ],
+      "id": "91baa2c9-1495-42cf-9541-264b5d0e701e",
+      "name": "Upload Audio",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File Info').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1kVmrfaYd-FQ3trbeJZVhPNPJNhsATvdl",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2704,
+        640
+      ],
+      "id": "2bfff90c-bd93-4305-be76-5ca2917ef07f",
+      "name": "Done",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        -240
+      ],
+      "id": "e6b3dda2-1480-434e-b65a-4b988587fc9c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw",
+          "mode": "list",
+          "cachedResultName": "自律養生陳老師",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "id": "e79466dc-f3b3-4fc0-b44e-914a8ae4dd3d",
+      "name": "File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -48
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "modelId": {
+          "__rl": true,
+          "value": "models/veo-2.0-generate-001",
+          "mode": "list",
+          "cachedResultName": "models/veo-2.0-generate-001"
+        },
+        "prompt": "=請根據以下腳本內容,產生影片.影片以卡通型式呈現.並且用內容大綱加上聲音旁白.\n{{ $json.document_content }}\n",
+        "options": {
+          "sampleCount": 1,
+          "durationSeconds": 8
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        -608
+      ],
+      "id": "af04ce43-6c59-494e-9adf-2d3b4a6d832d",
+      "name": "Generate a video",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/speech",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_OPENAI_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "tts-1"
+            },
+            {
+              "name": "input",
+              "value": "={{ $json.document_content }}"
+            },
+            {
+              "name": "voice",
+              "value": "=alloy"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8af7d859-251d-4e12-9258-dd978b34f228",
+      "name": "Send HTTP Request to OpenAI's TTS Endpoint",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1552,
+        -352
+      ],
+      "typeVersion": 4.1,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## By OpenAI TTS",
+        "height": 80,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        -336
+      ],
+      "id": "00b0be06-0c44-434b-80b1-1fe172378b09",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## By ElevenLabs",
+        "height": 80,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        96
+      ],
+      "id": "e6b85224-45fa-42df-bf61-8fd29a8e022c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "=https://docs.google.com/document/d/{{ $('Set File Info').item.json.file_id }}/export?format=pdf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/pdf"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "c1d4d9a4-15a3-4c78-ae72-29b4f2dc9e91",
+      "name": "Export to PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1152,
+        -1056
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://docs.google.com/document/d/{{ $('Set File Info').item.json.file_id }}/export?format=txt",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "156d95ff-3500-4cb8-bc53-6b60d2df6c9f",
+      "name": "Export to txt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1152,
+        -896
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://docs.google.com/document/d/{{ $('Set File Info').item.json.file_id }}/export?format=docx",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "7f5be0d5-1963-4a53-8974-b69f855b96c4",
+      "name": "Export to docx",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1152,
+        -592
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://docs.google.com/document/d/{{ $('Set File Info').item.json.file_id }}/export?format=odt",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "55b16b6d-5741-473b-9a34-8c14f176c662",
+      "name": "Export to odt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1152,
+        -736
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "doc-condition-1",
+              "leftValue": "={{ $json.file_type }}",
+              "rightValue": "presentation",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "ce048d70-c454-42f2-8910-cfb1d4ee49b2",
+      "name": "If Google Document1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File Info').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        976,
+        320
+      ],
+      "id": "695c1b3d-ed81-4ec2-a724-16130574b174",
+      "name": "Download PPT File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pdf-url",
+              "name": "pdf_url",
+              "value": "={{ $json.Files[0].Url }}",
+              "type": "string"
+            },
+            {
+              "id": "pdf-name",
+              "name": "pdf_name",
+              "value": "={{ $json.Files[0].FileName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        320
+      ],
+      "id": "22ac9ff5-4bc6-4473-b6d5-7eed55aa6ef5",
+      "name": "Extract PDF URL"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract PDF URL').item.json.pdf_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1696,
+        320
+      ],
+      "id": "0a7e2f4d-2a74-4798-a0e3-599bcfae795b",
+      "name": "Download PDF"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://v2.convertapi.com/convert/pptx/to/pdf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "StoreFile",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        320
+      ],
+      "id": "9c51d713-5138-41ee-904b-595a743d9137",
+      "name": "ConvertAPI HTTP Request1",
+      "credentials": {
+        "convertApi": {
+          "name": "ConvertAPI 20250801"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Set File Info": {
+      "main": [
+        [
+          {
+            "node": "If Google Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Google Document": {
+      "main": [
+        [
+          {
+            "node": "Export to PDF",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Export to txt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Export to odt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Export to docx",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Google Document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Extract Document Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Document Content": {
+      "main": [
+        [
+          {
+            "node": "Generate a video",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send HTTP Request to OpenAI's TTS Endpoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ElevenLabs Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets ElevenLabs": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio": {
+      "main": [
+        [
+          {
+            "node": "Sheets ElevenLabs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Line : 推送訊息 Line使用者n8n-peter5": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Set File Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Done": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send HTTP Request to OpenAI's TTS Endpoint": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PPT File": {
+      "main": [
+        [
+          {
+            "node": "ConvertAPI HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF URL": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Google Document1": {
+      "main": [
+        [
+          {
+            "node": "Download PPT File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "L9RQFagA7DehEy9F",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-08-12T07:07:06Z"
+    },
+    "node:File Updated": {
+      "lastTimeChecked": "2025-08-14T03:25:46Z"
+    },
+    "node:File Created1": {
+      "lastTimeChecked": "2025-08-14T03:25:46Z"
+    },
+    "node:File Updated1": {
+      "lastTimeChecked": "2025-08-08T02:06:20Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-29T00:53:34.613Z",
+      "createdAt": "2025-08-29T00:53:34.613Z",
+      "role": "workflow:owner",
+      "workflowId": "3BxiPFgrGLctmMnx",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-08-25T02:48:56.759Z",
+      "createdAt": "2025-08-25T02:48:56.759Z",
+      "id": "GJsbvStKOGRpQArw",
+      "name": "openai-tts"
+    },
+    {
+      "updatedAt": "2025-07-01T07:47:00.389Z",
+      "createdAt": "2025-07-01T07:46:24.750Z",
+      "id": "NemklGtzxWRxhe4p",
+      "name": "self-fast"
+    },
+    {
+      "updatedAt": "2025-07-01T03:40:24.997Z",
+      "createdAt": "2025-07-01T03:40:24.997Z",
+      "id": "Z6ojJoAXdIbQch00",
+      "name": "peter"
+    },
+    {
+      "updatedAt": "2025-07-01T05:31:57.087Z",
+      "createdAt": "2025-07-01T05:31:30.194Z",
+      "id": "cMDuD6Fpp0c9x76Q",
+      "name": "ElevenLabs"
+    }
+  ],
+  "activeVersion": null
+}

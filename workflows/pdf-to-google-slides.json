@@ -1,0 +1,1492 @@
+{
+  "id": "0UmPapjAbccY2ufm",
+  "name": "PDF to Google Slides",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pdf-url",
+              "name": "pdf_url",
+              "value": "={{ $json.Files[0].Url }}",
+              "type": "string"
+            },
+            {
+              "id": "pdf-name",
+              "name": "pdf_name",
+              "value": "={{ $('SetFileId').item.json.name.replace('.pptx', '.pdf').replace('.ppt', '.pdf') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -384,
+        1312
+      ],
+      "id": "d31e9572-22b5-46ff-886c-032fcc2f5f05",
+      "name": "Extract PDF URL"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2016,
+        1296
+      ],
+      "id": "809e01f5-7e5f-4ec6-9dc2-bd0e8b370dd7",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0501328-5e74-435f-afc3-a5796612c52d",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6989f772-441d-4284-84a1-dbb37dd1541d",
+              "name": "createdTime",
+              "value": "={{ $json.createdTime }}",
+              "type": "string"
+            },
+            {
+              "id": "150cfee5-e9a7-40af-ba0f-114bd1485681",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1616,
+        1312
+      ],
+      "id": "af47a4fa-dfaa-4db3-baaa-195243e6480b",
+      "name": "SetFileId"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://v2.convertapi.com/convert/pdf/to/jpg",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "StoreFile",
+              "value": "true"
+            },
+            {
+              "name": "PageRange",
+              "value": "1-5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        1312
+      ],
+      "id": "f2725707-372d-4f86-947a-0d75e4839639",
+      "name": "ConvertAPI HTTP Request1",
+      "credentials": {
+        "convertApi": {
+          "name": "ConvertAPI 20250801"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"{{ $json.url }}\"\n  },\n  \"include_image_base64\": true\n} ",
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        1312
+      ],
+      "id": "5d9f2410-3227-401a-b078-05ff3583fc08",
+      "name": "Mistral OCR - Document",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "purpose",
+              "value": "ocr"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        1312
+      ],
+      "id": "526fc476-a79d-45ed-a5bf-f625e5eb00c6",
+      "name": "Mistral - Upload File1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mistral.ai/v1/files/{{ $json.id }}/url ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expiry",
+              "value": "24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        1312
+      ],
+      "id": "5e037554-e3fc-4fa1-8f14-9a6f1d8e82c7",
+      "name": "Get Signed Url1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 獲取 Mistral OCR 節點的輸出\nconst ocrOutput = $input.all()[0].json;\n\n// 檢查是否有 pages 陣列\nif (!ocrOutput.pages || !Array.isArray(ocrOutput.pages)) {\n  throw new Error('找不到 pages 陣列在 OCR 輸出中');\n}\n\n// 提取所有頁面的 markdown 內容\nconst markdownContents = [];\n\n// 遍歷所有頁面\nfor (let i = 0; i < ocrOutput.pages.length; i++) {\n  const page = ocrOutput.pages[i];\n  \n  // 檢查該頁面是否有 markdown 內容\n  if (page && page.markdown) {\n    // 添加頁面分隔標記（可選）\n    markdownContents.push(`<!-- 第 ${i + 1} 頁 -->`);\n    markdownContents.push(page.markdown);\n    markdownContents.push(''); // 添加空行作為頁面之間的分隔\n  }\n}\n\n// 合併所有 markdown 內容\nconst combinedMarkdown = markdownContents.join('\\n');\n\n// 返回合併後的結果\nreturn {\n  json: {\n    combinedMarkdown: combinedMarkdown,\n    totalPages: ocrOutput.pages_processed || ocrOutput.pages.length,\n    documentSize: ocrOutput.doc_size_bytes || null,\n    model: ocrOutput.model || 'mistral-ocr-2505-completion',\n    annotation: ocrOutput.document_annotation || null,\n    usage: ocrOutput.usage_info || null\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        1312
+      ],
+      "id": "763d1eaa-7ced-4fb1-8bf5-3e528d352d9c",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"data\":{{ $json.combinedMarkdown.toJsonString() }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        1312
+      ],
+      "id": "ec1cd4c8-58ad-4b00-96b7-c808f8cb1132",
+      "name": "DocumentData1"
+    },
+    {
+      "parameters": {
+        "content": "## 1. convertapi : https://www.convertapi.com/a/billing/plans\n## 2. mistral : https://admin.mistral.ai/organization/billing\n\n## 3. 來源路徑 : n8n-研能週報文件摘要 \n## https://drive.google.com/drive/folders/1KAb-tvBPq0FnZeKbOga9EkO2i_rwyqH8\n\n## 4. 目的路徑 : mistral-ocr-generated-文件夾\n## https://drive.google.com/drive/folders/1hA6gBMcpAXwSm1dK6cOUVuUXJJ0PHEv6\n\n\n\n\n## update : 2026/01/27",
+        "height": 432,
+        "width": 1200,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        464
+      ],
+      "id": "d4da4131-0463-4e1d-a6c7-1d19eaf4d550",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "研能周報文件摘要 DONE"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -1648,
+        704
+      ],
+      "id": "2311feab-bf69-424a-a6c4-8778fa40c9ce",
+      "name": "Execute Workflow1"
+    },
+    {
+      "parameters": {
+        "content": "# convertApi : pdf-> pptx",
+        "height": 352,
+        "width": 592,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        1200
+      ],
+      "id": "09a7c088-17a2-4223-8ff7-0abf5ee1dc8f",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# 把 pdf 放到 n8n cloud 上以便做處理",
+        "height": 352,
+        "width": 624,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        1200
+      ],
+      "id": "ccf06325-0c58-4ffd-8631-f4ef7f70a285",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('DocumentData1').item.json.data }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        1312
+      ],
+      "id": "c65adfde-239e-4ece-a6e2-38c8d058b38a",
+      "name": "Insert Content1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "=1Htmb8aNFOdS-LpuAA4cQg5fZcXeAPsmX",
+        "title": "={{  $('Download File').item.json.name.replace(/\\.pptx$/i, '.doc') }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1312
+      ],
+      "id": "8b736615-d7cf-4467-a39d-f96b76132f76",
+      "name": "Create mistral ocr Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $('Create mistral ocr Doc').item.json.name }} https://docs.google.com/document/d/{{ $json.documentId }}/edit?tab=t.0  \"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "id": "280095ed-31e9-40f1-88a3-e2e91c87fd28",
+      "name": "Line : 推送訊息 Line使用者n8n-peter5",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2224,
+        1312
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/11y4by4CbBQoMiE48nvw5toKWCzGr0nNw",
+          "mode": "url"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        1424
+      ],
+      "id": "1a10bea5-2ece-4a67-b471-9a2d0508ed5f",
+      "name": "File Update",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/11y4by4CbBQoMiE48nvw5toKWCzGr0nNw",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        1216
+      ],
+      "id": "4b0e9168-5ee3-4dc2-80df-aee2abf1f0cb",
+      "name": "File created",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download File').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1QsgVi6LvdpplYizyAFA-t-H3RLZtVQH2",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        1424
+      ],
+      "id": "1909eeb1-1b1f-489f-b668-65779d453436",
+      "name": "Move ppt file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Create mistral ocr Doc').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1hA6gBMcpAXwSm1dK6cOUVuUXJJ0PHEv6",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2448,
+        1312
+      ],
+      "id": "46ea7dbe-c398-4788-97d9-74772dce2929",
+      "name": "Move doc file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## update history :\n## 1. 2026/01/29 ( Thu ) :",
+        "width": 448,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        336
+      ],
+      "id": "6b7c6d42-7ab2-4d9e-9ae7-a755d7e02eb7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 4. 目的路徑 : mistral-ocr-generated-文件夾\n## https://drive.google.com/drive/folders/1hA6gBMcpAXwSm1dK6cOUVuUXJJ0PHEv6\n\n\n\n",
+        "height": 112,
+        "width": 1024,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        1104
+      ],
+      "id": "aa088c03-4831-400c-a2ae-5be419fa477c",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## 目的路徑 : 備份來源夾-ppt\n## https://drive.google.com/drive/folders/1QsgVi6LvdpplYizyAFA-t-H3RLZtVQH2\n\n\n\n\n",
+        "height": 112,
+        "width": 1024,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        1888
+      ],
+      "id": "fc8a07b6-6634-4365-8bb9-5805a9dfd458",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        1424
+      ],
+      "id": "701dc51c-0ff1-4d10-bf9f-ad2d843998b2",
+      "name": "Wait",
+      "webhookId": "0ddbc540-1a08-4827-aae9-01ef73e8d94a"
+    },
+    {
+      "parameters": {
+        "folderId": "=1Htmb8aNFOdS-LpuAA4cQg5fZcXeAPsmX",
+        "title": "={{ 'mistral-ocr-' + $('Download File').item.json.name.replace(/\\.pptx$/i, '.doc') }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        800,
+        1088
+      ],
+      "id": "e8405cec-cc37-45f6-a88e-fc9d555905ee",
+      "name": "Create mistral ocr Doc1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('SetFileId').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1232,
+        1312
+      ],
+      "id": "029854e3-3485-43b7-8890-c33f44788f06",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract PDF URL').item.json.pdf_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        1312
+      ],
+      "id": "51a2807f-6cae-4720-a91d-641547d86846",
+      "name": "Download pptx"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "fileName": "={{ ($json.name || 'input.pdf').replaceAll('\\n','') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1872,
+        1968
+      ],
+      "id": "bc7d95d7-cd38-4b18-85d1-19075582fdd4",
+      "name": "Drive - Download PDF",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://v2.convertapi.com/convert/pdf/to/png",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Secret",
+              "value": "={{ $env.CONVERTAPI_SECRET }}"
+            },
+            {
+              "name": "StoreFile",
+              "value": "true"
+            },
+            {
+              "name": "ImageResolution",
+              "value": "200"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -1600,
+        1968
+      ],
+      "id": "81800eed-44d8-49b1-8124-491ce6eea654",
+      "name": "ConvertAPI - PDF to PNG",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        1968
+      ],
+      "id": "ca89c436-827f-4357-a1d9-1729389eed4d",
+      "name": "Split Files[] to Items",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Url }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -1120,
+        1968
+      ],
+      "id": "5c7e8eee-d32e-4c6e-9fa0-1678a2e4df60",
+      "name": "Download PNG (per page)",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.FileName || ('page_' + $itemIndex + '.png') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -864,
+        1968
+      ],
+      "id": "e0afb8de-f35f-4554-8812-35686c5120a7",
+      "name": "Drive - Upload PNG",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{$json.id}}/permissions",
+        "authentication": "oAuth2",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -624,
+        1968
+      ],
+      "id": "ae661181-31d7-4812-a5f2-232dd755ca26",
+      "name": "Drive API - Set Anyone Reader",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        1824
+      ],
+      "id": "de638cf7-1682-4194-b9bd-bd84a455863c",
+      "name": "Prepare Presentation Context"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json._hasPresentation }}",
+              "operation": "isFalse"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        1824
+      ],
+      "id": "658c3420-de21-48f2-bba7-b796c251ec38",
+      "name": "IF - Need Create Presentation?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://slides.googleapis.com/v1/presentations",
+        "authentication": "oAuth2",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        96,
+        1744
+      ],
+      "id": "e8a6e480-1ba1-461a-b896-2f0d05fee00c",
+      "name": "Slides API - Create Presentation"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1744
+      ],
+      "id": "5ed035a0-9db1-442c-ab0a-e8bb1c3dc25b",
+      "name": "Store PresentationId"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        96,
+        1968
+      ],
+      "id": "3c0387e7-e84a-4154-b056-1546f8f35eb0",
+      "name": "Get PresentationId"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://slides.googleapis.com/v1/presentations/{{$json.presentationId}}:batchUpdate",
+        "authentication": "oAuth2",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        336,
+        1968
+      ],
+      "id": "b4f0ea08-9a13-4f19-9e4d-154773a0ee99",
+      "name": "Slides API - Add Slide + Image"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        1312
+      ],
+      "id": "5cf2aed5-2c0a-4f86-8f97-774cc63b8eb0",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Extract PDF URL": {
+      "main": [
+        [
+          {
+            "node": "Download pptx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "SetFileId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFileId": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR - Document": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral - Upload File1": {
+      "main": [
+        [
+          {
+            "node": "Get Signed Url1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Signed Url1": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR - Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "DocumentData1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DocumentData1": {
+      "main": [
+        [
+          {
+            "node": "Create mistral ocr Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create mistral ocr Doc": {
+      "main": [
+        [
+          {
+            "node": "Insert Content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Content1": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Line : 推送訊息 Line使用者n8n-peter5": {
+      "main": [
+        [
+          {
+            "node": "Move doc file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Update": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File created": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move ppt file": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move doc file": {
+      "main": [
+        [
+          {
+            "node": "Move ppt file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        []
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download pptx": {
+      "main": [
+        []
+      ]
+    },
+    "Drive - Download PDF": {
+      "main": [
+        [
+          {
+            "node": "ConvertAPI - PDF to PNG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI - PDF to PNG": {
+      "main": [
+        [
+          {
+            "node": "Split Files[] to Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Files[] to Items": {
+      "main": [
+        [
+          {
+            "node": "Download PNG (per page)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PNG (per page)": {
+      "main": [
+        [
+          {
+            "node": "Drive - Upload PNG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive - Upload PNG": {
+      "main": [
+        [
+          {
+            "node": "Drive API - Set Anyone Reader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Need Create Presentation?": {
+      "main": [
+        [
+          {
+            "node": "Slides API - Create Presentation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Google Drive Trigger3": {
+      "lastTimeChecked": "2025-08-04T01:39:52Z"
+    },
+    "node:Google Drive Trigger4": {
+      "lastTimeChecked": "2025-08-04T01:39:53Z"
+    },
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-09-08T01:22:47Z"
+    },
+    "node:Google Drive Trigger5": {
+      "lastTimeChecked": "2025-09-08T01:22:47Z"
+    },
+    "node:File Update": {
+      "lastTimeChecked": "2026-02-03T02:38:18Z"
+    },
+    "node:File created": {
+      "lastTimeChecked": "2026-02-03T02:38:33Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "SetFileId": [
+      {
+        "json": {
+          "file_id": "1Gmvmve1HwaEcwwOpgwC6qBSYBPHAsZs-",
+          "createdTime": "2026-02-03T03:53:03.161Z",
+          "name": "NotebookLM_Visual_Engineering.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "File created": [
+      {
+        "json": {
+          "parents": [
+            "11y4by4CbBQoMiE48nvw5toKWCzGr0nNw"
+          ],
+          "lastModifyingUser": {
+            "displayName": "ChengHsien Yang",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "10322619891911715268",
+            "emailAddress": "chenghyang2001@gmail.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocJORLU_VyPXpRO7IOD5JK-pwHWIo0fDmYi6-RQ9zszkK1aTAaOByw=s64"
+          },
+          "owners": [
+            {
+              "displayName": "ChengHsien Yang",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "10322619891911715268",
+              "emailAddress": "chenghyang2001@gmail.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocJORLU_VyPXpRO7IOD5JK-pwHWIo0fDmYi6-RQ9zszkK1aTAaOByw=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "10322619891911715268",
+              "type": "user",
+              "emailAddress": "chenghyang2001@gmail.com",
+              "role": "owner",
+              "displayName": "ChengHsien Yang",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocJORLU_VyPXpRO7IOD5JK-pwHWIo0fDmYi6-RQ9zszkK1aTAaOByw=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "10322619891911715268"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1Gmvmve1HwaEcwwOpgwC6qBSYBPHAsZs-",
+          "name": "NotebookLM_Visual_Engineering.pdf",
+          "mimeType": "application/pdf",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "3",
+          "webContentLink": "https://drive.google.com/uc?id=1Gmvmve1HwaEcwwOpgwC6qBSYBPHAsZs-&export=download",
+          "webViewLink": "https://drive.google.com/file/d/1Gmvmve1HwaEcwwOpgwC6qBSYBPHAsZs-/view?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/pdf",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBNRvvosLLh_Re4VHbKGZn6apqA8Kr5wPlBs-fTZPJpaguZ56d0sQdefzjPqCPQor4Y0jQWdcmt_Fu14Eofs0fmk9C_6bwA4GQmM3FfgsD2ssN1PkQ=s220",
+          "thumbnailVersion": "1",
+          "viewedByMe": true,
+          "viewedByMeTime": "2026-02-03T03:53:03.161Z",
+          "createdTime": "2026-02-03T03:53:03.161Z",
+          "modifiedTime": "2026-02-03T03:52:28.000Z",
+          "modifiedByMeTime": "2026-02-03T03:52:28.000Z",
+          "modifiedByMe": true,
+          "shared": false,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "originalFilename": "NotebookLM_Visual_Engineering.pdf",
+          "fullFileExtension": "pdf",
+          "fileExtension": "pdf",
+          "md5Checksum": "7e3969d890eeb98c7f3865dca2af4117",
+          "sha1Checksum": "f2347b26888db51a3ad51422374f26042be4b3d5",
+          "sha256Checksum": "2e5e2579e6405b29af4a7b639f5cdd982e46ae3ab117ee32eaa8684f89b44f45",
+          "size": "14386763",
+          "quotaBytesUsed": "14386763",
+          "headRevisionId": "0B-tn-4T2ARezcTFtSlB1UDZNMUxiOG1rUXhmZlFmZXZqS1hnPQ",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Download File": [
+      {
+        "json": {
+          "file_id": "1Gmvmve1HwaEcwwOpgwC6qBSYBPHAsZs-",
+          "createdTime": "2026-02-03T03:53:03.161Z",
+          "name": "NotebookLM_Visual_Engineering.pdf"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "application/pdf",
+            "fileType": "pdf",
+            "fileExtension": "pdf",
+            "data": "filesystem-v2",
+            "fileName": "NotebookLM_Visual_Engineering.pdf",
+            "id": "filesystem-v2:workflows/0UmPapjAbccY2ufm/executions/201744/binary_data/54c9da6c-00a4-4c6a-b580-b8ed0905a62a",
+            "fileSize": "14.4 MB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "activeVersionId": null,
+  "versionCounter": 137,
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T03:54:22.426Z",
+      "createdAt": "2026-02-03T03:54:22.426Z",
+      "role": "workflow:owner",
+      "workflowId": "0UmPapjAbccY2ufm",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-08T02:17:22.079Z",
+      "createdAt": "2025-09-08T02:17:22.079Z",
+      "id": "1BqMKb0yiXZpLrIt",
+      "name": "open-router"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-08-15T02:55:51.292Z",
+      "createdAt": "2025-08-15T02:55:51.292Z",
+      "id": "DXXj4i5Qf2hT4g1M",
+      "name": "文件摘要"
+    },
+    {
+      "updatedAt": "2025-09-08T02:17:28.576Z",
+      "createdAt": "2025-09-08T02:17:28.576Z",
+      "id": "QApfBs3JJEjWqcnw",
+      "name": "openrouter"
+    },
+    {
+      "updatedAt": "2025-07-01T05:30:35.023Z",
+      "createdAt": "2025-07-01T05:30:35.023Z",
+      "id": "QD8iWXuhwLgT6gjM",
+      "name": "ocr"
+    },
+    {
+      "updatedAt": "2025-09-08T02:16:46.800Z",
+      "createdAt": "2025-09-08T02:16:46.800Z",
+      "id": "SsMfZo3dvzNQK5Av",
+      "name": "convertApi"
+    },
+    {
+      "updatedAt": "2025-07-03T03:10:58.688Z",
+      "createdAt": "2025-07-01T08:27:29.706Z",
+      "id": "bDs9H31IGhBDQ48K",
+      "name": "gdoc"
+    },
+    {
+      "updatedAt": "2025-08-08T05:58:45.041Z",
+      "createdAt": "2025-08-08T05:58:45.041Z",
+      "id": "ciOYNzebXw2ukKg5",
+      "name": "mistral"
+    },
+    {
+      "updatedAt": "2025-08-15T02:56:09.224Z",
+      "createdAt": "2025-08-15T02:56:09.224Z",
+      "id": "rgOAx3aAot7MxRhr",
+      "name": "convert-api"
+    }
+  ],
+  "activeVersion": null
+}

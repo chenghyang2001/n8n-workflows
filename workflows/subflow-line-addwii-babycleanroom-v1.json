@@ -1,0 +1,152 @@
+{
+  "id": "5nX6vIt500YwjdyU",
+  "name": "subFlow-line-addwii-babyCleanRoom-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        672
+      ],
+      "id": "72db4b5d-53fb-471d-a598-b8e9d8d9e7c2",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        672
+      ],
+      "id": "c197cf81-b9b1-499e-91c6-f266ee0690b4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer  Bsc/q5hVLzF93TErLPdalcSSp+Rbr76I8ZkQ9xxRvE8kyu50jaQZ5zaVfKPwytT8NrMx3QJPg/tDB4Spx3og87M8Rwfvd+SqFiRjUknZrQB3VWxo10V7fziNlPhi5j/ouFKLVMt+Y0IMkCmr2lnr0AdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"Ua34606198c1c175224acb835903d05eb\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $now.format('yyyy/M/d') + ' at ' + $now.format('HH:mm:ss a') }}  \" \n    },\n{\n      \"type\": \"text\",\n      \"text\": \" {{  $json.content || ''  }} \" \n    }\n\n\n  ]\n}\n\n\n",
+        "options": {}
+      },
+      "id": "18d2f8a9-7fc4-44cf-9c2f-a2ebde5cca5e",
+      "name": "推送訊息 addwii",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        384,
+        672
+      ],
+      "typeVersion": 4.2
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "推送訊息 addwii",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-28T03:33:38.576Z",
+      "createdAt": "2025-07-28T03:33:38.576Z",
+      "role": "workflow:owner",
+      "workflowId": "5nX6vIt500YwjdyU",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    },
+    {
+      "updatedAt": "2025-07-01T08:14:11.963Z",
+      "createdAt": "2025-07-01T08:14:11.963Z",
+      "id": "QFvFTqOLs1VLlBts",
+      "name": "line"
+    }
+  ],
+  "activeVersion": null
+}

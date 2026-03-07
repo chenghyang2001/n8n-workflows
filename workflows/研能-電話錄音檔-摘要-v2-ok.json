@@ -1,0 +1,986 @@
+{
+  "id": "BmUIU5ot2dksq0s8",
+  "name": "研能-電話錄音檔-摘要-v2-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "id": "eee8d40f-a086-43b1-9126-09c18136bc99",
+      "name": "OpenRouter-gpt-4o",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        656
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        672
+      ],
+      "id": "d48fb05a-b49b-42f3-924e-25a428663ec7",
+      "name": "claude-3.7-sonnet1",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "data_",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2208,
+        400
+      ],
+      "id": "9c2e491c-8307-4949-b5c1-d6f8b2a965e6",
+      "name": "Email_Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1952,
+        400
+      ],
+      "id": "0bcca73b-40b4-4a59-affd-416124d54874",
+      "name": "Get-Email",
+      "webhookId": "957ec656-1810-4f15-84d8-9b384e069ffd",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3ccf10e1-7d8d-418d-adf4-b27eadc50173",
+              "leftValue": "={{ $('Get-Email').item.binary.attachment_0.mimeType }}",
+              "rightValue": "=audio/aac",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1728,
+        400
+      ],
+      "id": "a8e35806-cdff-4e29-9515-e480818e9e3a",
+      "name": "check audio aac"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        384
+      ],
+      "id": "f457f8b1-8106-48d9-9548-6901248dd1c5",
+      "name": "Transcribe aac",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=以下是需要摘要的內容：\n{{ $json.content.parts[0].text }}\n\n\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=你是專業的摘要助理。請用繁體中文將提供的文字內容進行摘要，並以清楚的數字條列式輸出。\n遵循下列規格：\n\n先給出3–7 點關鍵要點（每點不超過 20 字）。\n\n接著列出重要數據／日期／人名／專有名詞（如有，使用「項目：值」格式）。\n\n提供一句話總結（不超過 25 字），放在最後。\n\n嚴禁杜撰或推測；若原文未提及，請標記為「未提及」。\n\n若原文超過 2000 字，先產生高階摘要，再視需要補充細節摘要。\n\n保持中立客觀，避免加入主觀評論。\n\n輸出格式範例（請套用到我的內容）：\n\n關鍵要點\n\n…\n\n…\n\n重要資訊\n\n日期：…\n\n人名／機構：…\n\n數據：…\n\n專有名詞：…\n\n一句話總結\n\n…\n\n\n\nWhat Changed:\n\n明確規定語言（繁體中文）與輸出結構（要點→資訊→一句話）。\n\n設定每點長度與總點數範圍，確保精煉。\n\n加入關鍵資訊抽取欄位，避免遺漏數據與名詞。\n\n規範長文處理策略（高階→細節），提升可用性。\n\n要求中立與防杜撰，增強可靠性。"
+            }
+          ]
+        }
+      },
+      "id": "53343bc0-3e7a-4e17-b32c-771bcfec3c64",
+      "name": "summary aac",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -944,
+        384
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"properties\": {\n    \"關鍵要點\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"列出所有關鍵要點\"\n    },\n    \"重要資訊\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"測試距離\": {\n          \"type\": \"string\",\n          \"description\": \"測試距離要求\"\n        },\n        \"數據\": {\n          \"type\": \"string\",\n          \"description\": \"相關數據資訊\"\n        },\n        \"專有名詞\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          },\n          \"description\": \"專業術語列表\"\n        }\n      },\n      \"required\": [\"測試距離\", \"數據\", \"專有名詞\"]\n    },\n    \"一句話總結\": {\n      \"type\": \"string\",\n      \"description\": \"整體內容的簡短摘要\"\n    }\n  },\n  \"required\": [\"關鍵要點\", \"重要資訊\", \"一句話總結\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -736,
+        688
+      ],
+      "id": "058fe876-ed0c-4ee2-aca0-e3cc87ab491a",
+      "name": "Output Parser",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node - 修正版本\n\nconst data = $input.first().json;\n\n// 正確提取資料 - 注意欄位名稱\nconst 關鍵要點 = data?.output?.關鍵要點 || data?.關鍵要點 || [];\nconst 重要資訊 = data?.output?.重要資訊 || data?.重要資訊 || {};\nconst 測試距離 = 重要資訊?.測試距離 || '';\nconst 數據 = 重要資訊?.數據 || '';\nconst 專有名詞 = 重要資訊?.專有名詞 || [];\nconst 總結 = data?.output?.一句話總結 || data?.一句話總結 || '';\n\n// 除錯：查看實際資料結構\nconsole.log('原始資料:', JSON.stringify(data, null, 2));\nconsole.log('關鍵要點:', 關鍵要點);\nconsole.log('專有名詞:', 專有名詞);\n\n// 生成 HTML 內容\nconst htmlContent = `\n<!DOCTYPE html>\n<html lang=\"zh-TW\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>報告摘要</title>\n    <style>\n        body {\n            font-family: \"Microsoft JhengHei\", \"Arial\", sans-serif;\n            line-height: 1.6;\n            color: #333;\n            max-width: 800px;\n            margin: 0 auto;\n            padding: 20px;\n            background-color: #f5f5f5;\n        }\n        .container {\n            background-color: white;\n            padding: 30px;\n            border-radius: 8px;\n            box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n        }\n        h1 {\n            color: #2c3e50;\n            border-bottom: 3px solid #3498db;\n            padding-bottom: 10px;\n            margin-bottom: 25px;\n        }\n        h2 {\n            color: #34495e;\n            margin-top: 25px;\n            margin-bottom: 15px;\n            font-size: 1.3em;\n            border-left: 4px solid #3498db;\n            padding-left: 12px;\n        }\n        .key-points {\n            background-color: #ecf0f1;\n            padding: 15px;\n            border-radius: 5px;\n            margin-bottom: 20px;\n        }\n        .key-points ul {\n            margin: 10px 0;\n            padding-left: 20px;\n        }\n        .key-points li {\n            margin-bottom: 8px;\n            line-height: 1.5;\n        }\n        .info-section {\n            background-color: #e8f4f8;\n            padding: 15px;\n            border-radius: 5px;\n            margin-bottom: 20px;\n        }\n        .info-item {\n            margin-bottom: 10px;\n            padding: 8px;\n            background-color: white;\n            border-radius: 3px;\n        }\n        .info-label {\n            font-weight: bold;\n            color: #2980b9;\n            display: inline-block;\n            min-width: 100px;\n        }\n        .terms {\n            display: flex;\n            flex-wrap: wrap;\n            gap: 8px;\n            margin-top: 10px;\n        }\n        .term-badge {\n            background-color: #3498db;\n            color: white;\n            padding: 5px 12px;\n            border-radius: 15px;\n            font-size: 0.9em;\n        }\n        .summary {\n            background-color: #fff3cd;\n            border-left: 4px solid #ffc107;\n            padding: 15px;\n            margin-top: 20px;\n            border-radius: 5px;\n        }\n        .summary-text {\n            font-size: 1.1em;\n            font-weight: 500;\n            color: #856404;\n        }\n        .footer {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #ddd;\n            text-align: center;\n            color: #7f8c8d;\n            font-size: 0.9em;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h1>📊 報告摘要</h1>\n        \n        <h2>🔑 關鍵要點</h2>\n        <div class=\"key-points\">\n            ${關鍵要點.length > 0 ? `\n            <ul>\n                ${關鍵要點.map((item, index) => `<li><strong>要點 ${index + 1}:</strong> ${item}</li>`).join('')}\n            </ul>\n            ` : '<p>無關鍵要點資料</p>'}\n        </div>\n        \n        <h2>📋 重要資訊</h2>\n        <div class=\"info-section\">\n            <div class=\"info-item\">\n                <span class=\"info-label\">測試距離:</span>\n                <span>${測試距離 || '無資料'}</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"info-label\">數據:</span>\n                <span>${數據 || '無資料'}</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"info-label\">專有名詞:</span>\n                ${專有名詞.length > 0 ? `\n                <div class=\"terms\">\n                    ${專有名詞.map(term => `<span class=\"term-badge\">${term}</span>`).join('')}\n                </div>\n                ` : '<p>無專有名詞資料</p>'}\n            </div>\n        </div>\n        \n        <h2>💡 一句話總結</h2>\n        <div class=\"summary\">\n            <p class=\"summary-text\">${總結 || '無總結資料'}</p>\n        </div>\n        \n        <div class=\"footer\">\n            <p>報告生成時間: ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}</p>\n        </div>\n    </div>\n</body>\n</html>\n`;\n\n// 生成純文字版本\nconst textContent = `\n報告摘要\n============\n\n【關鍵要點】\n${關鍵要點.length > 0 ? 關鍵要點.map((item, index) => `${index + 1}. ${item}`).join('\\n') : '無資料'}\n\n【重要資訊】\n測試距離: ${測試距離 || '無資料'}\n數據: ${數據 || '無資料'}\n\n【專有名詞】\n${專有名詞.length > 0 ? 專有名詞.map(term => `• ${term}`).join('\\n') : '無資料'}\n\n【一句話總結】\n${總結 || '無資料'}\n\n---\n報告生成時間: ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}\n`;\n\nreturn {\n  json: {\n    htmlContent: htmlContent,\n    textContent: textContent,\n    subject: '報告摘要 - ' + new Date().toLocaleDateString('zh-TW'),\n    關鍵要點數量: 關鍵要點.length,\n    專有名詞數量: 專有名詞.length,\n    // 除錯資訊\n    debug: {\n      原始資料結構: Object.keys(data),\n      關鍵要點: 關鍵要點,\n      專有名詞: 專有名詞\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        384
+      ],
+      "id": "5384929a-9916-48a2-bbe3-16436d61a9b0",
+      "name": "clean data",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com,peter_yang@microjet.com.tw",
+        "subject": "audio summary",
+        "message": "={{ $json.htmlContent }}\n\n{{ $json.textContent }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        384
+      ],
+      "id": "539c17d0-e5eb-45d9-bab4-b56def475ff0",
+      "name": "Send message",
+      "webhookId": "ac9ef4e1-4ded-41a8-b3d6-bf7602178def",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/187WvS-p9Pcx0pHcWj5cuorppdBwhAVnZ",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2624,
+        880
+      ],
+      "id": "5fa115f7-a7d8-4c53-95be-89dbdd52a1ca",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2400,
+        960
+      ],
+      "id": "dd0a7ec5-8f65-4b26-ab39-6e78d9f7e3d2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/187WvS-p9Pcx0pHcWj5cuorppdBwhAVnZ",
+          "mode": "url"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2624,
+        1088
+      ],
+      "id": "7140934e-b0fd-48ba-962b-f6e246953eb1",
+      "name": "Google Drive Trigger5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0501328-5e74-435f-afc3-a5796612c52d",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6989f772-441d-4284-84a1-dbb37dd1541d",
+              "name": "createdTime",
+              "value": "={{ $json.createdTime }}",
+              "type": "string"
+            },
+            {
+              "id": "150cfee5-e9a7-40af-ba0f-114bd1485681",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2000,
+        976
+      ],
+      "id": "4e46a7d5-cef1-4eeb-a364-8a5739422139",
+      "name": "SetFileId"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('SetFileId').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1616,
+        976
+      ],
+      "id": "66b875f0-17dc-4adb-9638-4371501ea5da",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "id": "43f5ade7-fd87-4248-ba4f-0c5584b94b8d",
+      "name": "OpenRouter-gpt-4o1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        1248
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        1264
+      ],
+      "id": "62685823-b50a-4e72-8449-77e2f8a22719",
+      "name": "claude-3.7-sonnet",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        976
+      ],
+      "id": "967231cb-fc31-4955-a8a8-efcbd85c7488",
+      "name": "Transcribe aac1",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=以下是需要摘要的內容：\n{{ $json.content.parts[0].text }}\n\n\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=你是專業的摘要助理。請用繁體中文將提供的文字內容進行摘要，並以清楚的數字條列式輸出。\n遵循下列規格：\n\n先給出3–7 點關鍵要點（每點不超過 20 字）。\n\n接著列出重要數據／日期／人名／專有名詞（如有，使用「項目：值」格式）。\n\n提供一句話總結（不超過 25 字），放在最後。\n\n嚴禁杜撰或推測；若原文未提及，請標記為「未提及」。\n\n若原文超過 2000 字，先產生高階摘要，再視需要補充細節摘要。\n\n保持中立客觀，避免加入主觀評論。\n\n輸出格式範例（請套用到我的內容）：\n\n關鍵要點\n\n…\n\n…\n\n重要資訊\n\n日期：…\n\n人名／機構：…\n\n數據：…\n\n專有名詞：…\n\n一句話總結\n\n…\n\n\n\nWhat Changed:\n\n明確規定語言（繁體中文）與輸出結構（要點→資訊→一句話）。\n\n設定每點長度與總點數範圍，確保精煉。\n\n加入關鍵資訊抽取欄位，避免遺漏數據與名詞。\n\n規範長文處理策略（高階→細節），提升可用性。\n\n要求中立與防杜撰，增強可靠性。"
+            }
+          ]
+        }
+      },
+      "id": "8744d7d8-1240-4c76-843b-aa81c6f02fbb",
+      "name": "summary aac1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -960,
+        976
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"properties\": {\n    \"關鍵要點\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"列出所有關鍵要點\"\n    },\n    \"重要資訊\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"測試距離\": {\n          \"type\": \"string\",\n          \"description\": \"測試距離要求\"\n        },\n        \"數據\": {\n          \"type\": \"string\",\n          \"description\": \"相關數據資訊\"\n        },\n        \"專有名詞\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          },\n          \"description\": \"專業術語列表\"\n        }\n      },\n      \"required\": [\"測試距離\", \"數據\", \"專有名詞\"]\n    },\n    \"一句話總結\": {\n      \"type\": \"string\",\n      \"description\": \"整體內容的簡短摘要\"\n    }\n  },\n  \"required\": [\"關鍵要點\", \"重要資訊\", \"一句話總結\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -752,
+        1280
+      ],
+      "id": "d5af75f9-af86-44a8-95b2-cc820dc17ac0",
+      "name": "Output Parser1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node - 修正版本\n\nconst data = $input.first().json;\n\n// 正確提取資料 - 注意欄位名稱\nconst 關鍵要點 = data?.output?.關鍵要點 || data?.關鍵要點 || [];\nconst 重要資訊 = data?.output?.重要資訊 || data?.重要資訊 || {};\nconst 測試距離 = 重要資訊?.測試距離 || '';\nconst 數據 = 重要資訊?.數據 || '';\nconst 專有名詞 = 重要資訊?.專有名詞 || [];\nconst 總結 = data?.output?.一句話總結 || data?.一句話總結 || '';\n\n// 除錯：查看實際資料結構\nconsole.log('原始資料:', JSON.stringify(data, null, 2));\nconsole.log('關鍵要點:', 關鍵要點);\nconsole.log('專有名詞:', 專有名詞);\n\n// 生成 HTML 內容\nconst htmlContent = `\n<!DOCTYPE html>\n<html lang=\"zh-TW\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>報告摘要</title>\n    <style>\n        body {\n            font-family: \"Microsoft JhengHei\", \"Arial\", sans-serif;\n            line-height: 1.6;\n            color: #333;\n            max-width: 800px;\n            margin: 0 auto;\n            padding: 20px;\n            background-color: #f5f5f5;\n        }\n        .container {\n            background-color: white;\n            padding: 30px;\n            border-radius: 8px;\n            box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n        }\n        h1 {\n            color: #2c3e50;\n            border-bottom: 3px solid #3498db;\n            padding-bottom: 10px;\n            margin-bottom: 25px;\n        }\n        h2 {\n            color: #34495e;\n            margin-top: 25px;\n            margin-bottom: 15px;\n            font-size: 1.3em;\n            border-left: 4px solid #3498db;\n            padding-left: 12px;\n        }\n        .key-points {\n            background-color: #ecf0f1;\n            padding: 15px;\n            border-radius: 5px;\n            margin-bottom: 20px;\n        }\n        .key-points ul {\n            margin: 10px 0;\n            padding-left: 20px;\n        }\n        .key-points li {\n            margin-bottom: 8px;\n            line-height: 1.5;\n        }\n        .info-section {\n            background-color: #e8f4f8;\n            padding: 15px;\n            border-radius: 5px;\n            margin-bottom: 20px;\n        }\n        .info-item {\n            margin-bottom: 10px;\n            padding: 8px;\n            background-color: white;\n            border-radius: 3px;\n        }\n        .info-label {\n            font-weight: bold;\n            color: #2980b9;\n            display: inline-block;\n            min-width: 100px;\n        }\n        .terms {\n            display: flex;\n            flex-wrap: wrap;\n            gap: 8px;\n            margin-top: 10px;\n        }\n        .term-badge {\n            background-color: #3498db;\n            color: white;\n            padding: 5px 12px;\n            border-radius: 15px;\n            font-size: 0.9em;\n        }\n        .summary {\n            background-color: #fff3cd;\n            border-left: 4px solid #ffc107;\n            padding: 15px;\n            margin-top: 20px;\n            border-radius: 5px;\n        }\n        .summary-text {\n            font-size: 1.1em;\n            font-weight: 500;\n            color: #856404;\n        }\n        .footer {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #ddd;\n            text-align: center;\n            color: #7f8c8d;\n            font-size: 0.9em;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h1>📊 報告摘要</h1>\n        \n        <h2>🔑 關鍵要點</h2>\n        <div class=\"key-points\">\n            ${關鍵要點.length > 0 ? `\n            <ul>\n                ${關鍵要點.map((item, index) => `<li><strong>要點 ${index + 1}:</strong> ${item}</li>`).join('')}\n            </ul>\n            ` : '<p>無關鍵要點資料</p>'}\n        </div>\n        \n        <h2>📋 重要資訊</h2>\n        <div class=\"info-section\">\n            <div class=\"info-item\">\n                <span class=\"info-label\">測試距離:</span>\n                <span>${測試距離 || '無資料'}</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"info-label\">數據:</span>\n                <span>${數據 || '無資料'}</span>\n            </div>\n            <div class=\"info-item\">\n                <span class=\"info-label\">專有名詞:</span>\n                ${專有名詞.length > 0 ? `\n                <div class=\"terms\">\n                    ${專有名詞.map(term => `<span class=\"term-badge\">${term}</span>`).join('')}\n                </div>\n                ` : '<p>無專有名詞資料</p>'}\n            </div>\n        </div>\n        \n        <h2>💡 一句話總結</h2>\n        <div class=\"summary\">\n            <p class=\"summary-text\">${總結 || '無總結資料'}</p>\n        </div>\n        \n        <div class=\"footer\">\n            <p>報告生成時間: ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}</p>\n        </div>\n    </div>\n</body>\n</html>\n`;\n\n// 生成純文字版本\nconst textContent = `\n報告摘要\n============\n\n【關鍵要點】\n${關鍵要點.length > 0 ? 關鍵要點.map((item, index) => `${index + 1}. ${item}`).join('\\n') : '無資料'}\n\n【重要資訊】\n測試距離: ${測試距離 || '無資料'}\n數據: ${數據 || '無資料'}\n\n【專有名詞】\n${專有名詞.length > 0 ? 專有名詞.map(term => `• ${term}`).join('\\n') : '無資料'}\n\n【一句話總結】\n${總結 || '無資料'}\n\n---\n報告生成時間: ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}\n`;\n\nreturn {\n  json: {\n    htmlContent: htmlContent,\n    textContent: textContent,\n    subject: '報告摘要 - ' + new Date().toLocaleDateString('zh-TW'),\n    關鍵要點數量: 關鍵要點.length,\n    專有名詞數量: 專有名詞.length,\n    // 除錯資訊\n    debug: {\n      原始資料結構: Object.keys(data),\n      關鍵要點: 關鍵要點,\n      專有名詞: 專有名詞\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        976
+      ],
+      "id": "20e2dc38-c5b3-4795-ae43-cd53dd9202e2",
+      "name": "clean data1"
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com,peter_yang@microjet.com.tw",
+        "subject": "audio summary",
+        "message": "={{ $json.htmlContent }}\n\n{{ $json.textContent }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        976
+      ],
+      "id": "fc29e69d-2ec9-4bf6-8b48-4126b6d57ce1",
+      "name": "Send message1",
+      "webhookId": "a40218ad-908f-4f21-8c7b-82a6b749642b",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive Trigger').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/16guZ0EAFawIYyrE475YctsWTpADe5Cro",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/16guZ0EAFawIYyrE475YctsWTpADe5Cro",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -112,
+        976
+      ],
+      "id": "23d5d48a-e6f9-4ef7-93cb-ba06d09cac72",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. 不能用 OpenAI 因為不支援 aac",
+        "width": 544,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        640
+      ],
+      "id": "47885b46-b205-46ad-bdb5-fbb9017cbe0e",
+      "name": "Sticky Note",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachment_0",
+        "name": "={{ $('Get-Email').item.binary.attachment_0.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/187WvS-p9Pcx0pHcWj5cuorppdBwhAVnZ",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/187WvS-p9Pcx0pHcWj5cuorppdBwhAVnZ",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1216,
+        160
+      ],
+      "id": "936c5fed-6e30-4a4a-a518-8597c259de6a",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Google folder n8n-audio-aac : https://drive.google.com/drive/folders/187WvS-p9Pcx0pHcWj5cuorppdBwhAVnZ",
+        "width": 1424,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2848,
+        672
+      ],
+      "id": "a6e957af-bfd5-4cb6-a93a-f931b94d2115",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "OpenRouter-gpt-4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary aac",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude-3.7-sonnet1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary aac",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Email_Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get-Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get-Email": {
+      "main": [
+        [
+          {
+            "node": "check audio aac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check audio aac": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Transcribe aac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe aac": {
+      "main": [
+        [
+          {
+            "node": "summary aac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "summary aac": {
+      "main": [
+        [
+          {
+            "node": "clean data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "summary aac",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean data": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "SetFileId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFileId": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe aac1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter-gpt-4o1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary aac1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude-3.7-sonnet": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary aac1",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Transcribe aac1": {
+      "main": [
+        [
+          {
+            "node": "summary aac1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "summary aac1": {
+      "main": [
+        [
+          {
+            "node": "clean data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "summary aac1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean data1": {
+      "main": [
+        [
+          {
+            "node": "Send message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message1": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:ReceiveEmail_Trigger": {
+      "ReceiveEmail_Trigger": {
+        "lastTimeChecked": 1759450153,
+        "possibleDuplicates": [
+          "199a766c8b4b9d31",
+          "199a7611dff56bbb"
+        ]
+      }
+    },
+    "node:GDrive_Trigger": {
+      "lastTimeChecked": "2025-08-11T03:51:48Z"
+    },
+    "node:Email_Trigger": {
+      "Email_Trigger": {
+        "lastTimeChecked": 1759468974,
+        "possibleDuplicates": [
+          "199a885f02ab42b8",
+          "199a7da30d7947c1"
+        ]
+      }
+    },
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-10-03T05:22:42Z"
+    },
+    "node:Google Drive Trigger5": {
+      "lastTimeChecked": "2025-10-03T05:23:24Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-03T05:29:09.849Z",
+      "createdAt": "2025-10-03T05:29:09.849Z",
+      "role": "workflow:owner",
+      "workflowId": "BmUIU5ot2dksq0s8",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-31T06:04:17.488Z",
+      "createdAt": "2025-07-31T06:04:17.488Z",
+      "id": "9pPluGfXfknhnccL",
+      "name": "gemini-node"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-08-25T02:48:56.759Z",
+      "createdAt": "2025-08-25T02:48:56.759Z",
+      "id": "GJsbvStKOGRpQArw",
+      "name": "openai-tts"
+    },
+    {
+      "updatedAt": "2025-08-28T05:25:04.531Z",
+      "createdAt": "2025-08-28T05:25:04.531Z",
+      "id": "JP2TVTuh8AeWa0Zw",
+      "name": "text-classifier"
+    },
+    {
+      "updatedAt": "2025-07-01T07:08:00.893Z",
+      "createdAt": "2025-07-01T07:08:00.893Z",
+      "id": "XJNpizuhs74WRPBC",
+      "name": "telegrame"
+    },
+    {
+      "updatedAt": "2025-09-01T07:06:11.579Z",
+      "createdAt": "2025-09-01T07:06:11.579Z",
+      "id": "aMy2UpMubTcAJKdE",
+      "name": "郵件"
+    },
+    {
+      "updatedAt": "2025-08-08T05:58:45.041Z",
+      "createdAt": "2025-08-08T05:58:45.041Z",
+      "id": "ciOYNzebXw2ukKg5",
+      "name": "mistral"
+    },
+    {
+      "updatedAt": "2025-09-01T07:06:37.731Z",
+      "createdAt": "2025-09-01T07:06:37.731Z",
+      "id": "eOkV0Os2drc9oWe3",
+      "name": "分派工作"
+    },
+    {
+      "updatedAt": "2025-09-08T07:23:41.954Z",
+      "createdAt": "2025-09-08T07:23:41.954Z",
+      "id": "jd0Orljg3Py3MuzB",
+      "name": "Gemini Node result"
+    },
+    {
+      "updatedAt": "2025-10-03T05:29:29.858Z",
+      "createdAt": "2025-10-03T05:29:29.858Z",
+      "id": "jvSjJXmRowBpAljC",
+      "name": "電話錄音檔"
+    },
+    {
+      "updatedAt": "2025-09-08T02:59:27.544Z",
+      "createdAt": "2025-09-08T02:59:27.544Z",
+      "id": "qj6acnQ9I92kxnD4",
+      "name": "gemini-node-result"
+    }
+  ],
+  "activeVersion": null
+}

@@ -1,0 +1,53 @@
+{
+  "id": "8koyg7Bx3dvpWw8O",
+  "name": "awesome-n8n-template",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Youtube : https://www.youtube.com/shorts/Y4nsVAEt71Q\n\n## github : https://github.com/enescingoz/awesome-n8n-templates",
+        "width": 1060
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -140
+      ],
+      "id": "0035fb4c-06ca-4a38-a9dd-00ce2c18bdd0",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T03:04:54.221Z",
+      "createdAt": "2025-06-30T03:04:54.221Z",
+      "role": "workflow:owner",
+      "workflowId": "8koyg7Bx3dvpWw8O",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

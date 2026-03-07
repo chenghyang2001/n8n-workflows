@@ -1,0 +1,1031 @@
+{
+  "id": "4ieFAkcfpHpKdAf6",
+  "name": "董事長家-風速檢查-ok",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2224,
+        2192
+      ],
+      "id": "d7c83a9c-0928-4574-8c71-cc6523a93a0e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com, steven_wu@microjet.com.tw , kerwin_ma@microjet.com.tw , peter_yang@microjet.com.tw",
+        "subject": "={{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} -  ",
+        "message": "=Room ID : {{ $json.room_id.toJsonString() }} <BR><BR>\n\nRoom name : {{ $json.room_name.toJsonString() }} <BR><BR>\n\nFan Speed :{{ $json.fan_speed.toJsonString() }}  <BR><BR>\n\nworkflow :   https://chenghyang2001.app.n8n.cloud/workflow/4ieFAkcfpHpKdAf6\n\n<BR><BR>\n\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -992,
+        1600
+      ],
+      "id": "d124347f-74da-42e8-98f6-f58c73d7db1a",
+      "name": "Send a message",
+      "webhookId": "811753c1-dded-4d77-8b6b-597f7b065cc6",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "id",
+              "renameField": true,
+              "outputFieldName": "room_id"
+            },
+            {
+              "fieldToAggregate": "name",
+              "renameField": true,
+              "outputFieldName": "room_name"
+            },
+            {
+              "fieldToAggregate": "fan_speed",
+              "renameField": true,
+              "outputFieldName": "fan_speed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        1600
+      ],
+      "id": "4d203360-4ddf-4523-ac5c-332ef756af18",
+      "name": "Aggregate1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $json.fan_speed }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1632,
+        1952
+      ],
+      "id": "bc3a2265-19cb-4b43-9266-5ce3601def3e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "## , steven_wu@microjet.com.tw , song_lin@microjet.com.tw ,  kerwin_ma@microjet.com.tw , peter_yang@microjet.com.tw\n\n\n## , wilson_hu@microjet.com.tw\n## chenghyang2001@gmail.com, peter_yang@microjet.com.tw",
+        "height": 240,
+        "width": 1616,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        1664
+      ],
+      "id": "ad582dd1-9b23-440f-a1b0-0013e4af9805",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    id,\n    name,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.mode')) AS mode,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.fan_speed')) AS fan_speed\nFROM rooms \nWHERE edge_id = 65;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1888,
+        1952
+      ],
+      "id": "7145b81a-90d0-4c02-b1f5-53e2062a82d8",
+      "name": "query_中控ID-65",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com, steven_wu@microjet.com.tw ,   kerwin_ma@microjet.com.tw , peter_yang@microjet.com.tw",
+        "subject": "=緊急通知-有風速超過1速機台- {{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} -  ",
+        "message": "=Room ID : {{ $json.room_id.toJsonString() }} <BR><BR>\n\nRoom name : {{ $json.room_name.toJsonString() }} <BR><BR>\n\nFan Speed :{{ $json.fan_speed.toJsonString() }}  <BR><BR>\n\nworkflow :   https://chenghyang2001.app.n8n.cloud/workflow/4ieFAkcfpHpKdAf6\n\n<BR><BR>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -992,
+        2048
+      ],
+      "id": "107173ef-a8c2-44b4-9f8e-9e6b386be5e3",
+      "name": "Send a message1",
+      "webhookId": "bb481bdf-2213-4107-81a2-a1d14182943a",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "id",
+              "renameField": true,
+              "outputFieldName": "room_id"
+            },
+            {
+              "fieldToAggregate": "name",
+              "renameField": true,
+              "outputFieldName": "room_name"
+            },
+            {
+              "fieldToAggregate": "fan_speed",
+              "renameField": true,
+              "outputFieldName": "fan_speed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        2048
+      ],
+      "id": "286878d2-d7da-4732-8d77-f0b919f187bb",
+      "name": "Aggregate2",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2224,
+        1536
+      ],
+      "id": "b7564291-a73b-4141-8129-60fc0cee2815",
+      "name": "every 1 hour",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} -  "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -992,
+        1392
+      ],
+      "id": "1acd76f4-75dc-4d03-855c-399351a42fee",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=緊急通知-有風速超過1速機台- {{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} - "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -992,
+        1840
+      ],
+      "id": "3efa526e-7e4d-4cbd-9922-94ce8aa8e77d",
+      "name": "Execute Workflow1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2224,
+        1776
+      ],
+      "id": "29502fbd-610b-468b-89cb-71d121d5df3e",
+      "name": "9:00AM"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2224,
+        2000
+      ],
+      "id": "d5f0ad30-0a3a-48fe-bb3e-8e6dd9bc4176",
+      "name": "5:00 PM"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "query_中控ID-65",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_中控ID-65": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "every 1 hour": {
+      "main": [
+        [
+          {
+            "node": "query_中控ID-65",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9:00AM": {
+      "main": [
+        [
+          {
+            "node": "query_中控ID-65",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5:00 PM": {
+      "main": [
+        [
+          {
+            "node": "query_中控ID-65",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:1:35AM1": {
+      "recurrenceRules": []
+    },
+    "node:1:45AM": {
+      "recurrenceRules": []
+    },
+    "node:1:40AM": {
+      "recurrenceRules": []
+    },
+    "node:Test": {
+      "recurrenceRules": []
+    },
+    "node:3:00AM": {
+      "recurrenceRules": []
+    },
+    "node:4:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:30AM": {
+      "recurrenceRules": []
+    },
+    "node:7:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:20AM": {
+      "recurrenceRules": []
+    },
+    "node:7:50AM": {
+      "recurrenceRules": []
+    },
+    "node:every 1 hour": {
+      "recurrenceRules": []
+    },
+    "node:9:00AM": {
+      "recurrenceRules": []
+    },
+    "node:5:00 PM": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": "f00f359b-0738-4b10-8e4c-a877dc85c9b3",
+  "versionCounter": 134,
+  "shared": [
+    {
+      "updatedAt": "2025-12-02T01:06:18.154Z",
+      "createdAt": "2025-12-02T01:06:18.154Z",
+      "role": "workflow:owner",
+      "workflowId": "4ieFAkcfpHpKdAf6",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-12-01T09:01:40.898Z",
+      "createdAt": "2025-12-01T09:01:40.898Z",
+      "id": "6uvB66kjoHzB1AdG",
+      "name": "董事長家-風速檢查"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-03T04:06:01.581Z",
+    "createdAt": "2025-12-03T04:06:01.581Z",
+    "versionId": "f00f359b-0738-4b10-8e4c-a877dc85c9b3",
+    "workflowId": "4ieFAkcfpHpKdAf6",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -2224,
+          2192
+        ],
+        "id": "d7c83a9c-0928-4574-8c71-cc6523a93a0e",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "sendTo": "=chenghyang2001@gmail.com, steven_wu@microjet.com.tw , kerwin_ma@microjet.com.tw , peter_yang@microjet.com.tw",
+          "subject": "={{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} -  ",
+          "message": "=Room ID : {{ $json.room_id.toJsonString() }} <BR><BR>\n\nRoom name : {{ $json.room_name.toJsonString() }} <BR><BR>\n\nFan Speed :{{ $json.fan_speed.toJsonString() }}  <BR><BR>\n\nworkflow :   https://chenghyang2001.app.n8n.cloud/workflow/4ieFAkcfpHpKdAf6\n\n<BR><BR>\n\n",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          -992,
+          1600
+        ],
+        "id": "d124347f-74da-42e8-98f6-f58c73d7db1a",
+        "name": "Send a message",
+        "webhookId": "811753c1-dded-4d77-8b6b-597f7b065cc6",
+        "executeOnce": true,
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "id",
+                "renameField": true,
+                "outputFieldName": "room_id"
+              },
+              {
+                "fieldToAggregate": "name",
+                "renameField": true,
+                "outputFieldName": "room_name"
+              },
+              {
+                "fieldToAggregate": "fan_speed",
+                "renameField": true,
+                "outputFieldName": "fan_speed"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          -1296,
+          1600
+        ],
+        "id": "4d203360-4ddf-4523-ac5c-332ef756af18",
+        "name": "Aggregate1",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+                "leftValue": "={{ $json.fan_speed }}",
+                "rightValue": "1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -1632,
+          1952
+        ],
+        "id": "bc3a2265-19cb-4b43-9266-5ce3601def3e",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "content": "## , steven_wu@microjet.com.tw , song_lin@microjet.com.tw ,  kerwin_ma@microjet.com.tw , peter_yang@microjet.com.tw\n\n\n## , wilson_hu@microjet.com.tw\n## chenghyang2001@gmail.com, peter_yang@microjet.com.tw",
+          "height": 240,
+          "width": 1616,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -624,
+          1664
+        ],
+        "id": "ad582dd1-9b23-440f-a1b0-0013e4af9805",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT \n    id,\n    name,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.mode')) AS mode,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.fan_speed')) AS fan_speed\nFROM rooms \nWHERE edge_id = 65;\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.4,
+        "position": [
+          -1888,
+          1952
+        ],
+        "id": "7145b81a-90d0-4c02-b1f5-53e2062a82d8",
+        "name": "query_中控ID-65",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "TTwTnDDRqkjYSK8v",
+            "name": "rd2 MySQL"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "sendTo": "=chenghyang2001@gmail.com, steven_wu@microjet.com.tw ,   kerwin_ma@microjet.com.tw , peter_yang@microjet.com.tw",
+          "subject": "=緊急通知-有風速超過1速機台- {{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} -  ",
+          "message": "=Room ID : {{ $json.room_id.toJsonString() }} <BR><BR>\n\nRoom name : {{ $json.room_name.toJsonString() }} <BR><BR>\n\nFan Speed :{{ $json.fan_speed.toJsonString() }}  <BR><BR>\n\nworkflow :   https://chenghyang2001.app.n8n.cloud/workflow/4ieFAkcfpHpKdAf6\n\n<BR><BR>",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          -992,
+          2048
+        ],
+        "id": "107173ef-a8c2-44b4-9f8e-9e6b386be5e3",
+        "name": "Send a message1",
+        "webhookId": "bb481bdf-2213-4107-81a2-a1d14182943a",
+        "executeOnce": true,
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "id",
+                "renameField": true,
+                "outputFieldName": "room_id"
+              },
+              {
+                "fieldToAggregate": "name",
+                "renameField": true,
+                "outputFieldName": "room_name"
+              },
+              {
+                "fieldToAggregate": "fan_speed",
+                "renameField": true,
+                "outputFieldName": "fan_speed"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          -1296,
+          2048
+        ],
+        "id": "286878d2-d7da-4732-8d77-f0b919f187bb",
+        "name": "Aggregate2",
+        "executeOnce": false
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 30
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -2224,
+          1536
+        ],
+        "id": "b7564291-a73b-4141-8129-60fc0cee2815",
+        "name": "every 1 hour",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "6Nh8EtGRaJdooDk9",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+            "cachedResultName": "subFlow-line-n8n-peter-v1"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "content": "={{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} -  "
+            },
+            "matchingColumns": [
+              "content"
+            ],
+            "schema": [
+              {
+                "id": "content",
+                "displayName": "content",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          -992,
+          1392
+        ],
+        "id": "1acd76f4-75dc-4d03-855c-399351a42fee",
+        "name": "Execute Workflow",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "6Nh8EtGRaJdooDk9",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+            "cachedResultName": "subFlow-line-n8n-peter-v1"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "content": "=緊急通知-有風速超過1速機台- {{ $now.format('yyyy-MM-dd') }}-董事長家-風速-{{ $json.fan_speed.toJsonString() }} 地點-  {{ $json.room_name.toJsonString() }} - "
+            },
+            "matchingColumns": [
+              "content"
+            ],
+            "schema": [
+              {
+                "id": "content",
+                "displayName": "content",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          -992,
+          1840
+        ],
+        "id": "3efa526e-7e4d-4cbd-9922-94ce8aa8e77d",
+        "name": "Execute Workflow1",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 9
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -2224,
+          1776
+        ],
+        "id": "29502fbd-610b-468b-89cb-71d121d5df3e",
+        "name": "9:00AM"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 17
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -2224,
+          2000
+        ],
+        "id": "d5f0ad30-0a3a-48fe-bb3e-8e6dd9bc4176",
+        "name": "5:00 PM"
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "query_中控ID-65",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send a message": {
+        "main": [
+          []
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Aggregate1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Aggregate2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "query_中控ID-65": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate2": {
+        "main": [
+          [
+            {
+              "node": "Send a message1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Execute Workflow1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "every 1 hour": {
+        "main": [
+          [
+            {
+              "node": "query_中控ID-65",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "9:00AM": {
+        "main": [
+          [
+            {
+              "node": "query_中控ID-65",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "5:00 PM": {
+        "main": [
+          [
+            {
+              "node": "query_中控ID-65",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ChengHsien Yang",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2025-12-03T04:07:54.000Z",
+        "id": 113,
+        "workflowId": "4ieFAkcfpHpKdAf6",
+        "versionId": "f00f359b-0738-4b10-8e4c-a877dc85c9b3",
+        "event": "activated",
+        "userId": null
+      }
+    ]
+  }
+}

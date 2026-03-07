@@ -1,0 +1,233 @@
+{
+  "id": "2cmEYjp8LMkb5ER3",
+  "name": "peter-wait-1s-loop-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        20,
+        35
+      ],
+      "id": "3f822a30-11b1-401a-b1df-69deb5f48a5a",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "unit": "seconds"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        460,
+        35
+      ],
+      "id": "7a653ee8-b5c2-436b-aed4-d5f7d26d7bca",
+      "name": "Wait 1 Second",
+      "webhookId": "e579c797-448b-461a-a23c-e00057a12c48"
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "counter",
+              "type": "numberValue",
+              "numberValue": "={{ --$json.counter  }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        680,
+        -40
+      ],
+      "id": "d66a450b-656d-441f-a830-705907549437",
+      "name": "Decrement Counter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.counter }}",
+              "operation": "larger"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        900,
+        35
+      ],
+      "id": "6ae84359-5b53-4fe3-980c-e9f78c2cbf3b",
+      "name": "If Counter > 0"
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "counter",
+              "type": "numberValue",
+              "numberValue": "3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        240,
+        40
+      ],
+      "id": "9a37002b-abf6-40e5-b13b-7b0599e15de6",
+      "name": "Initialize Counter = 3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YZMkIYIoxkeTerTi",
+          "mode": "list",
+          "cachedResultName": "subFlow-line"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "loop done"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        35
+      ],
+      "id": "b7bacdc4-dca9-43ea-ab24-36e8aac7c843",
+      "name": "Execute subFlow-line"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Initialize Counter = 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Second": {
+      "main": [
+        [
+          {
+            "node": "Decrement Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decrement Counter": {
+      "main": [
+        [
+          {
+            "node": "If Counter > 0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Counter > 0": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Second",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute subFlow-line",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Counter = 3": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Second",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:22:19.017Z",
+      "createdAt": "2025-07-01T00:22:19.017Z",
+      "role": "workflow:owner",
+      "workflowId": "2cmEYjp8LMkb5ER3",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

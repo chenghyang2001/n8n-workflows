@@ -1,0 +1,211 @@
+{
+  "id": "756ENtICXueFk8K8",
+  "name": "peter-gmail-extract-sender",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "functionCode": "const emails = new Set();\n\n// 擷取 email，去除無效資料\nfor (const item of items) {\n  const payload = item.json.payload;\n  if (!payload || !payload.headers) {\n    continue;\n  }\n\n  const fromHeader = payload.headers.find(h => h.name.toLowerCase() === 'from');\n\n  if (fromHeader?.value) {\n    const match = fromHeader.value.match(/<(.+?)>/);\n    const email = match ? match[1] : fromHeader.value;\n    emails.add(email.trim());\n  }\n}\n\n// 轉為陣列後依據第一個字元排序（不區分大小寫）\nconst sortedEmails = Array.from(emails).sort((a, b) =>\n  a[0].toLowerCase().localeCompare(b[0].toLowerCase())\n);\n\n// 回傳成 n8n 所需格式\nreturn sortedEmails.map(email => ({ json: { email } }));\n"
+      },
+      "id": "114199cd-ee18-4ebb-96a1-8253622338df",
+      "name": "Extract Unique Emails",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -460
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8eca97a0-488e-4ba0-b85c-20e9d040afb7",
+      "name": "Show Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -460
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        60,
+        -460
+      ],
+      "id": "dcb642bc-96c4-4b98-930c-96cd9c403ddc",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1nCJto8tE09iYxYyLvAT668FMcdjftQ4g4grgmlVwrig/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nCJto8tE09iYxYyLvAT668FMcdjftQ4g4grgmlVwrig/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.email }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e9f9138d-56a4-4e26-8b47-82f7cf91c4bf",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        940,
+        -460
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "limit": 50,
+        "additionalFields": {
+          "format": "full",
+          "labelIds": [
+            "INBOX"
+          ]
+        }
+      },
+      "id": "daa5103c-e251-44f8-afb5-c085c8440ffa",
+      "name": "Fetch 50 Gmail Messages",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [
+        280,
+        -460
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Extract Unique Emails": {
+      "main": [
+        [
+          {
+            "node": "Show Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch 50 Gmail Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show Result": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch 50 Gmail Messages": {
+      "main": [
+        [
+          {
+            "node": "Extract Unique Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-23T00:26:05.839Z",
+      "createdAt": "2025-05-23T00:26:05.839Z",
+      "role": "workflow:owner",
+      "workflowId": "756ENtICXueFk8K8",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

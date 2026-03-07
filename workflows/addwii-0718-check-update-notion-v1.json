@@ -1,0 +1,452 @@
+{
+  "id": "Bcgb8wmEct6SWjpn",
+  "name": "addwii-0718-check-update-notion-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        80
+      ],
+      "id": "e78ab72e-31bf-444f-be43-0a9de211f357",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from houses  \nWHERE id = {{ $json.house_id }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -544,
+        80
+      ],
+      "id": "02e3e6e7-8461-48b2-ba4a-ce59bdf4010a",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *  FROM edges e where LENGTH(e.update_software_version) = 7 and e.update_software_version=\"1.6.1.1\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -976,
+        80
+      ],
+      "id": "81ffc839-de68-4d99-aa3f-d9ff66a18a1d",
+      "name": "update string length = 7",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "beb86963-15fc-4b0e-9bae-05e410e45128",
+              "name": "edge_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "03cd5209-5c70-44cd-8aab-1e6e3a58b710",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "cfe0ea11-3934-46ba-befd-08c7bedcc842",
+              "name": "online",
+              "value": "={{ $json.online }}",
+              "type": "number"
+            },
+            {
+              "id": "6761fa8f-9fa2-4a77-870d-d340a5304993",
+              "name": "version",
+              "value": "={{ $json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "d98e31dd-9edc-4ecf-beb7-d913f8c05cc1",
+              "name": "update_software_version",
+              "value": "={{ $json.update_software_version }}",
+              "type": "string"
+            },
+            {
+              "id": "28f62f3d-c274-4512-801c-8270104cd850",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "48d80f7c-dbbf-4145-80d0-2cffe8e98e5e",
+              "name": "updated_at",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            },
+            {
+              "id": "d2dc2516-1a05-435a-9fb1-c073e2f19637",
+              "name": "locale",
+              "value": "={{ $json.locale }}",
+              "type": "string"
+            },
+            {
+              "id": "dbbca61f-a736-439b-b20f-61a795f765c6",
+              "name": "serial_number",
+              "value": "={{ $json.serial_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -768,
+        80
+      ],
+      "id": "7e57d163-f3b5-48a8-8b05-f03cd175208e",
+      "name": "config-1"
+    },
+    {
+      "parameters": {
+        "maxItems": 30
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        80
+      ],
+      "id": "888700e3-aa5e-4efc-8d9f-f255975519ad",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "Notion update table creation done. "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        80
+      ],
+      "id": "2f7d7dc6-a4a0-4340-9980-ec73de2af926",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "beb86963-15fc-4b0e-9bae-05e410e45128",
+              "name": "edge_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "03cd5209-5c70-44cd-8aab-1e6e3a58b710",
+              "name": "house_id",
+              "value": "={{ $('config-1').item.json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "cfe0ea11-3934-46ba-befd-08c7bedcc842",
+              "name": "online",
+              "value": "={{ $('config-1').item.json.online }}",
+              "type": "number"
+            },
+            {
+              "id": "6761fa8f-9fa2-4a77-870d-d340a5304993",
+              "name": "app_version",
+              "value": "={{ $('config-1').item.json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "d98e31dd-9edc-4ecf-beb7-d913f8c05cc1",
+              "name": "update_software_version",
+              "value": "={{ $('config-1').item.json.update_software_version }}",
+              "type": "string"
+            },
+            {
+              "id": "28f62f3d-c274-4512-801c-8270104cd850",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "48d80f7c-dbbf-4145-80d0-2cffe8e98e5e",
+              "name": "updated_at",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            },
+            {
+              "id": "d2dc2516-1a05-435a-9fb1-c073e2f19637",
+              "name": "locale",
+              "value": "={{ $('config-1').item.json.locale }}",
+              "type": "string"
+            },
+            {
+              "id": "dbbca61f-a736-439b-b20f-61a795f765c6",
+              "name": "serial_number",
+              "value": "={{ $('config-1').item.json.serial_number }}",
+              "type": "string"
+            },
+            {
+              "id": "64f7978c-f35f-4223-808a-3e4cea520aab",
+              "name": "client",
+              "value": "={{ $json.client }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        80
+      ],
+      "id": "2c3e01ac-b9a6-4a76-acb0-62c1c1e504c2",
+      "name": "config-2"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "234ca842-df05-80d8-a98d-e184785d2686",
+          "mode": "list",
+          "cachedResultName": "zap_check_update_result_20250718",
+          "cachedResultUrl": "https://www.notion.so/234ca842df0580d8a98de184785d2686"
+        },
+        "title": "={{ $json.client }}",
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "house_id|number",
+              "numberValue": "={{ $json.house_id }}"
+            },
+            {
+              "key": "app_version|rich_text",
+              "textContent": "={{ $json.app_version }}"
+            },
+            {
+              "key": "update_app_version|rich_text",
+              "textContent": "={{ $json.update_software_version }}"
+            },
+            {
+              "key": "mac|rich_text",
+              "textContent": "={{ $json.serial_number }}"
+            },
+            {
+              "key": "online|number",
+              "numberValue": "={{ $json.online }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        80
+      ],
+      "id": "af43ba42-3cd3-4d13-be7d-657fb2962e28",
+      "name": "Create a database page1",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "update string length = 7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "config-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update string length = 7": {
+      "main": [
+        [
+          {
+            "node": "config-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config-1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Create a database page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config-2": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-18T00:37:03.281Z",
+      "createdAt": "2025-07-18T00:37:03.281Z",
+      "role": "workflow:owner",
+      "workflowId": "Bcgb8wmEct6SWjpn",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-07-14T07:29:29.974Z",
+      "createdAt": "2025-07-14T07:29:29.974Z",
+      "id": "AFXjnq25FzE43zpj",
+      "name": "zap"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-07-14T07:25:46.329Z",
+      "createdAt": "2025-07-14T07:25:46.329Z",
+      "id": "rBu7KINmPwm4bhDL",
+      "name": "sql"
+    }
+  ],
+  "activeVersion": null
+}

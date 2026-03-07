@@ -1,0 +1,408 @@
+{
+  "id": "1q22Us0H2CRQiiha",
+  "name": "peter-perplexity-01-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## perplexity AI : https://www.perplexity.ai/account/api/keys\n\n\n",
+        "height": 120,
+        "width": 1340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -320
+      ],
+      "id": "dca706a0-98dc-45f3-9bd4-4ab68e607c7a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        100
+      ],
+      "id": "afb07417-7f18-4148-85fb-063d4b07eb7f",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "352f7ebd-969b-41ab-a741-5dd22dfe2ca0",
+              "name": "query",
+              "value": "tavity api",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        100
+      ],
+      "id": "9719195c-d1b6-4585-b716-ddb0e46f3f37",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "sonar-pro "
+            },
+            {
+              "name": "messages[0].role",
+              "value": "user"
+            },
+            {
+              "name": "messages[0].content",
+              "value": "=<prompt> provide a curl request sample for the following query : {{ $json.query }} </prompt>"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        100
+      ],
+      "id": "e7914bd7-3153-4cdd-a2ca-0734fd67e085",
+      "name": "Perplexity Info1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "perplexity.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "search_results",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        800,
+        100
+      ],
+      "id": "f438562f-ad04-4e8c-9315-8f9b8461d1c7",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "choices[0].message",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "choices[0].message.content",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        100
+      ],
+      "id": "d163fc92-342e-4987-8047-246eee8870cc",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "027401b8-6030-4f27-9a0e-24544042d048",
+              "name": "['choices[0].message.content']",
+              "value": "={{ $json['choices[0].message.content'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1460,
+        100
+      ],
+      "id": "a931fe77-3fbc-4394-a83a-a8df2f33fb5a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        100
+      ],
+      "id": "3d8797ac-5625-40f3-a1ea-921ed4dfd35f",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YF6y150bgQtKEP9S",
+          "mode": "list",
+          "cachedResultName": "subFlow-telegram-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json['choices[0].message.content'] }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1920,
+        100
+      ],
+      "id": "fa0e9061-55fa-490e-8159-16d6190fbf40",
+      "name": "telegram"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d86418fe-015b-4086-9604-251f157e544e",
+              "name": "debug_full_response",
+              "value": "={{ $json.toJsonString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        460
+      ],
+      "id": "5b964db3-b66c-4ff1-9997-9a6b637bf4c6",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com",
+        "subject": "curl request sample",
+        "message": "={{ $json.debug_full_response }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1820,
+        460
+      ],
+      "id": "223ffc9a-1969-47e7-8d2a-99284b4bcbae",
+      "name": "Send a message",
+      "webhookId": "02875e54-9936-4777-95a1-4760da692541",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Perplexity Info1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity Info1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "telegram": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-07T00:19:58.817Z",
+      "createdAt": "2025-07-07T00:19:58.817Z",
+      "role": "workflow:owner",
+      "workflowId": "1q22Us0H2CRQiiha",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T03:40:24.997Z",
+      "createdAt": "2025-07-01T03:40:24.997Z",
+      "id": "Z6ojJoAXdIbQch00",
+      "name": "peter"
+    },
+    {
+      "updatedAt": "2025-07-07T00:18:30.699Z",
+      "createdAt": "2025-07-07T00:18:30.699Z",
+      "id": "d9pNmXBx846FjnXP",
+      "name": "perplexity"
+    }
+  ],
+  "activeVersion": null
+}

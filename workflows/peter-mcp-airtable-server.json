@@ -1,0 +1,176 @@
+{
+  "id": "AgbOudbCt4T4nUiz",
+  "name": "peter-MCP-Airtable-Server",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "n8n-calculator"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7e9d37a9-31ab-4b3e-96c6-2d73fb94863c",
+      "name": "MCP Server Trigger",
+      "webhookId": "9b7d423f-a522-43d5-a285-a7a187f70378"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        100,
+        220
+      ],
+      "id": "df53da08-9f21-458f-82ee-a1c602a61de6",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app9Kf9UBya3ibMIS",
+          "mode": "list",
+          "cachedResultName": "CRM Management App",
+          "cachedResultUrl": "https://airtable.com/app9Kf9UBya3ibMIS"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblvhNF6KT2GLK1tF",
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://airtable.com/app9Kf9UBya3ibMIS/tblvhNF6KT2GLK1tF"
+        },
+        "filterByFormula": "={{ $fromAI('Filter_By_Formula', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        300,
+        220
+      ],
+      "id": "be32f014-efc4-4ce3-a3cf-66dd6c5e3001",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "app9Kf9UBya3ibMIS",
+          "mode": "list",
+          "cachedResultName": "CRM Management App",
+          "cachedResultUrl": "https://airtable.com/app9Kf9UBya3ibMIS"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblvhNF6KT2GLK1tF",
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://airtable.com/app9Kf9UBya3ibMIS/tblvhNF6KT2GLK1tF"
+        },
+        "id": "={{ $fromAI('Record_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        500,
+        220
+      ],
+      "id": "657546d5-4cee-4219-98fe-48b199e161a8",
+      "name": "Airtable1",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable1": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:22:39.773Z",
+      "createdAt": "2025-07-01T00:22:39.773Z",
+      "role": "workflow:owner",
+      "workflowId": "AgbOudbCt4T4nUiz",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T07:54:49.889Z",
+      "createdAt": "2025-07-01T07:54:18.830Z",
+      "id": "XiIV8wuqgIaq4Kii",
+      "name": "mcp"
+    }
+  ],
+  "activeVersion": null
+}

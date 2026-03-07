@@ -1,0 +1,557 @@
+{
+  "id": "5OQZSBMdR8ZbPMzO",
+  "name": "alex-畫布操作與節點管理",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# 🧭 **畫布操作與節點管理**\n\n",
+        "height": 2780,
+        "width": 550,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1020,
+        -80
+      ],
+      "id": "991b5203-6c55-4d6a-9272-d679d3b4edda",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## **1\\. 操作畫布**\n\n**操作步驟：**\n\n1. 打開 n8n 編輯器，進入工作流程畫布。\n\n2. **移動畫布：**\n\n   - 按住滑鼠滾輪並拖動畫布，可以上下左右移動。\n\n   - 按住 `Shift`鍵 window系統 or `Commend`鍵 mac系統，並滾動滑鼠滾輪，可水平移動畫布。\n\n3. **縮放畫布：**\n\n   - 使用滾輪上下滑動可放大或縮小畫布。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        0
+      ],
+      "id": "5906af97-f053-4827-8ee1-69d1f77e03f4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## **2\\. 快速添加節點**\n\n**操作步驟：**\n\n1. 在畫布任意空白處按 `Tab` 鍵，會彈出**節點搜索欄**。\n\n2. 輸入節點名稱或功能關鍵字（如「Webhook」、「HTTP」）。\n\n3. 選擇所需節點並按 `Enter`，自動添加到畫布中。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        440
+      ],
+      "id": "03dd2d5b-836b-4fc9-95e2-35cd16fe432d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## **3\\. 使用便籤整理**\n\n**操作步驟：**\n\n1. 在畫布上按 `Shift + S`，快速新增便籤， or 滑鼠右鍵開出選單。\n\n2. 輸入便籤內容，如「API 資料整理」或「錯誤處理邏輯」。\n\n3. 使用 Markdown 語法（如 `**加粗**` 或 `# 標題`）強化內容。\n\n4. 右鍵點擊便籤，可以修改顏色或刪除。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        880
+      ],
+      "id": "8fd2195a-13b8-47e4-b1a4-8995ecdecbd0",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## **4\\. 節點命名**\n\n**操作步驟：**\n\n1. 點擊任意節點，打開配置面板。\n\n2. 點擊節點標題（如「Webhook」），直接進入編輯模式。\n\n3. 修改名稱後按 `Enter`\n\n4. 按 `F2` 直接進入重命名。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        1320
+      ],
+      "id": "2a55e2b2-c280-4229-9b55-c88f8aa15a11",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "\n## **5\\. 鍵盤導航節點**\n\n**操作步驟：**\n\n1. 使用方向鍵（← ↑ → ↓）在畫布上移動節點選擇。\n\n2. 當選中目標節點時，按 `Enter` 直接進入配置面板。\n\n3. 在配置面板中，按 `Tab` 鍵快速切換字段，按 `Esc` 返回畫布。\n\n4. 使用 `Ctrl + C` 和 `Ctrl + V` 複製粘貼選中的節點。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        1760
+      ],
+      "id": "943ce011-d9a6-4ff5-9eb2-f859a49df811",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "\n## **6\\. 暫時停用節點**\n\n**操作步驟：**\n\n1. 選中目標節點，點擊右上角三個點，選擇「停用」。\n\n2. 或者按 `D` 鍵快速停用節點。\n\n3. 節點停用後，顯示為灰色，表示在執行過程中會被跳過。\n\n4. 需要重新啟用時，再次點擊右上角三點，選擇「啟用」。\n\n5. 可以點選電源按鈕",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        2200
+      ],
+      "id": "2763fccd-a012-4add-8d11-086f0cd71567",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# 💾 工作流程管理與版本控制\n",
+        "height": 2780,
+        "width": 550,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        -380
+      ],
+      "id": "296f382c-0b55-4875-9bb2-18bd7c9ff4d8",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## **7\\. 經常保存工作流程**\n\n**操作步驟：**\n\n1. 編輯工作流程時，點擊橙色保存按鈕或按 `Ctrl + S`（Mac 上為 `Cmd + S`）。\n\n2. 當工作流程有變更時，保存按鈕會變亮，表示尚未保存。\n\n3. 每次修改後保存，確保最新版本被記錄。\n\n4. 如需還原，使用快捷鍵 `Ctrl + Z` 進行撤銷操作。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        0
+      ],
+      "id": "589b2b10-2de5-405c-b274-d0c64fa5d658",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "\n## **8\\. 查看執行歷史**\n\n**操作步驟：**\n\n1. 在編輯器上方側，點擊「Execution 執行」標籤，查看歷史記錄。\n\n2. 可以看到每次工作流程執行的結果，包括成功與失敗。\n\n3. 點擊具體執行記錄，查看詳細輸出數據和錯誤報告。\n\n4. 使用篩選器選擇「成功」或「錯誤」類型，快速定位特定執行。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        440
+      ],
+      "id": "649b2825-f896-477f-83d2-d787d99d8943",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "\n## **9\\. 對於昂貴或緩慢的節點，使用數據釘選（Pin Data）**\n\n**操作步驟：**\n\n1. 執行一次流程，檢查節點輸出數據。\n\n2. 點擊節點，按 `P` 鍵快速釘選數據，或在「執行」標籤中選擇數據釘選。\n\n3. 釘選後，即使重新加載 n8n，數據依然保留。\n\n4. 若要取消釘選，再次點擊節點並按 `P` 或使用垃圾桶圖標。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        880
+      ],
+      "id": "4b6392fe-2fa7-4827-ba25-ae04410a5daf",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "\n## **11\\. 訪問工作流程變數**\n\n**操作步驟：**\n\n1. 在表達式字段中輸入 `${{$`[`workflow.name`](workflow.name)`}}` 或 `${{$`[`execution.id`](execution.id)`}}` 獲取相關變數。\n\n2. 使用 `${{$now}}` 獲取當前時間，可搭配格式化函數顯示。\n\n3. 可在節點配置中使用這些變數進行條件判斷或日誌記錄。\n\n4. 如果需要更多上下文信息，使用 `${{$json}}` 獲取當前數據。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        1760
+      ],
+      "id": "459f0fa0-8be3-446c-822b-71718b7344e7",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "\n## **10\\. 利用工作流程歷史**\n\n**操作步驟：**\n\n1. 在工作流程編輯器中，點擊「計時器」圖標查看歷史版本。\n\n2. 可以選擇「還原」到任一版本，或「下載」以備份。\n\n3. 在發現錯誤時，可以快速回滾到上一個穩定版本。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        1320
+      ],
+      "id": "e963d880-3fde-4bf5-a437-9d06f0c5aa43",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "\n## **12\\. 將 AI Agent 設為 API 端點並便於測試**\n\n**操作步驟：**\n\n1. 使用外部服務節點作為 API 入口，配置 URL 和方法（POST/GET）。\n\n2. 在外部服務節點節點後添加 AI Agent 節點，配置模型和參數。\n\n3. 為便於本地測試，添加 Chat 觸發器和 Edit Fields 節點。\n\n4. 使用 JavaScript 表達式將輸入訊息動態傳遞給 AI Agent。\n\n5. 在本地環境中直接觸發測試，檢查 AI Agent 回應。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        2200
+      ],
+      "id": "de66a98b-fab9-43bb-8fcd-d0604e93806b",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "# 🧪 **測試與除錯技巧**\n",
+        "height": 1880,
+        "width": 550,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        -80
+      ],
+      "id": "b2d79f87-e7e2-4a5b-b691-544cc85fb77b",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "\n## **13\\. 使用模擬數據**\n\n**操作步驟：**\n\n1. 在工作流程中，選擇一個需要測試的節點（如 HTTP 請求節點）。\n\n2. 點擊節點中的「鉛筆圖標」或「編輯字段」，進入輸入配置。\n\n3. 手動添加模擬數據，如設置假設的 API 回應或範例文本。\n\n4. 保存後，執行工作流程，觀察模擬數據如何在後續節點中流動。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        20
+      ],
+      "id": "66d40bb6-20da-4027-b567-b4e60f888dbe",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "\n## **14\\. 配置「錯誤繼續 error and continous」行為**\n\n**操作步驟：**\n\n1. 在任意節點中，點擊右上角的「三點」圖標，選擇「選項」。\n\n2. 勾選「在錯誤時繼續」或類似選項（根據節點不同而異）。\n\n3. 配置錯誤處理邏輯，例如保存錯誤輸出到變數中或將錯誤數據記錄到日誌。\n\n4. 測試時，故意觸發錯誤（如錯誤 URL），觀察流程是否正常繼續。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        460
+      ],
+      "id": "451c38bb-14e0-4602-a6e8-34da7717730b",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "\n## **15\\. 設置錯誤工作流程**\n\n**操作步驟：**\n\n1. 建立一個新的工作流程，添加「錯誤觸發器」作為起點。\n\n2. 設定錯誤處理操作，如發送 Slack 通知或記錄至數據庫。\n\n3. 回到主流程，點擊設定圖標，選擇「錯誤工作流程」，選擇剛剛建立的錯誤流程。\n\n4. 模擬錯誤情況，如 API 請求失敗，檢查錯誤流程是否被觸發。\n\n參考 - https://youtu.be/Yt0gVZX_OGQ",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        900
+      ],
+      "id": "9dd6ab1b-0c4b-4872-8d65-6419c0967b05",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "\n## **16\\. 使用聊天觸發器進行 AI 測試**\n\n**操作步驟：**\n\n1. 新建工作流程，選擇「Chat Trigger」作為起點。\n\n2. 配置輸入訊息和回應格式，如將用戶輸入傳遞給下游 AI 節點。\n\n3. 添加 AI Agent 節點，設定模型和參數。\n\n4. 測試時，在聊天窗口輸入測試文本，檢查 AI 回應。\n\n5. 若回應異常，通過調整模型或輸入格式來優化。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        1340
+      ],
+      "id": "6474124a-d1e9-4d46-ae1a-10f0a1612c3c",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "# 🔄 **數據處理與表達式使用**\n",
+        "height": 1860,
+        "width": 590,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        820,
+        -80
+      ],
+      "id": "b4986105-cd8f-4452-a9da-9766d7a80de3",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "\n## **17\\. 理解固定值與表達式值**\n\n**操作步驟：**\n\n1. 在節點配置中，選擇任意字段（如 HTTP 請求的 URL）。\n\n2. 點擊字段右側的 `齒輪圖標`，選擇「切換為表達式」模式。\n\n3. 在輸入框中直接輸入靜態值（如 [`https://api.example.com`](https://api.example.com)），這是**固定值**。\n\n4. 若要使用動態值，輸入 `=` 後調用變數（如 `={{$json[\"data\"][\"name\"]}}`），這是**表達式值**。\n\n5. 執行流程後，查看輸出以確認變數是否正確替換。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ],
+      "id": "e20069f5-cc75-471a-8d04-3a567c20f4e6",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "\n## **18\\. 引用上一節點的輸出**\n\n**操作步驟：**\n\n1. 在當前節點配置中，點擊需要引用的字段（如消息文本或數據字段）。\n\n2. 輸入等號 `=`，然後使用 `$json` 引用上一節點的輸出，如：\n\n   ```\n   ={{$json[\"name\"]}}\n   \n   ```\n\n3. 若需要嵌套數據，使用點符號鏈接，如：\n\n   ```\n   ={{$json[\"user\"][\"email\"]}}\n   \n   ```\n\n4. 測試流程，確保正確獲取上一節點的輸出值。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        440
+      ],
+      "id": "163fc20d-41e4-4fc1-9105-446233372a23",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "content": "\n## **19\\. 引用更早的節點輸出**\n\n**操作步驟：**\n\n1. 在當前節點配置中，點擊字段右側的「齒輪」圖標。\n\n2. 選擇「切換為表達式」，輸入以下格式：\n\n   ```\n   ={{ $(\"節點名稱\").json[\"字段名\"] }}\n   \n   ```\n\n   例如：\n\n   ```\n   ={{ $(\"Get User Data\").json[\"username\"] }}\n   \n   ```\n\n3. 如果上一節點不是所需數據的來源，這種方法能正確引用遠程節點的數據。\n\n4. 測試流程，確保能正確獲取指定節點的數據。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        880
+      ],
+      "id": "3264bbef-3736-453d-983f-468d7501c461",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "\n## **20\\. 使用 `$now` 表達式獲取當前時間**\n\n**操作步驟：**\n\n1. 在任意表達式欄位中，輸入以下代碼：\n\n   ```\n   ={{$now}}\n   \n   ```\n\n2. 若需要特定格式（如 `YYYY-MM-DD`），可使用以下代碼：\n\n   ```\n   ={{$now.format(\"YYYY-MM-DD\")}}\n   \n   ```\n\n3. 可以嵌入到輸出文本中，例如：\n\n   ```\n   今天是 {{$now.format(\"YYYY-MM-DD\")}}，歡迎光臨！\n   \n   ```\n\n4. 執行流程，檢查輸出是否顯示當前時間。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1320
+      ],
+      "id": "c85bebdb-8303-4bec-acee-d486aafc76b4",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "# 🧠 **AI Agent 與 Session 管理** \n\n\n\n\n",
+        "height": 560,
+        "width": 550,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -100
+      ],
+      "id": "8f787402-7db5-4167-93c1-cb8278a5b6f2",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "\n## **21\\. 理解 Session ID**\n\n**操作步驟：**\n\n1. 在工作流程中，添加「Chat Trigger」節點，該節點自動生成 Session ID。\n\n2. 若使用 Telegram 或其他外部觸發器，手動在記憶節點（如窗口緩衝記憶）配置 Session ID。\n\n3. 使用以下格式獲取 Session ID：\n\n   ```\n   ={{$json[\"session_id\"]}}\n   \n   ```\n\n4. 在 AI Agent 節點中，設置輸入參數，將 Session ID 傳入模型，實現上下文記憶。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        -20
+      ],
+      "id": "3080f848-1b1f-4c4a-bc83-965d17ea6c0b",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "content": "# 📅 **工作流程觸發與排程** ",
+        "height": 1040,
+        "width": 550,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        540
+      ],
+      "id": "6fa7e475-40f2-4a41-b625-e1dd00df4a67",
+      "name": "Sticky Note30"
+    },
+    {
+      "parameters": {
+        "content": "\n## **22\\. 使用排程觸發器**\n\n**操作步驟：**\n\n1. 添加「Schedule Trigger」節點，進入配置。\n\n2. 設定運行頻率，如「每天」或「每小時」。\n\n3. 自訂時間格式（如 `CRON` 表達式）以實現更靈活的調度。\n\n4. 將排程觸發器連接到後續處理節點，如數據收集或報告生成。\n\n5. 保存並執行測試，確認觸發器在指定時間啟動。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        640
+      ],
+      "id": "f14440f3-0213-4366-90c7-743635efbedb",
+      "name": "Sticky Note31"
+    },
+    {
+      "parameters": {
+        "content": "\n## **23\\. 關閉 n8n 署名**\n\n**操作步驟：**\n\n1. 進入整合節點（如 Email、Telegram、Slack）配置頁面。\n\n2. 尋找「附加署名」或「包含工作流程鏈接」選項。\n\n3. 將「附加署名」或類似選項取消勾選。\n\n4. 保存後，發送測試消息，檢查是否仍包含 n8n 署名。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        1100
+      ],
+      "id": "57bb2354-a924-48c6-8054-6d50c29b498e",
+      "name": "Sticky Note32"
+    },
+    {
+      "parameters": {
+        "content": "# 🔐 安全性與憑證管理\n\n\n\n\n",
+        "height": 560,
+        "width": 550,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        -60
+      ],
+      "id": "d242fb2c-8b19-4b46-97fa-4f5e1edc6736",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "content": "## **24\\. 安全保存 API 憑證**\n\n**操作步驟：**\n\n1. 在 n8n 的 Credential 管理界面中，選擇「新增憑證」。\n\n2. 根據 API 類型（如 HTTP、AWS、Google），選擇相應的憑證模板。\n\n3. 輸入 API 金鑰或密鑰，設置名稱和描述。\n\n4. 保存後，在節點中選擇此憑證作為認證方式。\n\n5. 測試 API 請求，確認授權正常。\n",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        20
+      ],
+      "id": "ab7e1716-c407-4afa-9532-72624217509a",
+      "name": "Sticky Note27"
+    },
+    {
+      "parameters": {
+        "content": "# 📝 **其他技巧與實用操作 (2個)**\n\n\n\n\n",
+        "height": 1080,
+        "width": 550,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        600
+      ],
+      "id": "b60f209d-1092-44b3-b28b-360dd81cbb1e",
+      "name": "Sticky Note28"
+    },
+    {
+      "parameters": {
+        "content": "\n## **26\\. 小心處理循環與多項輸出**\n\n**操作步驟：**\n\n1. 當節點（如資料抓取節點）輸出多個數據項時，使用「Aggregate」或「Split Out」節點進行處理。\n\n2. **Aggregate：** 將多項數據匯總為單一物件，便於下游處理。\n\n3. **Split Out：** 將多項數據逐一拆分，逐個處理後續邏輯。\n\n4. 測試流程，確保數據在聚合或拆分後正確流動。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        1140
+      ],
+      "id": "7f26a026-546b-4338-b4af-510dc9f9ce76",
+      "name": "Sticky Note29"
+    },
+    {
+      "parameters": {
+        "content": "\n## **25\\. 探索基本節點設置**\n\n**操作步驟：**\n\n1. 選中任意節點，點擊右上角三個點，選擇「編輯」。\n\n2. 探索節點中的「選項」設置，如「始終輸出數據」或「錯誤繼續」。\n\n3. 點擊「高級設定」，查看更多細節（如重試次數、執行限制）。\n\n4. 使用「筆記」欄位添加操作說明或用途，方便後期維護。",
+        "height": 420,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        680
+      ],
+      "id": "bcded73c-19e2-42c2-b148-0963e6b3fc24",
+      "name": "Sticky Note33"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-19T02:52:20.827Z",
+      "createdAt": "2025-05-19T02:52:20.827Z",
+      "role": "workflow:owner",
+      "workflowId": "5OQZSBMdR8ZbPMzO",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

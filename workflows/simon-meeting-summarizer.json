@@ -1,0 +1,457 @@
+{
+  "id": "9PtNI0M9UlArScmL",
+  "name": "simon-meeting-summarizer",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1y4g17c7TM7iuaqtPzS3BuhhgkHPzbeVt",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {
+          "fileType": "application/vnd.google-apps.document"
+        }
+      },
+      "id": "5c5fd444-f0bb-47d3-a4b1-6b8f26245935",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        640,
+        400
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6d2040a3-b9a2-4613-b920-ccf5a6539fd1",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        640
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "={{ $('Information Extractor').item.json.output.Title }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bc3eeeb8-255a-48a9-8fc8-92ff374aac4a",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1984,
+        400
+      ],
+      "webhookId": "4de661e1-360e-465b-bd6e-eb5e776d76e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.name }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Email",
+              "description": "All Attendees Email IDs"
+            },
+            {
+              "name": "Title",
+              "description": "Meeting Title"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "=您是一位專業的郵箱地址提取演算法專家。\n僅從文字中提取與會者的郵箱地址和會議標題。\n如果您不知道要求提取的屬性值，可以忽略該屬性的值。"
+        }
+      },
+      "id": "7cc846ff-11c2-48a4-90de-f865aa3ebb11",
+      "name": "Information Extractor",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        864,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=使用<transcript>建立詳細的會議摘要，其結構如下，無需添加任何補充說明：\n\n1. <strong>👥 與會者</strong>\n列出所有參與者\n\n2. <strong>✨ 摘要</strong>\n提供 100-150 字的會議要點和決策概述\n\n3. <strong>🎯 關鍵行動</strong>\n列出行動項目，並包含以下內容：\n- 負責人\n- 任務\n- 截止日期/時間表\n\n4. <strong>📋 提綱</strong>\n每個討論主題需包含：\n- 時間戳\n- 討論重點（100-400 字）\n- 值得注意的細節（姓名、日期、技術細節、價格、時間、事件）\n- 重要提示：列出所有關鍵討論要點和事實，例如，如果提到了價格，請列出價格和數量。\n- 重要提示：評估您認為某些內容是否重要，以決定是否將其包含在最終摘要中。\n\n使用 HTML 標籤格式化粗體標題 (<strong>) 和換行符號 (<br>)\n\n<transcript>\n{{ $json.data }}\n</transcript>\n\n<example output>\n<strong>✨ 摘要</strong><br>\n會議主要討論了 Daniel Chen 在雲端基礎架構方面的專業知識以及他目前在容器化解決方案（尤其是 Kubernetes 和 Docker）方面的工作。 Sarah Martinez 加入會議，討論了安全實施策略。會議的關鍵決策包括探索自動化部署管線和潛在的基礎設施擴展解決方案。會議也討論了新監控系統的實施以及日誌聚合方面的挑戰。各方討論了即將開展的專案的合作機會，並強調需要為營運團隊提供完善的文件和培訓材料。 <br><br>\n\n<strong>🎯 關鍵行動</strong><br>\n1. Daniel Chen 將於下週五之前準備好一份自動化部署管線的提案<br>\n2. Sarah Martinez 將於兩週內審查目前的安全協議並提供建議<br>\n3. James Wilson 將於第三季為新的監控工具分配預算<br>\n4. 團隊將安排一次關於 Istio 實施的後續研討會<br>\n5. 文件團隊將開始為新的監控系統創建培訓材料<br><br>\n\n<strong>📋 概要</strong><br>\n<strong>1.背景與經驗 • 0:00:33</strong><br>\n* Daniel Chen 在雲端架構方面擁有豐富的經驗，曾在西雅圖和新加坡的大型科技公司使用 AWS 和 Azure。 <br>\n* 他目前正在尋求轉型成為 DevOps 領導，並一直在嘗試使用基礎設施即程式碼 (IaaS) 工具。 <br><br>\n\n<strong>2. 雲端架構願景 • 0:03:31</strong><br>\n* Daniel 的目標是開發一個更具彈性的基礎設施，能夠根據即時指標自動擴展。 <br>\n* 他認為，實施基礎設施即程式碼有助於克服與配置漂移相關的挑戰。 <br><br>\n\n<strong>3. 目前 Kubernetes 的工作與挑戰 • 0:14:21</strong><br>\n* Daniel 一直致力於使用 Istio 實現服務網格，但目前網路策略有其限制。 <br>\n* Sarah Martinez 建議從 ELK Stack 切換到 Grafana Loki，以獲得更好的日誌聚合和視覺化功能。 <br><br>\n\n<strong>4.自訂監控解決方案開發 • 0:19:23</strong><br>\n* Daniel 使用 Prometheus 開發了一個自訂監控解決方案，以便更有效地處理指標，從而實現更好的警報關聯。 <br>\n* 他演示了他的解決方案如何透過聚合來自多個集群的數據成功捕獲系統健康指標。 <br><br>\n\n<strong>5. 系統健康警報配置 • 0:21:44</strong><br>\n* 討論的重點是建立包含上下文資料的系統健康監控警報範本。 <br>\n* Daniel Chen 建議，在調查事件時，需要集中式指標儲存來提供準確的歷史資料。 <br><br>\n\n<strong>6. 系統回應模擬 • 0:22:05</strong><br>\n* James Wilson 詢問了系統處理級聯故障的能力。 <br>\n* Daniel Chen 示範了系統的故障轉移功能，並概述了復原過程。 <br><br>\n\n<strong>7.指標儲存 • 0:27:07</strong><br>\n* Daniel Chen 提到他們正在將指標儲存在時間序列資料庫中，並即時更新儀表板。 <br>\n* 此流程旨在提高營運團隊的可見度和故障排除能力。 <br><br>\n\n<strong>8. 日誌管理的挑戰 • 0:31:00</strong><br>\n* Daniel Chen 解釋了目前日誌系統的局限性，尤其是在保留和搜尋功能方面。 <br>\n* 他指出，雖然基本日誌記錄運作良好，但由於資料量龐大，複雜的查詢經常會逾時。 <br><br>\n\n<strong>9. 未來合作機會 • 0:34:30</strong><br>\n* James Wilson 表示有興趣隨著基礎設施的成長，聘請 Daniel Chen 擔任技術顧問。 <br>\n* Sarah 表示，她的團隊可以從 Daniel 在安全實施方面的專業知識中受益。 <br><br>\n\n<strong>10.文件與團隊訓練 • 0:40:04"
+      },
+      "id": "1a6cdde4-a8a3-4444-a97a-853fbba38a93",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1600,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Meeting summarizer based on a transcript file\n\n## Use Case\nTransform meeting transcription into AI-friendly markdown format:\n- You need to process meeting transcripts for LLM analysis\n- You want to extract Meeting Title and Attendee's email from transcript\n- You need to send email to all the attendees with meeting summarize & key topics outline\n\n## What this Workflow Does\nThe workflow uses Open AI to summarize meeting transcripts:\n- Download the transcript file from Google Drive\n- Converts transcript to markdown format\n- Send email to all the attendees\n\n## Setup\n1. Create a [TimeOS.ai](https://www.TimeOS.ai/) account \n2. Add your Google Calendar to Sync with TimeOS\n3. Connect your Google Drive & Google Docs for transcript file to be uploaded after meeting is ended.\n4. Configure your preferred LLM connection\n\n\n## How to Adjust it to Your Needs\n- Customize output format for your specific use case\n\n",
+        "height": 771,
+        "width": 582,
+        "color": 7
+      },
+      "id": "1844c1c0-061e-49b8-b9f9-ed29b92fd594",
+      "name": "Sticky Note38",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### To Extract the Attendees' Email and Meeting Title",
+        "height": 239,
+        "width": 297,
+        "color": 7
+      },
+      "id": "06d0ead0-a0ab-46cf-aa58-50102648b988",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        848,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Download the Meeting \nTranscript",
+        "height": 239.35628742514973,
+        "width": 217.72455089820343,
+        "color": 7
+      },
+      "id": "1759e94a-38de-4cf5-85b7-f218ee6564a0",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Extract the data from downloaded file\n",
+        "height": 239.35628742514973,
+        "width": 194.05688622754485,
+        "color": 7
+      },
+      "id": "a648d8ab-c5b9-4bd1-8bdb-46be523316bd",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Summarize the meeting & convert the data into Markdown format \n",
+        "height": 239.35628742514973,
+        "width": 311.002994011976,
+        "color": 7
+      },
+      "id": "643aefda-6ba1-4426-bdf7-cc3f2616662a",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Send email to all attendees \n",
+        "height": 239,
+        "width": 271,
+        "color": 7
+      },
+      "id": "989818dc-7765-4a66-9cfc-fea54dff2622",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('File Created').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "id": "50bc1cea-57fa-4bcf-b3b4-3eefc998e665",
+      "name": "Download Transcript",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        400
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "a4cabbbc-205b-49b3-9ad3-9e084f6f2a54",
+      "name": "Extract Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Upload summary to GDrive\n",
+        "height": 239,
+        "width": 451,
+        "color": 7
+      },
+      "id": "446d993f-2954-442c-a7ab-a8be58962776",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "folderId": "1y4g17c7TM7iuaqtPzS3BuhhgkHPzbeVt",
+        "title": "={{ $('Information Extractor').item.json.output.Title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        640
+      ],
+      "id": "3acd2414-4303-4fc9-9126-611ccc7dff15",
+      "name": "Create Summary Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Basic LLM Chain').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        640
+      ],
+      "id": "25cf952f-e5a0-47b0-88cd-b62a60f0ea59",
+      "name": "Insert Content",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Download Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Summary Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Transcript": {
+      "main": [
+        [
+          {
+            "node": "Extract Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Summary Doc": {
+      "main": [
+        [
+          {
+            "node": "Insert Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-13T07:40:40.588Z",
+      "createdAt": "2025-08-13T07:40:40.588Z",
+      "role": "workflow:owner",
+      "workflowId": "9PtNI0M9UlArScmL",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-08-13T07:39:32.636Z",
+      "createdAt": "2025-08-13T07:39:32.636Z",
+      "id": "yjiugy6lHwCmZWlH",
+      "name": "AI agent"
+    }
+  ],
+  "activeVersion": null
+}

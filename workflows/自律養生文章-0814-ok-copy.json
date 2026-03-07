@@ -1,0 +1,639 @@
+{
+  "id": "2Qv5ueqORw8k0Tpn",
+  "name": "自律養生文章-0814-ok-copy",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "624c4468-652d-48e0-8fb4-ee65eb1cb786",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "name": "file_extension",
+              "value": "={{ $json.name.split('.').pop().toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d5ed22d9-e414-4e5e-b42d-4dabd9a67dec",
+      "name": "Set File Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "doc-condition-1",
+              "leftValue": "={{ $json.file_type }}",
+              "rightValue": "application/vnd.google-apps.document",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "bea5d799-4ed5-42ed-9467-ed9cc0527528",
+      "name": "If Google Document",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "documentURL": "={{ $json.file_id }}"
+      },
+      "id": "b0842b7b-91ca-46f9-9b3b-494243f5cb73",
+      "name": "Read Google Doc",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -224
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-doc-content-1",
+              "name": "document_title",
+              "value": "={{ $('If Google Document').item.json.file_name }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-doc-content-2",
+              "name": "document_content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-doc-content-3",
+              "name": "content_type",
+              "value": "={{ $('If Google Document').item.json.file_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0695afee-8342-4701-9b12-179ca4c81ba9",
+      "name": "Extract Document Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 1. Google folder 自律養生陳老師 : https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw \n## 2. ElevenLabs Voice Id : nXpwpswrlUdg3EFKKuww    ( based on Teacher Chen )  https://elevenlabs.io/app/voice-lab\n## 3. because it will generate audio twice, so remove Google Drive \"File Update\" Trigger\n## 4. ElevenLabs : 8000 字 server off line. 7000 字 OK, need 4.5 minutes to generate the audio which lasts 23 minutes\n## 5. 不能用 email trigger n8n 產生音檔, 因為會沒有文字檔可以看. 一定要用這個\n## 6. Todo : 用 Veo 3 產生 video file \n\n## History : 20250814\n\n\n",
+        "height": 364,
+        "width": 1548,
+        "color": 7
+      },
+      "id": "71a5877d-a4a3-4bba-ba18-fa53844dffad",
+      "name": "Workflow 說明",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -688
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw",
+          "mode": "list",
+          "cachedResultName": "自律養生陳老師",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "99eadbd3-97fc-41af-97a0-f4da17ac7b8a",
+      "name": "File Created1",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -240
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/nXpwpswrlUdg3EFKKuww",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": " sk_2863c46dd20e30bb5066dfd1532001349e62b69fd4dda4c5"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.document_content.slice(0, 7000) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        -224
+      ],
+      "id": "79148eef-154b-4d57-95e6-7c0880cb0a13",
+      "name": "ElevenLabs Audio",
+      "executeOnce": false,
+      "credentials": {
+        "httpCustomAuth": {
+          "name": "Custom Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1177472123,
+          "mode": "list",
+          "cachedResultName": "elevenLabs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit#gid=1177472123"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.webContentLink }}",
+            "timestamp": "={{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "517ad161-c504-4216-b993-406754ccf461",
+      "name": "Sheets ElevenLabs",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1536,
+        -224
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $('Upload Audio').item.json.webContentLink }} {{ $('Set File Info').item.json.file_name }}  (全文) ElevenLabs 產生音頻 : {{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }} \"\n    }\n\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "91d909e6-2ea8-42ec-9376-9a2cfde2c9ff",
+      "name": "Line : 推送訊息 Line使用者n8n-peter5",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1760,
+        -224
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "name": "={{ \"全文-ElevenLabs-\" + $('Set File Info').item.json.file_name }}",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1p_i4dl7eeIxyJkcd4PI4GlidK6xAOtk8",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1p_i4dl7eeIxyJkcd4PI4GlidK6xAOtk8",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1312,
+        -224
+      ],
+      "id": "3151062c-7122-48c0-a451-8cec8ab44ba6",
+      "name": "Upload Audio",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File Info').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1kVmrfaYd-FQ3trbeJZVhPNPJNhsATvdl",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1984,
+        -224
+      ],
+      "id": "e3aa6464-ce0d-4fa4-89ec-cd95ec39c263",
+      "name": "Done",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        -240
+      ],
+      "id": "339e0881-74e6-430f-b530-1286937a5014",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw",
+          "mode": "list",
+          "cachedResultName": "自律養生陳老師",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "id": "1d7af96c-704c-4e34-a661-e278a77e00ad",
+      "name": "File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -48
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Set File Info": {
+      "main": [
+        [
+          {
+            "node": "If Google Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Google Document": {
+      "main": [
+        [
+          {
+            "node": "Read Google Doc",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Read Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Extract Document Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Document Content": {
+      "main": [
+        [
+          {
+            "node": "ElevenLabs Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ElevenLabs Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets ElevenLabs": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio": {
+      "main": [
+        [
+          {
+            "node": "Sheets ElevenLabs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Line : 推送訊息 Line使用者n8n-peter5": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Set File Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Done": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "L9RQFagA7DehEy9F",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-08-12T07:07:06Z"
+    },
+    "node:File Updated": {
+      "lastTimeChecked": "2025-08-14T00:21:22Z"
+    },
+    "node:File Created1": {
+      "lastTimeChecked": "2025-08-14T00:21:22Z"
+    },
+    "node:File Updated1": {
+      "lastTimeChecked": "2025-08-08T02:06:20Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-14T03:25:12.398Z",
+      "createdAt": "2025-08-14T03:25:12.398Z",
+      "role": "workflow:owner",
+      "workflowId": "2Qv5ueqORw8k0Tpn",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T07:47:00.389Z",
+      "createdAt": "2025-07-01T07:46:24.750Z",
+      "id": "NemklGtzxWRxhe4p",
+      "name": "self-fast"
+    },
+    {
+      "updatedAt": "2025-07-01T03:40:24.997Z",
+      "createdAt": "2025-07-01T03:40:24.997Z",
+      "id": "Z6ojJoAXdIbQch00",
+      "name": "peter"
+    },
+    {
+      "updatedAt": "2025-07-01T05:31:57.087Z",
+      "createdAt": "2025-07-01T05:31:30.194Z",
+      "id": "cMDuD6Fpp0c9x76Q",
+      "name": "ElevenLabs"
+    }
+  ],
+  "activeVersion": null
+}

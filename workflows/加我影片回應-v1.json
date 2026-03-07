@@ -1,0 +1,294 @@
+{
+  "id": "A5rJA21YuN80QxEE",
+  "name": "加我影片回應-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        288
+      ],
+      "id": "7ae3ddf3-b299-4107-942f-e4c3ea46d1c7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=對於影片內容, 生成3則短回應, 每一則用10個繁體中文字回應 with emoji and positive tone.   每一則回應內容一定要根據影片內容生成. 用列表格式輸出.",
+        "videoUrls": "={{ $json.video_url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        432,
+        160
+      ],
+      "id": "5d64fba1-6bf4-4c08-bbe9-fc6f564e8702",
+      "name": "Analyze video",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82a1b27c-dcb9-4b70-975e-dd297aa7c135",
+              "name": "video_url",
+              "value": "https://www.youtube.com/shorts/2mSKluPbMJw",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        288
+      ],
+      "id": "298538a5-9641-40cc-a8d5-42b9c44714e1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "formTitle": "YouTube URL",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "video_url",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -32
+      ],
+      "id": "58210623-7400-4b13-8ec3-963e8dca9a02",
+      "name": "On form submission",
+      "webhookId": "cf5642aa-ab19-46d9-86aa-2352a9a4eb92"
+    },
+    {
+      "parameters": {
+        "content": "## 1. Google Doc : https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0\n\n## 1. YouTube URL : https://www.youtube.com/shorts/2mSKluPbMJw\n\n## Revision History : 20250804\n\n## 最常用法 : Form submission 然後貼url . ",
+        "height": 272,
+        "width": 1552
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -240
+      ],
+      "id": "c694a2f4-c0de-48c5-82d4-e0ecc6afb497",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        160
+      ],
+      "id": "51f4177d-5aa4-4052-8fba-a9b223606737",
+      "name": "subflow-line"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "BkbmQYtWU88mHFtM",
+          "mode": "list",
+          "cachedResultName": "subFlow-google-doc"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $('Analyze video').item.json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        160
+      ],
+      "id": "59665f66-5394-4c34-ae5e-d9d5ae5a55ce",
+      "name": "subflow-google-doc"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Analyze video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video": {
+      "main": [
+        [
+          {
+            "node": "subflow-line",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Analyze video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subflow-line": {
+      "main": [
+        [
+          {
+            "node": "subflow-google-doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-06T08:01:49.619Z",
+      "createdAt": "2025-08-06T08:01:49.619Z",
+      "role": "workflow:owner",
+      "workflowId": "A5rJA21YuN80QxEE",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-31T06:04:17.488Z",
+      "createdAt": "2025-07-31T06:04:17.488Z",
+      "id": "9pPluGfXfknhnccL",
+      "name": "gemini-node"
+    },
+    {
+      "updatedAt": "2025-07-01T08:25:09.067Z",
+      "createdAt": "2025-07-01T08:25:09.067Z",
+      "id": "ZDmfNH1E59ld7hO8",
+      "name": "gemini"
+    }
+  ],
+  "activeVersion": null
+}

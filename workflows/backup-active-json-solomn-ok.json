@@ -1,0 +1,1030 @@
+{
+  "id": "6M9t914AoIPyOa1l",
+  "name": "backup-active-json-solomn-ok",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "9210f6e1-44c6-4667-b148-1371c26d99c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "filters": {
+          "activeWorkflows": true
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -16
+      ],
+      "id": "f5ff10cd-1d15-4449-89e0-b43cb223cb12",
+      "name": "n8n",
+      "credentials": {
+        "n8nApi": {
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        912,
+        0
+      ],
+      "id": "7cbafd30-9992-4fe9-8b38-0a945a002a87",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const obj = $input.first().json;\nconst jsonString = JSON.stringify(obj, null, 2); // nicely formatted JSON string\n\nreturn [{\n  json: {\n    fileName: $input.first().json.name + \".json\",\n    rawJson: jsonString // <-- this will go into a cell\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        32
+      ],
+      "id": "70fe7e64-32ba-4719-9f9b-dac392cbe26c",
+      "name": "GetRawJSON"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "rawJson",
+        "options": {
+          "fileName": "={{ $json.fileName }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1520,
+        32
+      ],
+      "id": "e0cf218d-0fe7-4a46-9401-fbb841a8cffe",
+      "name": "ConvertToText"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('GetRawJSON').item.json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        32
+      ],
+      "id": "c06be067-7f54-4cc7-821d-07831b35daa4",
+      "name": "GoogleDriveFolder_ChangeThis",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ 'Backup_' + new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '').replace(/ /g, '-') }}\n",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "707f4071-d47e-4e41-8108-38921b517199",
+      "name": "Create Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "6fded055-8c11-4c30-93f8-5839e155917b",
+      "name": "Limit",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## 1. google folder n8n-backup-solomn : https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5\n## 2. Notion Database n8n-active-json : https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1?v=265ca842df0580dbbf2f000c40dd8a56",
+        "width": 1840,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -624
+      ],
+      "id": "2fd340b3-76fa-4a07-aa6f-4c09e3cbcdff",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "265ca842-df05-80db-8fb7-dd94c3c333a1",
+          "mode": "list",
+          "cachedResultName": "n8n-active-json",
+          "cachedResultUrl": "https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1"
+        },
+        "title": "={{ $json.name }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "建立日期|date",
+              "includeTime": false,
+              "date": "={{ $now.format('yyyy-MM-dd') }}"
+            },
+            {
+              "key": "檔案id|rich_text",
+              "textContent": "={{ $('n8n').item.json.id }}"
+            },
+            {
+              "key": "工作流檔案-網址|url",
+              "urlValue": "=https://chenghyang2001.app.n8n.cloud/workflow/{{ $('n8n').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        160
+      ],
+      "id": "4c231df5-cd1b-4492-a5f1-2b2180783508",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=Soloman : BACKUP active n8n json file : DONE !\n\n檢查 Notion 資料庫 : https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1?v=265ca842df0580dbbf2f000c40dd8a56\n"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1232,
+        -192
+      ],
+      "id": "3c8835b0-7037-49ba-a607-d4b25ea168e4",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=30 5 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        256
+      ],
+      "id": "e47e695a-77cf-404e-bc47-cb0dac5680e2",
+      "name": "Daily_5_30_am"
+    },
+    {
+      "parameters": {
+        "content": "## activate when develop/debugging",
+        "height": 80,
+        "width": 448,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -192
+      ],
+      "id": "c9c444e4-429e-4131-a3f2-3de300c197e1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "b4aa9d52-b47c-450c-98cd-d4f638ec3fe8",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "={{ $now.format('yyyy-MM-dd') }}- Solomn -Backup Active on Google Drive - Done",
+        "message": "=Soloman : BACKUP active n8n json file : DONE ! <BR> <BR>\n\nGoogle Drive : https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5\n<BR> <BR>\n\n\n檢查 Notion 資料庫 : https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1?v=265ca842df0580dbbf2f000c40dd8a56\n\n<BR> <BR>\n\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1232,
+        -416
+      ],
+      "id": "700c46ea-c8f5-481a-8668-64937f3067ec",
+      "name": "Send a message",
+      "webhookId": "811753c1-dded-4d77-8b6b-597f7b065cc6",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Create Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GetRawJSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetRawJSON": {
+      "main": [
+        [
+          {
+            "node": "ConvertToText",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertToText": {
+      "main": [
+        [
+          {
+            "node": "GoogleDriveFolder_ChangeThis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GoogleDriveFolder_ChangeThis": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Folder": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily_5_30_am": {
+      "main": [
+        [
+          {
+            "node": "Create Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Daily_5_30_am": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": "3bf23666-3767-4517-b6c7-783a8c0516fa",
+  "versionCounter": 29,
+  "shared": [
+    {
+      "updatedAt": "2025-09-04T08:54:41.324Z",
+      "createdAt": "2025-09-04T08:54:41.324Z",
+      "role": "workflow:owner",
+      "workflowId": "6M9t914AoIPyOa1l",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-02T01:42:47.178Z",
+      "createdAt": "2025-07-02T01:42:47.178Z",
+      "id": "CGOOKAHvaKjDEAen",
+      "name": "backup"
+    },
+    {
+      "updatedAt": "2025-09-05T01:03:34.455Z",
+      "createdAt": "2025-09-05T01:03:34.455Z",
+      "id": "EGm1vsa5fX8c8fBZ",
+      "name": "solomn"
+    },
+    {
+      "updatedAt": "2025-09-05T01:03:29.454Z",
+      "createdAt": "2025-09-05T01:03:29.454Z",
+      "id": "ZhXLQCL7D1oAQnuc",
+      "name": "backup-active"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-08T00:21:19.948Z",
+    "createdAt": "2025-12-08T00:21:19.948Z",
+    "versionId": "3bf23666-3767-4517-b6c7-783a8c0516fa",
+    "workflowId": "6M9t914AoIPyOa1l",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -160,
+          -16
+        ],
+        "id": "9210f6e1-44c6-4667-b148-1371c26d99c4",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "filters": {
+            "activeWorkflows": true
+          },
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "position": [
+          272,
+          -16
+        ],
+        "id": "f5ff10cd-1d15-4449-89e0-b43cb223cb12",
+        "name": "n8n",
+        "credentials": {
+          "n8nApi": {
+            "id": "0W24pCsi3DOytPwP",
+            "name": "n8n account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          912,
+          0
+        ],
+        "id": "7cbafd30-9992-4fe9-8b38-0a945a002a87",
+        "name": "Loop Over Items1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const obj = $input.first().json;\nconst jsonString = JSON.stringify(obj, null, 2); // nicely formatted JSON string\n\nreturn [{\n  json: {\n    fileName: $input.first().json.name + \".json\",\n    rawJson: jsonString // <-- this will go into a cell\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1232,
+          32
+        ],
+        "id": "70fe7e64-32ba-4719-9f9b-dac392cbe26c",
+        "name": "GetRawJSON"
+      },
+      {
+        "parameters": {
+          "operation": "toText",
+          "sourceProperty": "rawJson",
+          "options": {
+            "fileName": "={{ $json.fileName }}"
+          }
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          1520,
+          32
+        ],
+        "id": "e0cf218d-0fe7-4a46-9401-fbb841a8cffe",
+        "name": "ConvertToText"
+      },
+      {
+        "parameters": {
+          "name": "={{ $('GetRawJSON').item.json.fileName }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $('Create Folder').item.json.id }}",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1792,
+          32
+        ],
+        "id": "c06be067-7f54-4cc7-821d-07831b35daa4",
+        "name": "GoogleDriveFolder_ChangeThis",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "jMSK2ewrCL2nyhcN",
+            "name": "Google Drive account 20250704"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "folder",
+          "name": "={{ 'Backup_' + new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '').replace(/ /g, '-') }}\n",
+          "driveId": {
+            "__rl": true,
+            "value": "https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5",
+            "mode": "url"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5",
+            "mode": "url"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          64,
+          -16
+        ],
+        "id": "707f4071-d47e-4e41-8108-38921b517199",
+        "name": "Create Folder",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "jMSK2ewrCL2nyhcN",
+            "name": "Google Drive account 20250704"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "maxItems": 2
+        },
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          672,
+          -16
+        ],
+        "id": "6fded055-8c11-4c30-93f8-5839e155917b",
+        "name": "Limit",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "content": "## 1. google folder n8n-backup-solomn : https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5\n## 2. Notion Database n8n-active-json : https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1?v=265ca842df0580dbbf2f000c40dd8a56",
+          "width": 1840,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -208,
+          -624
+        ],
+        "id": "2fd340b3-76fa-4a07-aa6f-4c09e3cbcdff",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "databaseId": {
+            "__rl": true,
+            "value": "265ca842-df05-80db-8fb7-dd94c3c333a1",
+            "mode": "list",
+            "cachedResultName": "n8n-active-json",
+            "cachedResultUrl": "https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1"
+          },
+          "title": "={{ $json.name }}",
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "建立日期|date",
+                "includeTime": false,
+                "date": "={{ $now.format('yyyy-MM-dd') }}"
+              },
+              {
+                "key": "檔案id|rich_text",
+                "textContent": "={{ $('n8n').item.json.id }}"
+              },
+              {
+                "key": "工作流檔案-網址|url",
+                "urlValue": "=https://chenghyang2001.app.n8n.cloud/workflow/{{ $('n8n').item.json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          2064,
+          160
+        ],
+        "id": "4c231df5-cd1b-4492-a5f1-2b2180783508",
+        "name": "Create a database page",
+        "credentials": {
+          "notionApi": {
+            "id": "txjNZdUqDh4mkIOG",
+            "name": "Notion account 20250626"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "6Nh8EtGRaJdooDk9",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+            "cachedResultName": "subFlow-line-n8n-peter-v1"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "content": "=Soloman : BACKUP active n8n json file : DONE !\n\n檢查 Notion 資料庫 : https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1?v=265ca842df0580dbbf2f000c40dd8a56\n"
+            },
+            "matchingColumns": [
+              "content"
+            ],
+            "schema": [
+              {
+                "id": "content",
+                "displayName": "content",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          1232,
+          -192
+        ],
+        "id": "3c8835b0-7037-49ba-a607-d4b25ea168e4",
+        "name": "Execute Workflow",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "=30 5 * * *"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -160,
+          256
+        ],
+        "id": "e47e695a-77cf-404e-bc47-cb0dac5680e2",
+        "name": "Daily_5_30_am"
+      },
+      {
+        "parameters": {
+          "content": "## activate when develop/debugging",
+          "height": 80,
+          "width": 448,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          416,
+          -192
+        ],
+        "id": "c9c444e4-429e-4131-a3f2-3de300c197e1",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "name"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          480,
+          -16
+        ],
+        "id": "b4aa9d52-b47c-450c-98cd-d4f638ec3fe8",
+        "name": "Sort"
+      },
+      {
+        "parameters": {
+          "sendTo": "=chenghyang2001@gmail.com",
+          "subject": "={{ $now.format('yyyy-MM-dd') }}- Solomn -Backup Active on Google Drive - Done",
+          "message": "=Soloman : BACKUP active n8n json file : DONE ! <BR> <BR>\n\nGoogle Drive : https://drive.google.com/drive/folders/1IKK5c8Z6XoB_aWwpeUIq27X4PuYuc8L5\n<BR> <BR>\n\n\n檢查 Notion 資料庫 : https://www.notion.so/265ca842df0580db8fb7dd94c3c333a1?v=265ca842df0580dbbf2f000c40dd8a56\n\n<BR> <BR>\n\n",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          1232,
+          -416
+        ],
+        "id": "700c46ea-c8f5-481a-8668-64937f3067ec",
+        "name": "Send a message",
+        "webhookId": "811753c1-dded-4d77-8b6b-597f7b065cc6",
+        "executeOnce": true,
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        },
+        "disabled": true
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Create Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items1": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "GetRawJSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "n8n": {
+        "main": [
+          [
+            {
+              "node": "Sort",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GetRawJSON": {
+        "main": [
+          [
+            {
+              "node": "ConvertToText",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ConvertToText": {
+        "main": [
+          [
+            {
+              "node": "GoogleDriveFolder_ChangeThis",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "GoogleDriveFolder_ChangeThis": {
+        "main": [
+          [
+            {
+              "node": "Create a database page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Folder": {
+        "main": [
+          [
+            {
+              "node": "n8n",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a database page": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Daily_5_30_am": {
+        "main": [
+          [
+            {
+              "node": "Create Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ChengHsien Yang",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2025-12-08T00:21:19.000Z",
+        "id": 106,
+        "workflowId": "6M9t914AoIPyOa1l",
+        "versionId": "3bf23666-3767-4517-b6c7-783a8c0516fa",
+        "event": "activated",
+        "userId": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "id": "3NUJXKbw8jTXWoB7",
+  "name": "Play MP3 from Google Drive - Cloud",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "play-my-audio",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -16
+      ],
+      "id": "fe3fa56e-90d3-4a0f-955c-918bcddf9c03",
+      "webhookId": "282b43c6-5d58-4531-8f9c-43095c373f92"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1vl92Flxdw-xcImnpK34CWhwGjz-8l2mW",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "c6a77a0b-7696-4c94-bf14-93416da54a59",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "audio/mpeg"
+              },
+              {
+                "name": "Content-Disposition",
+                "value": "inline; filename=\"audio.mp3\""
+              }
+            ]
+          }
+        }
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -16
+      ],
+      "id": "6890d2b3-ecf4-4b34-9046-ba565c422ada"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-21T01:18:46.164Z",
+      "createdAt": "2025-10-21T01:18:46.164Z",
+      "role": "workflow:owner",
+      "workflowId": "3NUJXKbw8jTXWoB7",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-10-21T02:08:10.587Z",
+      "createdAt": "2025-10-21T02:08:10.587Z",
+      "id": "3e2EB8OFDkEiFwln",
+      "name": "play-mp3"
+    }
+  ],
+  "activeVersion": null
+}

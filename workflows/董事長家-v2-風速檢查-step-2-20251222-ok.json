@@ -1,0 +1,2636 @@
+{
+  "id": "5TMq8zmFlHydIiy6",
+  "name": "董事長家-v2-風速檢查-step-2-20251222-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2480,
+        1264
+      ],
+      "id": "d70cb8ad-8880-4946-964a-37018d8af6bb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    id,\n    house_id,\n    edge_id,\n    type_id,\n    mode,\n    name,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.mode')) AS mode,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.fan_speed')) AS fan_speed\nFROM rooms\nWHERE edge_id = {{ $json.edge_id }}\nORDER BY id ASC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1856,
+        2032
+      ],
+      "id": "29f95fe1-a013-43ef-b844-9078a101e270",
+      "name": "query_中控 ID-7",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $json.id }}",
+            "edge_id": "={{ $json.edge_id }}",
+            "house_id": "={{ $json.house_id }}",
+            "room_name": "={{ $json.name }}",
+            "fan_speed": "={{ $json.fan_speed }}",
+            "最後更新時間": "={{ $now.format('yyyy-MM-dd hh:mm:ss') }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "consecutive_count",
+              "displayName": "consecutive_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_1",
+              "displayName": "send_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_2",
+              "displayName": "send_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1600,
+        2384
+      ],
+      "id": "a1bf1771-6eba-4679-91c1-00907bc95162",
+      "name": "n8n-建威廚房",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3123f410-8e5b-47a8-9758-79b5db68feb0",
+              "name": "edge_id",
+              "value": "={{ $json.edge_id }}",
+              "type": "number"
+            },
+            {
+              "id": "7c1f18f0-d561-4542-ae9e-5e6c70f6583a",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "8c886f29-3623-420a-81a1-9e6fc9713bfa",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "cf6269da-a3db-4a74-9b65-50b5e720bd3b",
+              "name": "room_name",
+              "value": "={{ $json.room_name }}",
+              "type": "string"
+            },
+            {
+              "id": "13698757-9834-40f9-a3a7-340f48a4e17b",
+              "name": "fan_speed",
+              "value": "={{ $json.fan_speed }}",
+              "type": "number"
+            },
+            {
+              "id": "7de4e755-3d36-4116-b254-b0c174e7ff04",
+              "name": "consecutive_count",
+              "value": "={{ $json.consecutive_count }}",
+              "type": "number"
+            },
+            {
+              "id": "37d8086e-c9c1-4390-a655-aff38dcb2764",
+              "name": "send_email_1",
+              "value": "={{ $json.send_email_1 }}",
+              "type": "boolean"
+            },
+            {
+              "id": "bb23d27d-e4bc-46db-8976-5bb3a005b8bc",
+              "name": "send_email_2",
+              "value": "={{ $json.send_email_2 }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1664,
+        1664
+      ],
+      "id": "734c7fc8-9638-419d-9783-b36656efc4cc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "fan_speed",
+              "renameField": true
+            },
+            {
+              "fieldToAggregate": "room_id"
+            },
+            {
+              "fieldToAggregate": "edge_id"
+            },
+            {
+              "fieldToAggregate": "house_id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        1664
+      ],
+      "id": "12c4327a-12c7-4ae3-b748-b304db33988d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "fan_speed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        2032
+      ],
+      "id": "1e11dc9e-bae3-4d6c-a758-44f2a8b6b222",
+      "name": "Aggregate-sql"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9ebc783-83ac-47b8-8525-7fe9b8d923c0",
+              "name": "fan_speed_sum",
+              "value": "={{ $json.fan_speed_sum }}",
+              "type": "number"
+            },
+            {
+              "id": "89917f5a-20aa-41ee-b8e9-bcbc2f094826",
+              "name": "fan_speed_count",
+              "value": "={{ $json.fan_speed_count }}",
+              "type": "number"
+            },
+            {
+              "id": "ad3bb772-9ace-4bd9-8b78-6121d6bf4aa1",
+              "name": "fan_speed_string",
+              "value": "={{ $json.fan_speed_string }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -912,
+        2032
+      ],
+      "id": "a95de136-e384-4db0-bf77-30dbf4b0ce19",
+      "name": "config_sql"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得輸入資料\nconst items = $input.all();\n\n// 處理每個輸入項目\nconst output = items.map(item => {\n  const fanSpeedArray = item.json.fan_speed;\n  const edgeIdArray = item.json.edge_id;    // 取得 edge_id 陣列\n  const roomIdArray = item.json.room_id;    // 取得 room_id 陣列\n  \n  // 將字串陣列轉換為數字並加總\n  const sum = fanSpeedArray.reduce((total, speed) => {\n    return total + Number(speed);\n  }, 0);\n  \n  // 字串連接（不轉換為數字，直接連接）\n  const stringConcat = fanSpeedArray.join('');\n  \n  return {\n    json: {\n      fan_speed_array: fanSpeedArray,       // 保留原始陣列\n      fan_speed_sum: sum,                   // 加總結果\n      fan_speed_count: fanSpeedArray.length, // 項目數量\n      fan_speed_string: stringConcat,       // 字串連接結果\n      edge_id: edgeIdArray,                 // edge_id 陣列\n      room_id: roomIdArray                  // 新增 room_id 陣列\n    }\n  };\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1184,
+        1664
+      ],
+      "id": "861192ac-afdb-4472-9436-6b3969257257",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9ebc783-83ac-47b8-8525-7fe9b8d923c0",
+              "name": "fan_speed_sum",
+              "value": "={{ $json.fan_speed_sum }}",
+              "type": "number"
+            },
+            {
+              "id": "89917f5a-20aa-41ee-b8e9-bcbc2f094826",
+              "name": "fan_speed_count",
+              "value": "={{ $json.fan_speed_count }}",
+              "type": "number"
+            },
+            {
+              "id": "c3310b57-e7d4-4978-893c-6fe2368a1f6e",
+              "name": "fan_speed_string",
+              "value": "={{ $json.fan_speed_string }}",
+              "type": "string"
+            },
+            {
+              "id": "3a9fb6fd-9c1d-45d0-aa20-32d604cf1395",
+              "name": "edge_id",
+              "value": "={{ $json.edge_id }}",
+              "type": "array"
+            },
+            {
+              "id": "12bcc958-f116-424e-814b-befe9a5fa653",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -944,
+        1664
+      ],
+      "id": "6f8733e6-f159-450a-a4c7-ee6377ee3ea9",
+      "name": "config_sheet"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "076959b6-ba30-4f66-9b1c-ce800ae7c413",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -640,
+        1856
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## 用 SQL 取出目前的風速",
+        "height": 80,
+        "width": 576,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        2208
+      ],
+      "id": "fa2ec04d-9023-4536-9415-8450c26cf0a1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## step 4.  把現在的風速 記錄到 Sheet",
+        "height": 80,
+        "width": 720,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        2560
+      ],
+      "id": "b38721da-b416-436a-affb-421d638c1f7b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 1. 廚房 中控 7  Sheet : https://docs.google.com/spreadsheets/d/19uNRFYe5_4zn_qooGuf81gvGgCm-yRV3QVAJBiCpuTk/edit?gid=1489727203#gid=1489727203\n\n## 2. Step-1 工作流 : https://chenghyang2001.app.n8n.cloud/workflow/VDN9n1CLatj9riFw\n\n## update : 20251218",
+        "height": 208,
+        "width": 1904,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        400
+      ],
+      "id": "f2459e4b-d3ee-4265-9801-e5900dda457a",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得輸入資料\nconst items = $input.all();\n\n// 處理每個輸入項目\nconst output = items.map(item => {\n  const fanSpeedArray = item.json.fan_speed;\n  \n  // 將字串陣列轉換為數字並加總\n  const sum = fanSpeedArray.reduce((total, speed) => {\n    return total + Number(speed);\n  }, 0);\n  \n  // 字串連接（不轉換為數字，直接連接）\n  const stringConcat = fanSpeedArray.join('');\n  \n  return {\n    json: {\n      fan_speed_array: fanSpeedArray,      // 保留原始陣列\n      fan_speed_sum: sum,                   // 加總結果\n      fan_speed_count: fanSpeedArray.length, // 項目數量\n      fan_speed_string: stringConcat        // 字串連接結果（新增）\n    }\n  };\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1184,
+        2032
+      ],
+      "id": "75fb42f8-4f6e-47dc-9b66-83147c9e93be",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 維持一樣,沒有改變",
+        "message": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 維持一樣,沒有改變 <BR> <BR>\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }} <BR> <BR>\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }} <BR> <BR>\n\nedge id : {{ $('檢查風速是否等於1').item.json.edge_id }} <BR> <BR>\n\nroom id : {{ $('檢查風速是否等於1').item.json.room_id }} <BR> <BR>\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5\n",
+        "options": {
+          "appendAttribution": false
+        },
+        "path": "c739bbca-a902-4871-b475-a33c87e39c34"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1232,
+        1536
+      ],
+      "id": "f7cb423d-f20c-428b-b55b-fc04422f95e4",
+      "name": "Send a message",
+      "webhookId": "c739bbca-a902-4871-b475-a33c87e39c34",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd5f4aeb-84a0-40dc-bc50-b081bb80dde2",
+              "name": "edge_id",
+              "value": 7,
+              "type": "number"
+            },
+            {
+              "id": "ab5136eb-cb47-4ff1-a0a1-5c567e834a44",
+              "name": "url_sheet",
+              "value": "https://docs.google.com/spreadsheets/d/19uNRFYe5_4zn_qooGuf81gvGgCm-yRV3QVAJBiCpuTk/edit?gid=1489727203#gid=1489727203",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2272,
+        1840
+      ],
+      "id": "4fafd69e-195e-40b5-b0ff-f625ff31a8b1",
+      "name": "config_edge_id_7"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 : 由小變大\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }}\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }}\n\nedge id : {{ $json.edge_id }}\n\nroom id : {{ $json.room_id }}\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        2576
+      ],
+      "id": "2df98446-f45f-4f11-918b-f2cb14f2eae5",
+      "name": "case : 由小變大"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 : 由大變小\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }}\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }}\n\nedge id : {{ $json.edge_id }}\n\nroom id : {{ $json.room_id }}\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        1856
+      ],
+      "id": "51494f47-c2f4-433c-9655-a05385a998a7",
+      "name": "case : 由大變小"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 維持一樣,沒有改變\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }}\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }}\n\nedge id : {{ $json.edge_id }}\n\nroom id : {{ $json.room_id }}\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        1536
+      ],
+      "id": "b36b73a6-bc2b-4b0f-b950-c07996237076",
+      "name": "case : 維持不變"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 :  由大變小",
+        "message": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 <BR> <BR>\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }} <BR> <BR>\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }} <BR> <BR>\n\nedge id : {{ $('檢查風速是否等於1').item.json.edge_id }} <BR> <BR>\n\nroom id : {{ $('檢查風速是否等於1').item.json.room_id }} <BR> <BR>\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5\n",
+        "options": {
+          "appendAttribution": false
+        },
+        "path": "dedcd79e-767f-480a-8e1e-004a29ea3aa7"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        1856
+      ],
+      "id": "713f2faa-4ba2-4cf4-865d-b47e761f102e",
+      "name": "Send a message :  由大變小",
+      "webhookId": "dedcd79e-767f-480a-8e1e-004a29ea3aa7",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2576,
+        1504
+      ],
+      "id": "23a6dc2d-b727-4d60-97e9-3e878ca9e2b9",
+      "name": "every 10s",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $('Edit Fields').last().json.send_email_2 }}",
+              "rightValue": "={{ $('config_sql').item.json.fan_speed_sum }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        2576
+      ],
+      "id": "9f33fc38-0d12-4ef4-ac53-4cdedfef77d3",
+      "name": "is send_email_2 true",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $('Edit Fields').last().json.send_email_1 }}",
+              "rightValue": "={{ $('config_sql').item.json.fan_speed_sum }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        2688
+      ],
+      "id": "48422524-15f8-48cd-9dd1-ebacfe969e14",
+      "name": "is send_email_1 true"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b6079f14-c9f0-479b-b6f9-449377487548",
+              "name": "=consecutive_count",
+              "value": "={{ $('Edit Fields').last().json.consecutive_count + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        2576
+      ],
+      "id": "542c9681-f160-45b5-a786-410c83348f7d",
+      "name": "consecutive_count_update"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $('Edit Fields').last().json.consecutive_count.toString() }}",
+              "rightValue": "=4",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1840,
+        2608
+      ],
+      "id": "58c145c9-7a0e-4987-bd7d-bb1664685911",
+      "name": "is consecutive count 4"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "send_email_1": "true",
+            "最後更新時間": "={{ $now.format('yyyy-MM-dd hh:mm:ss') }}",
+            "room_id": "={{ $json.room_id }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "consecutive_count",
+              "displayName": "consecutive_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "send_email_1",
+              "displayName": "send_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_2",
+              "displayName": "send_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2336,
+        2912
+      ],
+      "id": "4634dec3-15b1-4f29-bc99-bc310cf7a43a",
+      "name": "send_email_1_update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "edge_id",
+              "lookupValue": "={{ $('config_edge_id_7').item.json.edge_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2096,
+        2912
+      ],
+      "id": "3027c8ae-6337-4aa3-a977-b87b351a47f9",
+      "name": "send_email_1_get",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "edge_id",
+              "lookupValue": "={{ $('config_edge_id_7').item.json.edge_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2368,
+        2352
+      ],
+      "id": "f606014e-1acf-4024-aad5-c0c3a75d6c9e",
+      "name": "send_email_2_get",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "最後更新時間": "={{ $now.format('yyyy-MM-dd hh:mm:ss') }}",
+            "room_id": "={{ $json.room_id }}",
+            "send_email_2": "true"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "consecutive_count",
+              "displayName": "consecutive_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "send_email_1",
+              "displayName": "send_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "send_email_2",
+              "displayName": "send_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2608,
+        2352
+      ],
+      "id": "28cc822c-f716-4458-8cff-fe9048b9cf89",
+      "name": "send_email_2_update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=第2次通知: {{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 :  由小變大",
+        "message": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 :  由小變大 <BR> <BR>\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }} <BR> <BR>\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }} <BR> <BR>\n\nedge id : {{ $('檢查風速是否等於1').item.json.edge_id }} <BR> <BR>\n\nroom id : {{ $('檢查風速是否等於1').item.json.room_id }} <BR> <BR>\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5\n",
+        "options": {
+          "appendAttribution": false
+        },
+        "path": "b4b41c89-9608-4914-bf22-4dd43c221825"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2128,
+        2352
+      ],
+      "id": "08ab2072-95a6-4e15-8a99-15d6e7262270",
+      "name": "send_email_2_gmail",
+      "webhookId": "b4b41c89-9608-4914-bf22-4dd43c221825",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=第1次通知 : {{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 :  由小變大",
+        "message": "={{ $now.format('yyyy-MM-dd  HH:mm:ss') }}\nfan_speed 有改變 :  由小變大 <BR> <BR>\n\nsheet : {{ $('config_sheet').item.json.fan_speed_string }} <BR> <BR>\n\nsql   : {{ $('config_sql').item.json.fan_speed_string }} <BR> <BR>\n\nedge id : {{ $('檢查風速是否等於1').item.json.edge_id }} <BR> <BR>\n\nroom id : {{ $('檢查風速是否等於1').item.json.room_id }} <BR> <BR>\n\nn8n : https://chenghyang2001.app.n8n.cloud/workflow/64rUjTLBDZEPOGd5\n",
+        "options": {
+          "appendAttribution": false
+        },
+        "path": "f299a0ac-7e86-4865-9d86-47cf19d19b52"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        2912
+      ],
+      "id": "03b992fd-9c36-451c-bbd7-2554325564dd",
+      "name": "send_email_1_gmail",
+      "webhookId": "f299a0ac-7e86-4865-9d86-47cf19d19b52",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $json.room_id }}",
+            "consecutive_count": "={{ $('consecutive_count_update').item.json.consecutive_count }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "consecutive_count",
+              "displayName": "consecutive_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_1",
+              "displayName": "send_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "send_email_2",
+              "displayName": "send_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1008,
+        2576
+      ],
+      "id": "4f259a51-7130-45dc-8968-c007c0dcbae5",
+      "name": "consecutive_count_update1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "edge_id",
+              "lookupValue": "={{ $('config_edge_id_7').item.json.edge_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        768,
+        2576
+      ],
+      "id": "e21f59f2-f075-4f6c-bf37-e203ce72efa6",
+      "name": "consecutive_count_get",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    id,\n    house_id,\n    edge_id,\n    type_id,\n    mode,\n    name,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.mode')) AS mode,\n    JSON_UNQUOTE(JSON_EXTRACT(device_states, '$.zp.fan_speed')) AS fan_speed\nFROM rooms\nWHERE edge_id = {{ $json.edge_id }}\nORDER BY id ASC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1968,
+        1056
+      ],
+      "id": "1d3594b5-1b60-4202-8cd3-460b58f39e2a",
+      "name": "query_中控 ID ASC",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        1056
+      ],
+      "id": "4cc7178e-9359-44a0-997a-04ccc554edbe",
+      "name": "Asc Sort"
+    },
+    {
+      "parameters": {
+        "content": "## Step 1 : Init at 11:55PM every night",
+        "height": 80,
+        "width": 528,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2464,
+        784
+      ],
+      "id": "9d01fb76-fa28-4b64-a65f-5fb70c2ae26d",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd5f4aeb-84a0-40dc-bc50-b081bb80dde2",
+              "name": "edge_id",
+              "value": 7,
+              "type": "number"
+            },
+            {
+              "id": "ab5136eb-cb47-4ff1-a0a1-5c567e834a44",
+              "name": "url_sheet",
+              "value": "https://docs.google.com/spreadsheets/d/19uNRFYe5_4zn_qooGuf81gvGgCm-yRV3QVAJBiCpuTk/edit?gid=1489727203#gid=1489727203\n",
+              "type": "string"
+            },
+            {
+              "id": "7fe5a531-c2a6-4edb-b20d-bdd6dc93dc4a",
+              "name": "speed",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2192,
+        1056
+      ],
+      "id": "44dde6dd-baaf-46c4-ac84-3b6f618e48c1",
+      "name": "config_中控ID_7"
+    },
+    {
+      "parameters": {
+        "content": "## Step 2 : every 30 分鐘",
+        "height": 80,
+        "width": 832,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        1344
+      ],
+      "id": "c8278a2c-281b-41a9-be33-cb73c4a29a85",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=55 23 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2464,
+        1056
+      ],
+      "id": "f129bca1-4efb-4de6-ab36-08909de56dc5",
+      "name": "11:55PM"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json.url_sheet }}",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "edge_id",
+              "lookupValue": "={{ $json.edge_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1872,
+        1664
+      ],
+      "id": "2fcb9c07-d01b-4d1a-b556-ae1b9fbf92f9",
+      "name": "n8n-董事長家-get",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $json.room_id }}",
+            "consecutive_count": "=0"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "consecutive_count",
+              "displayName": "consecutive_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_1",
+              "displayName": "send_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "send_email_2",
+              "displayName": "send_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        960,
+        1536
+      ],
+      "id": "bd02f721-18cf-491d-930d-8af7456e7ec7",
+      "name": "consecutive_count_update2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_edge_id_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "edge_id",
+              "lookupValue": "={{ $('config_edge_id_7').item.json.edge_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        720,
+        1536
+      ],
+      "id": "4b1c8871-7e9b-452d-85cf-248d691b9b03",
+      "name": "consecutive_count_get1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $('config_sheet').item.json.fan_speed_sum }}",
+              "rightValue": "={{ $('config_sql').item.json.fan_speed_sum }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        1984
+      ],
+      "id": "0ca41137-5b22-464f-96cd-4e0bc9f6e6f5",
+      "name": "風速大於設定值"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('config_中控ID_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('config_中控ID_7').item.json.url_sheet }}",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $json.id }}",
+            "edge_id": "={{ $json.edge_id }}",
+            "house_id": "={{ $json.house_id }}",
+            "room_name": "={{ $json.name }}",
+            "fan_speed": "={{ $('config_中控ID_7').item.json.speed }}",
+            "最後更新時間": "={{ $now.format('yyyy-MM-dd hh:mm:ss') }}",
+            "建立時間": "={{ $now.format('yyyy-MM-dd') }}",
+            "consecutive_count": "0",
+            "send_email_1": "=false",
+            "send_email_2": "=false"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "edge_id",
+              "displayName": "edge_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fan_speed",
+              "displayName": "fan_speed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "最後更新時間",
+              "displayName": "最後更新時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "consecutive_count",
+              "displayName": "consecutive_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_1",
+              "displayName": "send_email_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "send_email_2",
+              "displayName": "send_email_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1472,
+        1056
+      ],
+      "id": "4999ee38-9938-47c7-99d6-b2f305c54759",
+      "name": "n8n-董事長家-init",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $('config_sheet').item.json.fan_speed_string }}",
+              "rightValue": "={{ $('config_sql').item.json.fan_speed_string }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        1856
+      ],
+      "id": "fd327278-9e53-40af-ad5c-c20b4a5aab80",
+      "name": "檢查風速是否等於1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "=10,40 * * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2560,
+        2160
+      ],
+      "id": "13d627de-1cec-4bf2-8a1f-eb4b90c4714d",
+      "name": "every 30m"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "to": "U8ca91ed1c30228e776d83179a1893fb0",
+        "messages": {
+          "values": [
+            {
+              "text": "={{ $json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        1072
+      ],
+      "id": "4dba38f0-9a2a-46de-b8a5-d99d1702748d",
+      "name": "Line Messaging",
+      "executeOnce": true,
+      "credentials": {
+        "lineMessagingApi": {
+          "name": "20251023-Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+              "name": "content",
+              "value": "=董事長家-風速檢查-v2 Init Done",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        1072
+      ],
+      "id": "09efda4d-2153-49a3-b827-5c99d288db88",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "config_中控ID_7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_中控 ID-7": {
+      "main": [
+        [
+          {
+            "node": "Aggregate-sql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate-sql": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "config_sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_sql": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "檢查風速是否等於1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "config_sql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_edge_id_7": {
+      "main": [
+        [
+          {
+            "node": "n8n-董事長家-get",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "query_中控 ID-7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "case : 由大變小": {
+      "main": [
+        [
+          {
+            "node": "Send a message :  由大變小",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "case : 維持不變": {
+      "main": [
+        [
+          {
+            "node": "consecutive_count_get1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "case : 由小變大": {
+      "main": [
+        [
+          {
+            "node": "consecutive_count_update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "every 10s": {
+      "main": [
+        [
+          {
+            "node": "config_edge_id_7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is send_email_2 true": {
+      "main": [
+        [],
+        [
+          {
+            "node": "is send_email_1 true",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consecutive_count_update": {
+      "main": [
+        [
+          {
+            "node": "consecutive_count_get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is send_email_1 true": {
+      "main": [
+        [
+          {
+            "node": "is consecutive count 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send_email_1_gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is consecutive count 4": {
+      "main": [
+        [
+          {
+            "node": "send_email_2_gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email_1_get": {
+      "main": [
+        [
+          {
+            "node": "send_email_1_update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email_2_get": {
+      "main": [
+        [
+          {
+            "node": "send_email_2_update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email_2_gmail": {
+      "main": [
+        [
+          {
+            "node": "send_email_2_get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email_1_gmail": {
+      "main": [
+        [
+          {
+            "node": "send_email_1_get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consecutive_count_update1": {
+      "main": [
+        [
+          {
+            "node": "is send_email_2 true",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consecutive_count_get": {
+      "main": [
+        [
+          {
+            "node": "consecutive_count_update1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_中控 ID ASC": {
+      "main": [
+        [
+          {
+            "node": "Asc Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asc Sort": {
+      "main": [
+        [
+          {
+            "node": "n8n-董事長家-init",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_中控ID_7": {
+      "main": [
+        [
+          {
+            "node": "query_中控 ID ASC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11:55PM": {
+      "main": [
+        [
+          {
+            "node": "config_中控ID_7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n-董事長家-get": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consecutive_count_get1": {
+      "main": [
+        [
+          {
+            "node": "consecutive_count_update2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consecutive_count_update2": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "風速大於設定值": {
+      "main": [
+        [
+          {
+            "node": "case : 由大變小",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "case : 由小變大",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "檢查風速是否等於1": {
+      "main": [
+        [
+          {
+            "node": "case : 維持不變",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "風速大於設定值",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "every 30m": {
+      "main": [
+        [
+          {
+            "node": "config_edge_id_7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n-董事長家-init": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Line Messaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:1:35AM1": {
+      "recurrenceRules": []
+    },
+    "node:1:45AM": {
+      "recurrenceRules": []
+    },
+    "node:1:40AM": {
+      "recurrenceRules": []
+    },
+    "node:Test": {
+      "recurrenceRules": []
+    },
+    "node:3:00AM": {
+      "recurrenceRules": []
+    },
+    "node:4:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:30AM": {
+      "recurrenceRules": []
+    },
+    "node:7:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:20AM": {
+      "recurrenceRules": []
+    },
+    "node:7:50AM": {
+      "recurrenceRules": []
+    },
+    "node:every 1 hour": {
+      "recurrenceRules": []
+    },
+    "node:9:00AM": {
+      "recurrenceRules": []
+    },
+    "node:5:00 PM": {
+      "recurrenceRules": []
+    },
+    "node:every 10 s": {
+      "recurrenceRules": []
+    },
+    "node:every 20 s": {
+      "recurrenceRules": []
+    },
+    "node:every 2 minutes": {
+      "recurrenceRules": []
+    },
+    "node:every 10 minutes": {
+      "recurrenceRules": []
+    },
+    "node:every 2 minutes1": {
+      "recurrenceRules": []
+    },
+    "node:every 10s": {
+      "recurrenceRules": []
+    },
+    "node:every 20s": {
+      "recurrenceRules": []
+    },
+    "node:11:55PM": {
+      "recurrenceRules": []
+    },
+    "node:every 30m": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 425,
+  "shared": [
+    {
+      "updatedAt": "2025-12-22T00:19:54.212Z",
+      "createdAt": "2025-12-22T00:19:54.212Z",
+      "role": "workflow:owner",
+      "workflowId": "5TMq8zmFlHydIiy6",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-12-05T00:19:41.163Z",
+      "createdAt": "2025-12-05T00:19:41.163Z",
+      "id": "CyPs1oHzrZoyTmF0",
+      "name": "建威廚房-風速檢查"
+    }
+  ],
+  "activeVersion": null
+}

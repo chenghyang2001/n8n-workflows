@@ -1,0 +1,734 @@
+{
+  "id": "9tYqb2UfGZc1jqto",
+  "name": "Form-測試",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "be629b8a-fa8b-4b7c-8960-60502a4c7949",
+              "name": "create_date",
+              "value": "={{ $now.minus(1,'days').format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "6edc52ef-7635-4450-8978-ff0a36643a81",
+              "name": "=content",
+              "value": "={{ $json.user_input }}",
+              "type": "string"
+            },
+            {
+              "id": "275e3ddf-83b4-4bf4-88bb-244a36be2a04",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        912
+      ],
+      "id": "d4f1a761-07c1-46fa-9649-b99659e39581",
+      "name": "config-1"
+    },
+    {
+      "parameters": {
+        "formTitle": "🧠 研能-工作日誌",
+        "formDescription": "=研能-工作日誌\n",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "task_done_today",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "n8n 工作流 創建/修改"
+                  },
+                  {
+                    "option": "Notion 資料庫/頁面 創建/修改"
+                  },
+                  {
+                    "option": "中控電腦"
+                  },
+                  {
+                    "option": "YouTube 影片學習"
+                  },
+                  {
+                    "option": "其他"
+                  }
+                ]
+              },
+              "multiselect": true,
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Note",
+              "fieldType": "textarea",
+              "placeholder": "備註"
+            },
+            {
+              "fieldLabel": "url_1",
+              "fieldType": "textarea",
+              "placeholder": "url"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "送出",
+          "path": "subscribe",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "已經成功寄送了！"
+            }
+          },
+          "ignoreBots": false,
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 14px;\n\t--font-size-label: 16px;\n\t--font-size-test-notice: 14px;\n\t--font-size-input: 16px;\n\t--font-size-header: 26px;\n\t--font-size-paragraph: 16px;\n\t--font-size-link: 14px;\n\t--font-size-error: 14px;\n\t--font-size-html-h1: 32px;\n\t--font-size-html-h2: 24px;\n\t--font-size-html-h3: 18px;\n\t--font-size-html-h4: 16px;\n\t--font-size-html-h5: 14px;\n\t--font-size-html-h6: 12px;\n\t--font-size-subheader: 16px;\n\n\t/* Colors */\n\t--color-background: #f0f4f8;\n\t--color-test-notice-text: #ff9f43;\n\t--color-test-notice-bg: #fff5e7;\n\t--color-test-notice-border: #ffd89e;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #ced4da;\n\t--color-card-shadow: rgba(60, 64, 67, 0.15);\n\t--color-link: #007bff;\n\t--color-header: #333;\n\t--color-label: #555555;\n\t--color-input-border: #ced4da;\n\t--color-input-text: #495057;\n\t--color-focus-border: #007bff;\n\t--color-submit-btn-bg: #ff6d5a;\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #dc3545;\n\t--color-required: #ff6d5a;\n\t--color-clear-button-bg: #6c757d;\n\t--color-html-text: #495057;\n\t--color-html-link: #007bff;\n\t--color-header-subtext: #6c757d;\n\n\t/* Border Radii */\n\t--border-radius-card: 12px;\n\t--border-radius-input: 8px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 12px;\n\n\t/* Spacing */\n\t--padding-container-top: 32px;\n\t--padding-card: 32px;\n\t--padding-test-notice-vertical: 16px;\n\t--padding-test-notice-horizontal: 32px;\n\t--margin-bottom-card: 24px;\n\t--padding-form-input: 16px;\n\t--card-padding: 32px;\n\t--card-margin-bottom: 24px;\n\n\t/* Dimensions */\n\t--container-width: 480px;\n\t--submit-btn-height: 52px;\n\t--checkbox-size: 20px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 6px 20px rgba(0, 0, 0, 0.1);\n\t--opacity-placeholder: 0.7;\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        672
+      ],
+      "id": "224ee5d0-c8dc-4cc0-a59c-92f321e6c539",
+      "name": "工作日誌項目",
+      "webhookId": "c3578ee7-fd1d-402e-90fc-76bac4938542",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code Node: 格式化 task_done_today 為編號列表並附加 Note 和 URL\n\n// 獲取輸入資料 - 從 config-1 節點\nconst inputData = $input.first().json;\nconst taskDoneToday = inputData.content; // config-1 中已將 task_done_today 設為 content\nconst note = inputData.note || '';\nconst url1 = inputData.url1 || ''; // 從輸入資料獲取 url1\nconst createDate = inputData.create_date;\n\n// 將 task_done_today 轉換為編號列表\nlet formattedContent = '';\n\nif (Array.isArray(taskDoneToday)) {\n  // 如果是陣列，創建編號列表\n  taskDoneToday.forEach((task, index) => {\n    formattedContent += `${index + 1}. ${task}\\n`;\n  });\n} else if (taskDoneToday) {\n  // 如果是單一項目或字串\n  if (typeof taskDoneToday === 'string') {\n    // 嘗試解析陣列字串\n    try {\n      const parsed = JSON.parse(taskDoneToday);\n      if (Array.isArray(parsed)) {\n        parsed.forEach((task, index) => {\n          formattedContent += `${index + 1}. ${task}\\n`;\n        });\n      } else {\n        formattedContent = `1. ${taskDoneToday}\\n`;\n      }\n    } catch (e) {\n      formattedContent = `1. ${taskDoneToday}\\n`;\n    }\n  } else {\n    formattedContent = `1. ${taskDoneToday}\\n`;\n  }\n}\n\n// 在末尾附加 Note 內容（如果有的話）\nif (note && note.trim() !== '') {\n  formattedContent += `\\n備註：${note}`;\n}\n\n// 在末尾附加 URL 內容（如果有的話）\nif (url1 && url1.trim() !== '') {\n  formattedContent += `\\n連結：${url1}`;\n}\n\n// 回傳格式化後的資料\nreturn [\n  {\n    json: {\n      create_date: createDate,\n      content: formattedContent.trim(),\n      original_tasks: taskDoneToday,\n      note: note,\n      url_1: url1\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        912
+      ],
+      "id": "58603e17-76ab-45f7-b43c-6328fda3e6e8",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "formTitle": "🌍 旅遊創作主題選擇",
+        "formDescription": "=選擇您想創作的旅遊內容主題\n",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "user_input",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "我想創作關於**紐西蘭南島的壯麗景色**的內容，重點是**冰川健行**和**峽灣遊船**。"
+                  },
+                  {
+                    "option": "我想創作關於**日本京都的古都風情**的內容，重點是**寺廟巡禮**和**和服體驗**。"
+                  },
+                  {
+                    "option": "我想創作關於**泰國普吉島的海島度假**的內容，重點是**陽光沙灘**和**浮潛活動**。"
+                  },
+                  {
+                    "option": "我想創作關於**歐洲巴黎的浪漫之旅**的內容，重點是**艾菲爾鐵塔**和**羅浮宮藝術**。"
+                  },
+                  {
+                    "option": "我想創作關於**非洲肯亞的野性魅力**的內容，重點是**動物大遷徙**和**馬賽部落文化**。"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "確認選擇",
+          "path": "travel-content-selection",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "已成功提交您的創作主題選擇！"
+            }
+          },
+          "ignoreBots": false,
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 14px;\n\t--font-size-label: 16px;\n\t--font-size-test-notice: 14px;\n\t--font-size-input: 16px;\n\t--font-size-header: 26px;\n\t--font-size-paragraph: 16px;\n\t--font-size-link: 14px;\n\t--font-size-error: 14px;\n\t--font-size-html-h1: 32px;\n\t--font-size-html-h2: 24px;\n\t--font-size-html-h3: 18px;\n\t--font-size-html-h4: 16px;\n\t--font-size-html-h5: 14px;\n\t--font-size-html-h6: 12px;\n\t--font-size-subheader: 16px;\n\n\t/* Colors */\n\t--color-background: #f0f4f8;\n\t--color-test-notice-text: #ff9f43;\n\t--color-test-notice-bg: #fff5e7;\n\t--color-test-notice-border: #ffd89e;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #ced4da;\n\t--color-card-shadow: rgba(60, 64, 67, 0.15);\n\t--color-link: #007bff;\n\t--color-header: #333;\n\t--color-label: #555555;\n\t--color-input-border: #ced4da;\n\t--color-input-text: #495057;\n\t--color-focus-border: #007bff;\n\t--color-submit-btn-bg: #4CAF50;\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #dc3545;\n\t--color-required: #ff6d5a;\n\t--color-clear-button-bg: #6c757d;\n\t--color-html-text: #495057;\n\t--color-html-link: #007bff;\n\t--color-header-subtext: #6c757d;\n\n\t/* Border Radii */\n\t--border-radius-card: 12px;\n\t--border-radius-input: 8px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 12px;\n\n\t/* Spacing */\n\t--padding-container-top: 32px;\n\t--padding-card: 32px;\n\t--padding-test-notice-vertical: 16px;\n\t--padding-test-notice-horizontal: 32px;\n\t--margin-bottom-card: 24px;\n\t--padding-form-input: 16px;\n\t--card-padding: 32px;\n\t--card-margin-bottom: 24px;\n\n\t/* Dimensions */\n\t--container-width: 550px;\n\t--submit-btn-height: 52px;\n\t--checkbox-size: 20px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 6px 20px rgba(0, 0, 0, 0.1);\n\t--opacity-placeholder: 0.7;\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        912
+      ],
+      "id": "b83a0384-fb4b-44e3-a58b-1c91b07f7c83",
+      "name": "旅遊創作主題選擇器",
+      "webhookId": "travel-content-theme-selector"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1504
+      ],
+      "id": "322ab439-0de8-4f1c-9993-18f2b9e58481",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "=https://docs.google.com/document/d/1XBK8-StEr81oSknLVXMvKgDjV3jkCb1RkxjR-_uYh28/edit?usp=drive_link"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        944,
+        1168
+      ],
+      "id": "37dd2ee2-c235-437c-ad39-c5f1abd62ccc",
+      "name": "Get a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=根據以下文章,歸納出重點之後, 產生一段生成影片的提示詞. 移除所有非文字的符號.只留下逗號與句號>\n{{ $json.content }}"
+            }
+          ]
+        },
+        "options": {
+          "systemMessage": "一律用繁體中文回覆"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        1392
+      ],
+      "id": "2dc61557-4d24-45e3-835e-e20831dbd208",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "download",
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        1392
+      ],
+      "id": "5826eb07-3210-4329-adad-1d9206e27f26",
+      "name": "Download a video1",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp"
+        },
+        "text": "描述视频中的内容，用中文回复",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        1392
+      ],
+      "id": "033275d7-7cc2-430a-84c5-816d94a7d0fb",
+      "name": "Analyze video2",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "modelId": {
+          "__rl": true,
+          "value": "models/veo-3.0-generate-preview",
+          "mode": "list",
+          "cachedResultName": "models/veo-3.0-generate-preview"
+        },
+        "prompt": "=t\n影片開場, 兩種人生路徑的強烈對比, 一條看似輕鬆卻通往病痛與懊悔, 另一條充滿挑戰卻能引領身心自由。影片核心理念是自律不痛, 懊悔才痛。畫面呈現人們因病痛, 飲食限制而承受的心理之痛, 以及生命終點時對未做之事的深沉懊悔。鼓勵觀眾修正被物化的價值觀, 捨棄不切實際的夢想, 立即行動, 為拒絕病痛重新下定義。鏡頭轉向一場逆水行舟的身體之旅, 充滿智慧與寶藏, 自律是這趟旅程的核心。展示如何透過延遲享樂與身體建立默契, 學習讀懂身體的每一個信息, 給予計畫性的回應, 例如飢餓時進食, 滿足時停止, 困倦時入睡, 斷食以徹底休息。闡述紀律雖伴隨短暫痛苦, 但穿越後將帶來喜悅, 關鍵在於將大腦視角轉換為身體視角。最後, 影片揭示缺乏自律終將走向懊悔, 而自律才是駕馭痛苦的真正鑰匙。結尾畫面呈現兩種人生抉擇, 選擇提早經歷不適, 或是與生命豪賭, 強調天下沒有白吃的午餐, 凡吃過必留下痕跡, 我們都將承受紀律的痛苦或後悔的痛苦。",
+        "returnAs": "url",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        1392
+      ],
+      "id": "0c9d958f-7136-4816-9ac8-387085a23692",
+      "name": "Generate a video1",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"url\": \"{{ $json.url }}&key=AIzaSyCv4cFOGT0JecS-f2iuze3e7Xy1OFz-ZLc\"\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1712,
+        1392
+      ],
+      "id": "b9bd8665-2b90-4e3c-849b-d9679734254d",
+      "name": "Edit Fields2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "7292664350",
+        "text": "=Analyze video :\n{{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "parse_mode": "="
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2432,
+        1392
+      ],
+      "id": "a824aeaf-71db-4d3e-b4c7-8a6ad6fe35f1",
+      "name": "Telegram3",
+      "webhookId": "f5d52d99-c051-46a2-ad4e-be135c076d26",
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "name": "={{ $now.format('yyyy-mm-dd') }}-data-video",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1KDTK4KNo5KFVoOju-Fd1iUrpiJKFIf8y",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1KDTK4KNo5KFVoOju-Fd1iUrpiJKFIf8y",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2192,
+        1600
+      ],
+      "id": "c1341424-04e3-450c-bb1c-d1beb6e31dd4",
+      "name": "Upload file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "b7UpCE5zIQGzjTYA",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/b7UpCE5zIQGzjTYA",
+          "cachedResultName": "subFlow-tts"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        1152
+      ],
+      "id": "8963c30f-c43e-44a0-9757-9f9dbb5d93a7",
+      "name": "Call 'subFlow-tts'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        1792
+      ],
+      "id": "55a14bb3-86d2-42bb-9834-7ce7740a6e2e",
+      "name": "Call 'subFlow-line-n8n-peter-v1'"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        1792
+      ],
+      "id": "5ba4c2d5-023c-4a80-b01e-1bd181276730",
+      "name": "Every5s"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6edc52ef-7635-4450-8978-ff0a36643a81",
+              "name": "=content",
+              "value": "=Hello World.",
+              "type": "string"
+            },
+            {
+              "id": "275e3ddf-83b4-4bf4-88bb-244a36be2a04",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        1792
+      ],
+      "id": "18798edc-e153-4e7c-b5c9-3fff72fa9c47",
+      "name": "HelloWorld"
+    }
+  ],
+  "connections": {
+    "config-1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "工作日誌項目": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        []
+      ]
+    },
+    "旅遊創作主題選擇器": {
+      "main": [
+        [
+          {
+            "node": "config-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Get a document": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call 'subFlow-tts'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download a video1": {
+      "main": [
+        [
+          {
+            "node": "Analyze video2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video2": {
+      "main": [
+        [
+          {
+            "node": "Telegram3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate a video1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Download a video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Generate a video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every5s": {
+      "main": [
+        [
+          {
+            "node": "HelloWorld",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HelloWorld": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Daily 5PM Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Daily 4:30PM Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-15T08:21:02.516Z",
+      "createdAt": "2025-09-15T08:21:02.516Z",
+      "role": "workflow:owner",
+      "workflowId": "9tYqb2UfGZc1jqto",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-22T06:33:03.622Z",
+      "createdAt": "2025-09-22T06:33:03.622Z",
+      "id": "SFDZyPAjCdi7vTEV",
+      "name": "form-選擇器"
+    },
+    {
+      "updatedAt": "2025-09-22T06:31:45.511Z",
+      "createdAt": "2025-09-22T06:31:45.511Z",
+      "id": "bgZK9A8tTIGFtc8I",
+      "name": "form-主題選擇器"
+    },
+    {
+      "updatedAt": "2025-10-03T02:50:21.853Z",
+      "createdAt": "2025-10-03T02:50:21.853Z",
+      "id": "kowkVa0Tj5CxP1MK",
+      "name": "every5s"
+    },
+    {
+      "updatedAt": "2025-08-05T02:08:09.662Z",
+      "createdAt": "2025-08-05T02:08:09.662Z",
+      "id": "x8VKdgMswubu18Dl",
+      "name": "form"
+    },
+    {
+      "updatedAt": "2025-09-12T05:55:59.496Z",
+      "createdAt": "2025-09-12T05:55:59.496Z",
+      "id": "xMKWd6v6EI7USXfq",
+      "name": "form-trigger"
+    }
+  ],
+  "activeVersion": null
+}

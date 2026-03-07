@@ -1,0 +1,1363 @@
+{
+  "id": "2d7yLAWFGEvmuA9l",
+  "name": "n8n-aaa-02-input-source",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "id": "b5513ae7-fe4f-4cac-be30-23f118c8fc0d",
+      "name": "OpenRouter-gpt-4o",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        400
+      ],
+      "id": "e198388c-1ed8-424c-8d6b-990e7e1ed812",
+      "name": "claude-3.7-sonnet1",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "data",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3520,
+        400
+      ],
+      "id": "99305412-1e22-4c66-b605-8720801cc22e",
+      "name": "Email_Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"key_points\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          },\n          \"minItems\": 3,\n          \"maxItems\": 7\n        },\n        \"important_information\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"dates\": {\n              \"type\": \"string\"\n            },\n            \"people_organizations\": {\n              \"type\": \"string\"\n            },\n            \"data_statistics\": {\n              \"type\": \"string\"\n            },\n            \"specialized_terms\": {\n              \"type\": \"string\"\n            }\n          }\n        },\n        \"detailed_summary\": {\n          \"type\": \"string\"\n        }\n      }\n    },\n    \"business_questions\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"q1_international_sales\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"question\": {\n              \"type\": \"string\"\n            },\n            \"answer\": {\n              \"type\": \"string\"\n            },\n            \"source_reference\": {\n              \"type\": \"string\"\n            }\n          }\n        },\n        \"q2_mainland_china_sales\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"question\": {\n              \"type\": \"string\"\n            },\n            \"answer\": {\n              \"type\": \"string\"\n            },\n            \"source_reference\": {\n              \"type\": \"string\"\n            }\n          }\n        },\n        \"q3_tax_incentives\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"question\": {\n              \"type\": \"string\"\n            },\n            \"answer\": {\n              \"type\": \"string\"\n            },\n            \"source_reference\": {\n              \"type\": \"string\"\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1504,
+        400
+      ],
+      "id": "1a41593a-57d2-4863-b9fd-b91516353cc1",
+      "name": "Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com , peter_yang@microjet.com.tw",
+        "subject": "audio summary",
+        "message": "=\n重點列表:<BR>\n\n{{ $json.output.summary.key_points }}<BR>\n\n{{ $json.output.summary.key_points.map((point, i) => `${i + 1}. ${point}`).join('\\n') }}\n\n<BR>\n日期: {{ $json.output.summary.important_information.dates }}<BR>\n人物/組織: {{ $json.output.summary.important_information.people_organizations }}<BR>\n數據統計: {{ $json.output.summary.important_information.data_statistics }}<BR>\n專業術語: {{ $json.output.summary.important_information.specialized_terms }}<BR>\n\n<BR>\n逐字稿: <BR>\n{{ $('Transcribe audio').item.json.content.parts[0].text }}<BR>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1264,
+        -240
+      ],
+      "id": "dd051d31-46a5-46b7-98a8-bf7e2105a22b",
+      "name": "Send message",
+      "webhookId": "8b492b2c-2f83-4ff9-a5d6-14f360097368",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1aba62f-1857-4e2d-8209-f4d7d4ba13cd",
+              "name": "trigger_source",
+              "value": "gmail",
+              "type": "string"
+            },
+            {
+              "id": "45f70d2c-7259-4c92-a900-98af10bc20b2",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3296,
+        400
+      ],
+      "id": "85ea4021-1900-42ff-8f12-c7777f968321",
+      "name": "rename attachment_0 to be data"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download audio File').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1BnD7m7DamrcnruZhia0boE2KF6DkL3ZW",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1BnD7m7DamrcnruZhia0boE2KF6DkL3ZW",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -848,
+        192
+      ],
+      "id": "5251173e-afe6-4489-856b-beeb908f982e",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        560
+      ],
+      "id": "f050e672-0ddb-4ed2-92fc-4c96a6e0584d",
+      "name": "Transcribe audio",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=以下是需要摘要的內容：\n{{ $json.content.parts[0].text }}\n\n\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# Role\n您是一位專業的內容摘要與分析助理，專門處理繁體中文文本的結構化摘要與特定商業問題的回答。您的任務是將複雜的文字內容轉換為清晰的條列式摘要,並針對特定的商業問題提供基於原文的精確分析。\n\n# Constraints\n- 必須使用繁體中文進行所有輸出\n- 嚴格遵循指定的輸出格式與結構\n- 關鍵要點數量限制為 3-7 點,每點不超過 20 字\n- 禁止杜撰、推測或添加原文未提及的資訊\n- 若原文無相關資訊,必須明確標記為「未提及」或「原文未提及相關資訊」\n- 保持客觀中立,不加入主觀評論或個人意見\n- 長文(超過 2000 字)需採用階層式摘要策略\n- 對於三個特定問題的回答,必須基於原文內容進行分析\n- 輸出格式必須便於 n8n 的 JSON 解析器處理\n\n# Inputs\n- **文字內容**(必填):需要摘要的繁體中文文本\n- **文本長度**:用於判斷是否需要階層式摘要(自動判斷)\n- **特定問題**(固定):\n  1. 技術或產品完成可以在台灣以外的地方銷售?\n  2. 未來產品可以在大陸賣嗎?\n  3. 租稅優惠,是包含了公司研發的投資抵減(如稅務)嗎?\n\n# Instructions\n\n## 步驟 1: 內容分析與長度判斷\n1. 接收並檢查輸入的文字內容\n2. 估算文字長度(字數)\n3. 判斷是否超過 2000 字,決定摘要策略\n\n## 步驟 2: 生成關鍵要點\n1. 識別文本中的核心概念與主要論點\n2. 提取 3-7 個最重要的要點\n3. 將每個要點精簡至 20 字以內\n4. 確保要點涵蓋文本的主要資訊\n\n## 步驟 3: 抽取重要資訊\n1. 識別並提取以下類型的資訊:\n   - 日期與時間\n   - 人名與機構名稱\n   - 數據與統計資料\n   - 專有名詞與術語\n2. 使用「項目:值」的格式整理\n3. 若某類資訊不存在,標記為「未提及」\n\n## 步驟 4: 處理長文本(如適用)\n1. 若文本超過 2000 字:\n   - 先生成高階摘要(整體概覽)\n   - 再按段落或主題生成細節摘要\n   - 保持階層結構清晰\n\n## 步驟 5: 回答特定商業問題\n1. 針對三個固定問題,逐一分析原文:\n   - 問題 1: 搜尋與國際市場、出口、海外銷售相關的內容\n   - 問題 2: 搜尋與中國大陸市場、兩岸貿易相關的內容\n   - 問題 3: 搜尋與租稅優惠、研發抵減、稅務優惠相關的內容\n2. 基於原文內容提供答案\n3. 若原文未提及相關資訊,明確說明「原文未提及相關資訊」\n4. 引用原文相關段落作為支持(如有)\n\n## 步驟 6: 格式化輸出\n1. 按照指定的 JSON 結構組織所有內容\n2. 確保所有欄位都有值(即使是「未提及」)\n3. 驗證 JSON 格式正確性\n\n# Conclusions (Expected Outputs)\n輸出將以 JSON 格式呈現,包含以下結構:\n```json\n{\n  \"summary\": {\n    \"key_points\": [\n      \"要點 1(不超過 20 字)\",\n      \"要點 2(不超過 20 字)\",\n      \"要點 3(不超過 20 字)\"\n    ],\n    \"important_information\": {\n      \"dates\": \"相關日期或「未提及」\",\n      \"people_organizations\": \"人名/機構名稱或「未提及」\",\n      \"data_statistics\": \"重要數據或「未提及」\",\n      \"specialized_terms\": \"專有名詞或「未提及」\"\n    },\n    \"detailed_summary\": \"若為長文,此處提供細節摘要;否則為空字串\"\n  },\n  \"business_questions\": {\n    \"q1_international_sales\": {\n      \"question\": \"技術或產品完成可以在台灣以外的地方銷售?\",\n      \"answer\": \"基於原文的分析結果\",\n      \"source_reference\": \"原文相關段落引用或「原文未提及相關資訊」\"\n    },\n    \"q2_mainland_china_sales\": {\n      \"question\": \"未來產品可以在大陸賣嗎?\",\n      \"answer\": \"基於原文的分析結果\",\n      \"source_reference\": \"原文相關段落引用或「原文未提及相關資訊」\"\n    },\n    \"q3_tax_incentives\": {\n      \"question\": \"租稅優惠,是包含了公司研發的投資抵減(如稅務)嗎?\",\n      \"answer\": \"基於原文的分析結果\",\n      \"source_reference\": \"原文相關段落引用或「原文未提及相關資訊」\"\n    }\n  }\n}\n```\n\n# Solutions (Error Handling)\n- **輸入內容為空或過短**:回傳錯誤訊息「輸入內容不足,無法生成有效摘要」,並提供空的 JSON 結構\n- **無法識別關鍵要點**:至少提供 3 個最基本的描述性要點,標記為「內容概述」\n- **重要資訊缺失**:在對應欄位填入「未提及」,不留空值\n- **長文處理失敗**:降級為標準摘要模式,在 detailed_summary 欄位說明「因內容複雜度較高,已簡化為標準摘要」\n- **特定問題無法回答**:在 answer 欄位填入「原文未提及相關資訊」,在 source_reference 填入「無法從原文中找到相關內容」\n- **JSON 格式錯誤**:驗證並修正所有特殊字元的轉義,確保輸出符合 JSON 標準\n- **字數統計不準確**:使用字元長度作為備用判斷標準\n- **多語言混雜內容**:優先處理繁體中文部分,其他語言內容視為補充資訊"
+            }
+          ]
+        }
+      },
+      "id": "af714e95-f2c1-4e02-bc36-67c01c29142b",
+      "name": "summary",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -1712,
+        176
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "trigger_source",
+              "renameField": true,
+              "outputFieldName": "trigger_source"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -3072,
+        400
+      ],
+      "id": "2b5d80e3-d1f7-40de-9055-d23f633556af",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "研能-科專計畫 : from Gmail "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        -16
+      ],
+      "id": "2f1aff88-22c2-4bb4-822b-8d7ac9b2a3cb",
+      "name": "Call 'subFlow-line-n8n-peter-v1'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "研能-科專計畫 : from Google Drive"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        192
+      ],
+      "id": "4b935777-6a13-47ea-9976-0760dd7db82c",
+      "name": "Call 'subFlow-line-n8n-peter-v1'1"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('set name').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          },
+          "fileName": "attachment_0"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2304,
+        560
+      ],
+      "id": "59a47fff-ed6e-4567-8f22-23fd43138a81",
+      "name": "Download audio File1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $('Email_Trigger').item.json.id }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2528,
+        368
+      ],
+      "id": "8e2fe421-ff8d-4e02-ba98-3f3e969d9e53",
+      "name": "Get-Email1",
+      "webhookId": "38cb666d-27dd-4cf6-ae74-d66dd3f658e7",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "877bbd56-4f86-4ee0-8834-dd7490506061",
+              "name": "data",
+              "value": "=attachment_0",
+              "type": "binary"
+            },
+            {
+              "id": "e1aba62f-1857-4e2d-8209-f4d7d4ba13cd",
+              "name": "trigger_source",
+              "value": "gmail",
+              "type": "string"
+            },
+            {
+              "id": "45f70d2c-7259-4c92-a900-98af10bc20b2",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2304,
+        368
+      ],
+      "id": "78a06f87-9ca7-4fdf-b9f8-d7c89a08dc89",
+      "name": "rename attachment_0 to be data1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.trigger_source[0] }}",
+                    "rightValue": "=gmail",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "74decac7-8924-4bd5-80db-ddbc1c8478fd"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "gmail"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b81cfb29-ba77-4e80-8487-a0ad8c3e3ab1",
+                    "leftValue": "={{ $json.trigger_source[0] }}",
+                    "rightValue": "google_drive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "google_drive"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "041c1b17-6f82-4edf-a8d9-bbd366107fc1",
+                    "leftValue": "={{ $json.trigger_source[0] }}",
+                    "rightValue": "manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "maunal"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -2848,
+        384
+      ],
+      "id": "d46c4c32-e5c6-4445-8046-a838b33810a8",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        96
+      ],
+      "id": "2888ae25-1008-44ee-b559-8247fed825b1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('config_manual').item.json.url }}",
+          "mode": "url"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          },
+          "fileName": "attachment_0"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2304,
+        752
+      ],
+      "id": "8e97e4ca-c468-421a-a4ac-bd517573b765",
+      "name": "Download audio File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Aggregate').item.json.trigger_source[0] }}",
+                    "rightValue": "=gmail",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "74decac7-8924-4bd5-80db-ddbc1c8478fd"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "gmail"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b81cfb29-ba77-4e80-8487-a0ad8c3e3ab1",
+                    "leftValue": "={{ $('Aggregate').item.json.trigger_source[0] }}",
+                    "rightValue": "google_drive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "google_drive"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "041c1b17-6f82-4edf-a8d9-bbd366107fc1",
+                    "leftValue": "={{ $('Aggregate').item.json.trigger_source[0] }}",
+                    "rightValue": "manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "maunal"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1296,
+        256
+      ],
+      "id": "efc568cf-ac34-46dd-8c3f-5399bab7d9f3",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "研能-科專計畫 : from Manual-Trigger"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        384
+      ],
+      "id": "89a176f0-be4c-4c35-b570-537ffb95b72f",
+      "name": "Call 'subFlow-line-n8n-peter-v1'2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "74decac7-8924-4bd5-80db-ddbc1c8478fd"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "41590b32-2f6d-499e-8e80-8f3b9c1d6e83",
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Other"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -2656,
+        1968
+      ],
+      "id": "7d78cb06-144e-4f65-8526-5e4bd16a795c",
+      "name": "Switch2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "pdf"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=pptx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "pptx"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pptx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=mp3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "mp3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mp3"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=mp4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "mp4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mp4"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=m4a",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "m4a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "m4a"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=png",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "png"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "png"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=xlsx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "xlsx"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xlsx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=wav",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "wav"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "wav"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "=docx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "endsWith"
+                    },
+                    "id": "docx"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "docx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.name }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "other"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "other"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -544,
+        2000
+      ],
+      "id": "1ec033a5-2cd7-4767-85e0-4ace941b3bad",
+      "name": "Switch by File Type"
+    },
+    {
+      "parameters": {
+        "content": "## Google folder : https://drive.google.com/drive/folders/1oa6kAIakJSs7xTnNsMGD_VOm2hlbOASQ",
+        "width": 1008,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3920,
+        1504
+      ],
+      "id": "30b96187-dcd1-4be1-86d9-d5f544949a4e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# n8n AI 模型最常用的 30 種文字輸入來源\n\n| 編號 | 輸入來源 | 說明 | 使用場景 |\n|------|---------|------|---------|\n| 1 | 音訊逐字稿 (Audio Transcription) | 將語音轉換為文字 | 會議記錄、訪談、客服電話 |\n| 2 | OCR (PDF/圖片) | 從掃描文件或圖片中提取文字 | 發票處理、合約分析、名片識別 |\n| 3 | Google Sheets | 從試算表讀取結構化數據 | 批量數據處理、報表生成 |\n| 4 | 網頁爬蟲 (Web Scraping) | 從網站抓取文字內容 | 競品監控、內容聚合 |\n| 5 | Email 內容 | 讀取電子郵件主旨和內文 | 客服自動回覆、郵件分類 |\n| 6 | Slack 訊息 | 從 Slack 頻道提取訊息 | 團隊溝通分析、問題追蹤 |\n| 7 | Google Drive 文件 | 讀取 Google Docs 內容 | 文件摘要、內容審查 |\n| 8 | CSV 檔案 | 讀取 CSV 格式數據 | 資料遷移、批量處理 |\n| 9 | JSON API | 從 RESTful API 獲取數據 | 系統整合、數據同步 |\n| 10 | 資料庫查詢 (SQL) | 從資料庫提取文字欄位 | 報告生成、數據分析 |\n| 11 | Microsoft Teams 訊息 | 提取 Teams 對話內容 | 企業內部溝通分析 |\n| 12 | Notion 頁面 | 讀取 Notion 資料庫或文件 | 知識庫管理、專案追蹤 |\n| 13 | Airtable | 從 Airtable 基地提取記錄 | CRM 管理、項目管理 |\n| 14 | RSS Feed | 訂閱新聞或部落格 | 內容監控、新聞聚合 |\n| 15 | Telegram 訊息 | 從 Telegram 機器人獲取訊息 | 客戶支援、通知系統 |\n| 16 | WordPress API | 取得部落格文章內容 | 內容管理、SEO 分析 |\n| 17 | Jira Issues | 提取 Jira 票證內容 | 專案管理、問題追蹤 |\n| 18 | GitHub Issues/PR | 讀取 GitHub 問題或 PR | 程式碼審查、問題管理 |\n| 19 | Discord 訊息 | 讀取 Discord 伺服器內容 | 社群管理、客戶支援 |\n| 20 | Twitter/X API | 抓取推文或提及 | 社群監聽、品牌監控 |\n| 21 | WhatsApp Business API | 讀取 WhatsApp 對話 | 客戶服務、訂單確認 |\n| 22 | Trello 卡片 | 讀取看板卡片描述 | 任務管理、工作流程 |\n| 23 | Dropbox 檔案 | 讀取 Dropbox 文字檔案 | 檔案同步、內容分析 |\n| 24 | OneDrive 檔案 | 讀取 OneDrive 文件 | 文件管理、協作 |\n| 25 | Webhook 接收 | 接收來自其他系統的數據 | 即時整合、事件觸發 |\n| 26 | Microsoft Excel | 讀取 Excel 工作表 | 財務報表、數據分析 |\n| 27 | HubSpot CRM | 提取客戶資料和互動記錄 | 銷售自動化、客戶管理 |\n| 28 | Salesforce | 讀取 CRM 數據 | 銷售分析、客戶洞察 |\n| 29 | Zendesk 票證 | 提取客服工單內容 | 客戶支援、問題分類 |\n| 30 | HTML 表單提交 | 接收網站表單數據 | 客戶查詢、意見回饋 |\n\n## 使用建議\n\n### 最常見的組合應用：\n1. **客戶服務**：Email + Slack + Zendesk\n2. **內容管理**：Google Sheets + WordPress + Notion\n3. **專案管理**：Jira + GitHub + Trello\n4. **數據分析**：CSV + SQL 資料庫 + Google Sheets\n5. **社群監控**：Twitter API + RSS Feed + 網頁爬蟲\n\n### 選擇建議：\n- **即時性需求**：選擇 Webhook、API、訊息平台\n- **批量處理**：選擇檔案類型（CSV、Excel、PDF）\n- **協作場景**：選擇雲端平台（Google Drive、Notion、Airtable）\n- **整合需求**：選擇 API 和資料庫連接\n\n---\n*建立日期：2025-10-23*\n*適用於 n8n 工作流程自動化*\n",
+        "height": 944,
+        "width": 848,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2448,
+        -912
+      ],
+      "id": "3d1c1929-63ff-4c74-a76b-f518f04415d9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Nate 建議 : keep workflow as simple as possible. 同時做太多事,\n# 會讓系統太複雜, 彼此牽連. 所以最好只做一件工作\n# 所以只處理一種 trigger, 不要同時處理兩種以上",
+        "height": 320,
+        "width": 928,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3488,
+        672
+      ],
+      "id": "a9075ffa-ef92-4491-839e-287c921a500a",
+      "name": "Sticky Note2"
+    }
+  ],
+  "connections": {
+    "OpenRouter-gpt-4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude-3.7-sonnet1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Email_Trigger": {
+      "main": [
+        [
+          {
+            "node": "rename attachment_0 to be data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "summary",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message": {
+      "main": [
+        []
+      ]
+    },
+    "rename attachment_0 to be data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe audio": {
+      "main": [
+        [
+          {
+            "node": "summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "summary": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'subFlow-line-n8n-peter-v1'1": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download audio File1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get-Email1": {
+      "main": [
+        [
+          {
+            "node": "rename attachment_0 to be data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "rename attachment_0 to be data1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get-Email1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download audio File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download audio File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Download audio File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:ReceiveEmail_Trigger": {
+      "ReceiveEmail_Trigger": {
+        "lastTimeChecked": 1759450153,
+        "possibleDuplicates": [
+          "199a766c8b4b9d31",
+          "199a7611dff56bbb"
+        ]
+      }
+    },
+    "node:GDrive_Trigger": {
+      "lastTimeChecked": "2025-08-11T03:51:48Z"
+    },
+    "node:Email_Trigger": {
+      "Email_Trigger": {
+        "lastTimeChecked": 1761104365,
+        "possibleDuplicates": [
+          "19a0a0009d06fdde"
+        ]
+      }
+    },
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-10-22T03:52:05Z"
+    },
+    "node:Google Drive Trigger5": {
+      "lastTimeChecked": "2025-10-22T03:52:05Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 5,
+  "shared": [
+    {
+      "updatedAt": "2025-10-23T08:13:25.868Z",
+      "createdAt": "2025-10-23T08:13:25.868Z",
+      "role": "workflow:owner",
+      "workflowId": "2d7yLAWFGEvmuA9l",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-10-22T06:06:00.734Z",
+      "createdAt": "2025-10-22T06:06:00.734Z",
+      "id": "CMiYqwgCijnqebJo",
+      "name": "n8n-aaa"
+    },
+    {
+      "updatedAt": "2025-10-23T02:46:40.109Z",
+      "createdAt": "2025-10-23T02:46:40.109Z",
+      "id": "ljZPNHejdnEYMvoH",
+      "name": "aaa-file-type"
+    },
+    {
+      "updatedAt": "2025-10-23T01:50:58.243Z",
+      "createdAt": "2025-10-23T01:50:58.243Z",
+      "id": "qoctva0if96Yl1cz",
+      "name": "file-type"
+    },
+    {
+      "updatedAt": "2025-10-23T02:46:45.680Z",
+      "createdAt": "2025-10-23T02:46:45.680Z",
+      "id": "zZ71fnug1RIFst6c",
+      "name": "aaa-filetype"
+    }
+  ],
+  "activeVersion": null
+}

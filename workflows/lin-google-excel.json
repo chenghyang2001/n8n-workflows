@@ -1,0 +1,663 @@
+{
+  "id": "6m5RUTdNOGD1zjjC",
+  "name": "lin-google-excel",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1700,
+        140
+      ],
+      "id": "f73d7936-8321-4b1e-8baf-22f4091f88bb",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1KZcD-CrLVIDV1Zj82dJI97_ZnzL2mg9KBFsjvcJnHj8/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KZcD-CrLVIDV1Zj82dJI97_ZnzL2mg9KBFsjvcJnHj8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1480,
+        140
+      ],
+      "id": "38df0239-bedc-495b-8193-983905d86638",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 增强的格式化日期函数\nfunction formatDate(dateInput) {\n  if (!dateInput) return dateInput;\n  \n  let dateStr = String(dateInput).trim();\n  \n  // 处理8位数字格式 (如 20240501)\n  if (/^\\d{8}$/.test(dateStr)) {\n    const year = dateStr.substring(0, 4);\n    const month = dateStr.substring(4, 6);\n    const day = dateStr.substring(6, 8);\n    return `${year}-${month}-${day}`;\n  }\n  \n  // 处理7位数字格式 (如 2025529 表示 2025-05-29)\n  if (/^\\d{7}$/.test(dateStr)) {\n    const year = dateStr.substring(0, 4);\n    const month = dateStr.substring(4, 5).padStart(2, '0');\n    const day = dateStr.substring(5, 7).padStart(2, '0');\n    return `${year}-${month}-${day}`;\n  }\n  \n  // 处理6位数字格式 (如 202453 表示 2024-05-03)\n  if (/^\\d{6}$/.test(dateStr)) {\n    const year = dateStr.substring(0, 4);\n    const month = dateStr.substring(4, 5).padStart(2, '0');\n    const day = dateStr.substring(5, 6).padStart(2, '0');\n    return `${year}-${month}-${day}`;\n  }\n  \n  // 处理5位数字格式 (如 24529 表示 2024-05-29)\n  if (/^\\d{5}$/.test(dateStr)) {\n    const year = '20' + dateStr.substring(0, 2);\n    const month = dateStr.substring(2, 3).padStart(2, '0');\n    const day = dateStr.substring(3, 5).padStart(2, '0');\n    return `${year}-${month}-${day}`;\n  }\n  \n  // 处理带斜杠的日期格式 (如 2025/05/29 或 2025/5/29)\n  const slashRegex = /^(\\d{4})[\\/\\\\](\\d{1,2})[\\/\\\\](\\d{1,2})$/;\n  if (slashRegex.test(dateStr)) {\n    const [_, year, month, day] = dateStr.match(slashRegex);\n    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n  }\n  \n  // 处理带点的日期格式 (如 2025.05.29 或 2025.5.29)\n  const dotRegex = /^(\\d{4})\\.(\\d{1,2})\\.(\\d{1,2})$/;\n  if (dotRegex.test(dateStr)) {\n    const [_, year, month, day] = dateStr.match(dotRegex);\n    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n  }\n  \n  // 处理 MM-DD-YYYY 格式\n  const mmddyyyyRegex = /^(\\d{1,2})-(\\d{1,2})-(\\d{4})$/;\n  if (mmddyyyyRegex.test(dateStr)) {\n    const [_, month, day, year] = dateStr.match(mmddyyyyRegex);\n    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n  }\n  \n  // 处理 DD/MM/YYYY 格式\n  const ddmmyyyyRegex = /^(\\d{1,2})[\\/\\\\](\\d{1,2})[\\/\\\\](\\d{4})$/;\n  if (ddmmyyyyRegex.test(dateStr)) {\n    const [_, day, month, year] = dateStr.match(ddmmyyyyRegex);\n    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n  }\n  \n  // 处理 YYYY-MM-DD 格式 (已经是目标格式，但确保月和日是两位数)\n  const yyyymmddRegex = /^(\\d{4})-(\\d{1,2})-(\\d{1,2})$/;\n  if (yyyymmddRegex.test(dateStr)) {\n    const [_, year, month, day] = dateStr.match(yyyymmddRegex);\n    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n  }\n  \n  // 处理中文日期格式 (如 2025年05月29日 或 2025年5月29日)\n  const chineseRegex = /^(\\d{4})年(\\d{1,2})月(\\d{1,2})日?$/;\n  if (chineseRegex.test(dateStr)) {\n    const [_, year, month, day] = dateStr.match(chineseRegex);\n    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n  }\n  \n  // 处理月份名称的日期格式 (如 29 May 2025 或 May 29, 2025)\n  const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];\n  const monthNamesShort = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];\n  \n  // 尝试匹配 \"29 May 2025\" 格式\n  const dayMonthYearRegex = new RegExp(`^(\\\\d{1,2})\\\\s+(${monthNames.join('|')}|${monthNamesShort.join('|')})\\\\s+(\\\\d{4})$`, 'i');\n  if (dayMonthYearRegex.test(dateStr)) {\n    const [_, day, monthStr, year] = dateStr.match(dayMonthYearRegex);\n    const monthLower = monthStr.toLowerCase();\n    let month;\n    if (monthNames.includes(monthLower)) {\n      month = (monthNames.indexOf(monthLower) + 1).toString().padStart(2, '0');\n    } else {\n      month = (monthNamesShort.indexOf(monthLower) + 1).toString().padStart(2, '0');\n    }\n    return `${year}-${month}-${day.padStart(2, '0')}`;\n  }\n  \n  // 尝试匹配 \"May 29, 2025\" 格式\n  const monthDayYearRegex = new RegExp(`^(${monthNames.join('|')}|${monthNamesShort.join('|')})\\\\s+(\\\\d{1,2})(?:,|\\\\s)\\\\s*(\\\\d{4})$`, 'i');\n  if (monthDayYearRegex.test(dateStr)) {\n    const [_, monthStr, day, year] = dateStr.match(monthDayYearRegex);\n    const monthLower = monthStr.toLowerCase();\n    let month;\n    if (monthNames.includes(monthLower)) {\n      month = (monthNames.indexOf(monthLower) + 1).toString().padStart(2, '0');\n    } else {\n      month = (monthNamesShort.indexOf(monthLower) + 1).toString().padStart(2, '0');\n    }\n    return `${year}-${month}-${day.padStart(2, '0')}`;\n  }\n  \n  // 如果以上格式都不匹配，尝试使用Date对象解析\n  // 但要小心处理，避免意外的解析结果\n  try {\n    const date = new Date(dateStr);\n    if (!isNaN(date.getTime())) {\n      const year = date.getFullYear();\n      const month = (date.getMonth() + 1).toString().padStart(2, '0');\n      const day = date.getDate().toString().padStart(2, '0');\n      // 验证解析结果是否合理\n      if (year >= 1900 && year <= 2100) {\n        return `${year}-${month}-${day}`;\n      }\n    }\n  } catch (e) {\n    // 解析失败，继续使用原始值\n  }\n  \n  // 如果所有尝试都失败，返回原始值\n  return dateStr;\n}\n\n// 主处理函数\nfunction processData(items) {\n  return items.map(item => {\n    const data = item.json;\n    const anomalies = [];\n    \n    // 1. 处理数量、单价、总金额\n    const quantity = data.数量;\n    const unitPrice = data.单价;\n    let totalAmount = data.总金额;\n    \n    // 如果总金额为空但有数量和单价\n    if ((totalAmount === \"\" || totalAmount === null || totalAmount === undefined) && quantity && unitPrice) {\n      totalAmount = quantity * unitPrice;\n      data.总金额 = totalAmount;\n      anomalies.push(`总金额补全`);\n    }\n    // 如果数量为空但有单价和总金额\n    else if ((quantity === \"\" || quantity === null || quantity === undefined) && unitPrice && totalAmount) {\n      const calculatedQuantity = totalAmount / unitPrice;\n      data.数量 = calculatedQuantity;\n      anomalies.push(`数量补全`);\n    }\n    // 如果单价为空但有数量和总金额\n    else if ((unitPrice === \"\" || unitPrice === null || unitPrice === undefined) && quantity && totalAmount) {\n      const calculatedUnitPrice = totalAmount / quantity;\n      data.单价 = calculatedUnitPrice;\n      anomalies.push(`单价补全`);\n    }\n    \n    // 2. 格式化日期\n    const originalDate = data.下单日期;\n    const formattedDate = formatDate(data.下单日期);\n    if (String(originalDate) !== formattedDate) {\n      anomalies.push(`下单日期补全`);\n      data.下单日期 = formattedDate;\n    }\n    \n    // 3. 添加数据异常字段\n    data.数据异常 = anomalies.length > 0 ? anomalies.join('; ') : '无';\n    \n    return {\n      json: data,\n      pairedItem: item.pairedItem\n    };\n  });\n}\n\n// 处理输入数据\nreturn processData($input.all());\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        140
+      ],
+      "id": "61888d33-b74a-45f3-808e-7b2da2aeb2e1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1KZcD-CrLVIDV1Zj82dJI97_ZnzL2mg9KBFsjvcJnHj8/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 281215274,
+          "mode": "list",
+          "cachedResultName": "副本1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KZcD-CrLVIDV1Zj82dJI97_ZnzL2mg9KBFsjvcJnHj8/edit#gid=281215274"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "订单ID",
+              "displayName": "订单ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "客户姓名",
+              "displayName": "客户姓名",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "联系电话",
+              "displayName": "联系电话",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "收货地址",
+              "displayName": "收货地址",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "商品ID",
+              "displayName": "商品ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "数量",
+              "displayName": "数量",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "单价",
+              "displayName": "单价",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "总金额",
+              "displayName": "总金额",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "下单日期",
+              "displayName": "下单日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "销售员",
+              "displayName": "销售员",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "联系方式",
+              "displayName": "联系方式",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "异常补全",
+              "displayName": "异常补全",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "数据异常",
+              "displayName": "数据异常",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -440,
+        140
+      ],
+      "id": "52c0d025-3f42-4d02-b309-6bbd80a77be2",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=订单ID:{{ $json[\"订单ID\"] }}\n收货地址：{{ $json[\"收货地址\"] }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "你是一个数据清洗专家，帮助我优化收货地址，把用户的地址信息修改成标准化的省市区格式显示"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        -1260,
+        260
+      ],
+      "id": "857f20b5-82ea-48fd-b94c-6bdd4461eaec",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n    \"orderid\": \"订单ID\",\n\t\"address\": \"收货地址\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -1080,
+        500
+      ],
+      "id": "285223e3-ac9d-4a34-be3e-f9814403f0ce",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "订单ID",
+              "field2": "output.orderid"
+            }
+          ]
+        },
+        "joinMode": "enrichInput1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -880,
+        140
+      ],
+      "id": "d40fa910-634f-4e35-a29e-799da5bfa01f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f6f39899-7d3b-409b-88a1-894cfb76b955",
+              "leftValue": "={{ $('Google Sheets').item.json[\"联系电话\"].toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0b90fe67-8d84-4197-9ff3-3c959e8b627a",
+              "leftValue": "={{  $('Google Sheets').item.json[\"联系电话\"].toString().match(/^1[3-9]\\d{9}$/) !== null }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -220,
+        140
+      ],
+      "id": "2548e4c4-716d-4bbc-ac69-9acbe4eae315",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "## 触发条件\n- 可以设置为定时触发\n- 也可以设置为 表格数据变动触发。当新数据写入，自动触发数据格式化工作流程\n\n## 表格数据\n- 可以是云表格，或者本地的excel表格，或者notion表格都可以\n\n## 收获地址处理\n- 如果数据条数非常多，可以分批执行，使用拆分节点+loop循环节点+合并节点实现每次只处理一部分内容。\n\n",
+        "height": 380,
+        "width": 340,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1760,
+        380
+      ],
+      "typeVersion": 1,
+      "id": "63121527-99b6-44b0-b1dd-031ffb1eee3f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 通知\n- 可以设定不同的通知方式，如：短信、AI电话、钉钉、telegram、slack、whatsapp等",
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "ddbc5a4d-6bb6-4532-bb3f-0be1a7197425",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## YouTube :  https://www.youtube.com/watch?v=oWoy0U5rBnQ&t=818s\n\n## code : https://github.com/soluckysummer/n8n_workflows/blob/main/workflows/ExcelAutoCleaning.json\n\n",
+        "width": 1560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1640,
+        -100
+      ],
+      "id": "7d48aec7-4e7a-414b-b65f-f719381e4ac4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1320,
+        500
+      ],
+      "id": "f0ae0636-3130-4ec3-8cd6-0b2f5c8d4a60",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YZMkIYIoxkeTerTi",
+          "mode": "list",
+          "cachedResultName": "subFlow-line"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "OK"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        40
+      ],
+      "id": "3d981bf4-a395-4434-bd91-e251abd85b3e",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YZMkIYIoxkeTerTi",
+          "mode": "list",
+          "cachedResultName": "subFlow-line"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "Fail"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        240
+      ],
+      "id": "a08a8485-0598-4318-85ff-7b41ae5b207d",
+      "name": "Execute Workflow1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-06T00:30:51.447Z",
+      "createdAt": "2025-06-06T00:30:51.447Z",
+      "role": "workflow:owner",
+      "workflowId": "6m5RUTdNOGD1zjjC",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T08:05:00.449Z",
+      "createdAt": "2025-07-01T08:05:00.449Z",
+      "id": "enQoB4G7Kwp4eQX9",
+      "name": "china"
+    }
+  ],
+  "activeVersion": null
+}

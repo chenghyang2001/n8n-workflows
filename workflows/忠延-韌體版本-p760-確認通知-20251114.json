@@ -1,0 +1,903 @@
+{
+  "id": "3s9M8ASvdoVPrqCh",
+  "name": "忠延-韌體版本-P760-確認通知-20251114",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1888,
+        512
+      ],
+      "id": "450132f8-c1f0-4e9c-85e7-46614652ab9f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "maxItems": 30
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        16
+      ],
+      "id": "72495c44-43f2-4898-ac4c-ab8626f17587",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "beb86963-15fc-4b0e-9bae-05e410e45128",
+              "name": "edge_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "03cd5209-5c70-44cd-8aab-1e6e3a58b710",
+              "name": "house_id",
+              "value": "={{ $('set edge_id').item.json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "cfe0ea11-3934-46ba-befd-08c7bedcc842",
+              "name": "online",
+              "value": "={{ $('set edge_id').item.json.online }}",
+              "type": "number"
+            },
+            {
+              "id": "6761fa8f-9fa2-4a77-870d-d340a5304993",
+              "name": "app_version",
+              "value": "={{ $('set edge_id').item.json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "d98e31dd-9edc-4ecf-beb7-d913f8c05cc1",
+              "name": "update_software_version",
+              "value": "={{ $('set edge_id').item.json.update_software_version }}",
+              "type": "string"
+            },
+            {
+              "id": "28f62f3d-c274-4512-801c-8270104cd850",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "48d80f7c-dbbf-4145-80d0-2cffe8e98e5e",
+              "name": "updated_at",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            },
+            {
+              "id": "d2dc2516-1a05-435a-9fb1-c073e2f19637",
+              "name": "locale",
+              "value": "={{ $('set edge_id').item.json.locale }}",
+              "type": "string"
+            },
+            {
+              "id": "dbbca61f-a736-439b-b20f-61a795f765c6",
+              "name": "serial_number",
+              "value": "={{ $('set edge_id').item.json.serial_number }}",
+              "type": "string"
+            },
+            {
+              "id": "64f7978c-f35f-4223-808a-3e4cea520aab",
+              "name": "client",
+              "value": "={{ $json.client }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        -80
+      ],
+      "id": "d7a27fe6-7870-46c3-bb16-e21b30b2fc02",
+      "name": "config-2"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "house_id"
+            },
+            {
+              "fieldToAggregate": "client"
+            },
+            {
+              "fieldToAggregate": "app_version"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "84033228-db49-49ae-a477-605748412c8d",
+      "name": "Aggregate-OK"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "house_id"
+            },
+            {
+              "fieldToAggregate": "client"
+            },
+            {
+              "fieldToAggregate": "app_version"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        368,
+        208
+      ],
+      "id": "335e5e44-7567-48dc-9d97-e1a74ed3a5cc",
+      "name": "Aggregate-NG"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df40adeb-9e80-4fac-bff6-c31fd443e482",
+              "name": "house_id",
+              "value": "={{ $json.house_id.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "3ae4cea4-1fb2-466f-9608-f3b5af46069d",
+              "name": "client",
+              "value": "={{ $json.client.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "2af4bce8-2280-420c-b1c3-169a0beea701",
+              "name": "app_version",
+              "value": "={{ $json.app_version.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "65d7db5a-8836-4199-af4b-a072a9fcd890",
+              "name": "count",
+              "value": "={{ $json.house_id.length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        592,
+        0
+      ],
+      "id": "b400dd1d-d8b6-4b10-b725-10abff2d6d12",
+      "name": "Set OK",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df40adeb-9e80-4fac-bff6-c31fd443e482",
+              "name": "house_id",
+              "value": "={{ $json.house_id.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "3ae4cea4-1fb2-466f-9608-f3b5af46069d",
+              "name": "client",
+              "value": "={{ $json.client.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "2af4bce8-2280-420c-b1c3-169a0beea701",
+              "name": "app_version",
+              "value": "={{ $json.app_version.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "d9720633-956b-475d-b534-d37a80dc6e40",
+              "name": "count",
+              "value": "={{ $json.house_id.length }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        592,
+        208
+      ],
+      "id": "cf27d9db-fa0e-4b51-8311-40762d2ae9fb",
+      "name": "Set NG",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('config email app-ver').item.json.emails }}",
+        "subject": "Update Result : OK",
+        "emailType": "text",
+        "message": "=Update OK :\n\nCount       : {{ $json.count }}\n\n\nHouse ID    : \n{{ $json.house_id }}\n\nClient Name : \n{{ $json.client }}\n\nApp version : \n{{ $json.app_version }}\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "5bf257fe-f11d-4438-b72e-9ea1a5a1367c",
+      "name": "Send OK",
+      "webhookId": "d10991bc-13ab-479d-893e-b1627d3252a0",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('config email app-ver').item.json.emails }}",
+        "subject": "Update Result - NG",
+        "emailType": "text",
+        "message": "=Update NG :\n\nCount       : {{ $json.count }}\n\nHouse ID    : \n{{ $json.house_id }}\n\nClient name : \n{{ $json.client }}\n\nApp Version : \n{{ $json.app_version }}\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        208
+      ],
+      "id": "731ef5b1-52c3-4a4b-ac22-be74caeb0b20",
+      "name": "Send NG",
+      "webhookId": "3e876dc1-40aa-4499-81b9-7f0bffda15cf",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1888,
+        768
+      ],
+      "id": "991a7a7c-3b34-4c8c-99c0-78ff61e4e6c4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "94f15f77-5fb0-40d9-a1aa-d0ad73f93d52",
+              "name": "=emails",
+              "value": "=chenghyang2001@gmail.com, peter_yang@microjet.com.tw,chungyen_lai@microjet.com.tw,steven_wu@microjet.com.tw,song_lin@microjet.com.tw,kerwin_ma@microjet.com.tw,yaru_chang@microjet.com.tw ",
+              "type": "string"
+            },
+            {
+              "id": "fa01efd7-6ef9-4414-b8d3-c4dcc6d3ae1b",
+              "name": "app_version",
+              "value": "25.11.10.6",
+              "type": "string"
+            },
+            {
+              "id": "9875c165-2bc0-46ae-9633-d765b454bc53",
+              "name": "update_app_version",
+              "value": "1.6.1.1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1664,
+        512
+      ],
+      "id": "e8787928-fb6e-4a1e-98ee-561b6e18cc52",
+      "name": "config email app-ver"
+    },
+    {
+      "parameters": {
+        "content": "## Note for change in node \"config email app-ver\"\n\n\n## 2. In node \"config email app-ver\", change app version and email receipts\n## 3. change trigger time   : 04:00 AM or Test time\n\n\n## 1. add email for 收件人  ;  (賴忠延) OR \n\n# chenghyang2001@gmail.com, peter_yang@microjet.com.tw,chungyen_lai@microjet.com.tw,steven_wu@microjet.com.tw,song_lin@microjet.com.tw,kerwin_ma@microjet.com.tw \n\n# history : updated on 20250924 for 25.9.18.2\n\n## 1.6.1.1",
+        "height": 484,
+        "width": 3060
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1824,
+        -688
+      ],
+      "id": "ef9b483c-eee3-493f-9a91-2aa892762ff4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * \nFROM edges e \nWHERE e.update_software_version = \"1.6.1.2\" \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1440,
+        512
+      ],
+      "id": "76d38c35-57b9-4dc5-bdfc-76c8ed7024bf",
+      "name": "query table edges with 1.6.1.1",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from houses  \nWHERE id = {{ $json.house_id }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -464,
+        -48
+      ],
+      "id": "2a91dd80-44dc-4030-8ef2-44ed5b84d435",
+      "name": "query table houses to get client name",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9924d2e6-d042-46fb-a418-22ef1348eaec",
+              "leftValue": "={{ $json.app_version }}",
+              "rightValue": "={{ $('config email app-ver').item.json.app_version }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        -16
+      ],
+      "id": "6b715cb3-2b58-46a3-8365-c3f6d954e4c8",
+      "name": "check app version"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "94f15f77-5fb0-40d9-a1aa-d0ad73f93d52",
+              "name": "emails",
+              "value": "chenghyang2001@gmail.com, peter_yang@microjet.com.tw,chungyen_lai@microjet.com.tw,steven_wu@microjet.com.tw,song_lin@microjet.com.tw,kerwin_ma@microjet.com.tw ",
+              "type": "string"
+            },
+            {
+              "id": "fa01efd7-6ef9-4414-b8d3-c4dcc6d3ae1b",
+              "name": "app_version",
+              "value": "25.8.5.3",
+              "type": "string"
+            },
+            {
+              "id": "9875c165-2bc0-46ae-9633-d765b454bc53",
+              "name": "update_app_version",
+              "value": "1.6.1.1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1824,
+        -160
+      ],
+      "id": "dc860a56-1bba-4710-aeaa-8a27d8fbdda0",
+      "name": "config-參考複製用",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from rooms r  \nWHERE r.edge_id = {{ $json.edge_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -992,
+        512
+      ],
+      "id": "0c4365e4-199c-4853-be67-0c0adf028119",
+      "name": "get room id",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.edge_id }}",
+                    "rightValue": 133,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "a915d987-2a44-43a1-8c4f-551c518cb4ff"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "edge_id_133"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "99a2574b-b220-4b29-a3cd-f18e31e7f900",
+                    "leftValue": "={{ $json.edge_id }}",
+                    "rightValue": 33,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Other"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -752,
+        512
+      ],
+      "id": "84740c84-3d65-4ee7-85cb-c5d6e3595d39",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *  FROM edges e where  e.update_software_version=\"{{ $json.update_app_version }}\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1072,
+        48
+      ],
+      "id": "f6e23ed8-1b02-495c-9637-d39ca1fc5fb4",
+      "name": "query table edges with 1.6.1.",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "beb86963-15fc-4b0e-9bae-05e410e45128",
+              "name": "edge_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "03cd5209-5c70-44cd-8aab-1e6e3a58b710",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "cfe0ea11-3934-46ba-befd-08c7bedcc842",
+              "name": "online",
+              "value": "={{ $json.online }}",
+              "type": "number"
+            },
+            {
+              "id": "6761fa8f-9fa2-4a77-870d-d340a5304993",
+              "name": "version",
+              "value": "={{ $json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "d98e31dd-9edc-4ecf-beb7-d913f8c05cc1",
+              "name": "update_software_version",
+              "value": "={{ $json.update_software_version }}",
+              "type": "string"
+            },
+            {
+              "id": "28f62f3d-c274-4512-801c-8270104cd850",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "48d80f7c-dbbf-4145-80d0-2cffe8e98e5e",
+              "name": "updated_at",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            },
+            {
+              "id": "d2dc2516-1a05-435a-9fb1-c073e2f19637",
+              "name": "locale",
+              "value": "={{ $json.locale }}",
+              "type": "string"
+            },
+            {
+              "id": "dbbca61f-a736-439b-b20f-61a795f765c6",
+              "name": "serial_number",
+              "value": "={{ $json.serial_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        512
+      ],
+      "id": "ec870b99-9888-4b69-83b5-7dc22a53d579",
+      "name": "set edge_id"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from devices where room_id = {{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -496,
+        384
+      ],
+      "id": "9707b71b-db04-46cd-812a-213def833389",
+      "name": "get all devices by room",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "config email app-ver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        []
+      ]
+    },
+    "config-2": {
+      "main": [
+        []
+      ]
+    },
+    "Aggregate-OK": {
+      "main": [
+        [
+          {
+            "node": "Set OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate-NG": {
+      "main": [
+        [
+          {
+            "node": "Set NG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set OK": {
+      "main": [
+        [
+          {
+            "node": "Send OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set NG": {
+      "main": [
+        [
+          {
+            "node": "Send NG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "config email app-ver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config email app-ver": {
+      "main": [
+        [
+          {
+            "node": "query table edges with 1.6.1.1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query table edges with 1.6.1.1": {
+      "main": [
+        [
+          {
+            "node": "set edge_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query table houses to get client name": {
+      "main": [
+        [
+          {
+            "node": "config-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check app version": {
+      "main": [
+        [
+          {
+            "node": "Aggregate-OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate-NG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get room id": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set edge_id": {
+      "main": [
+        [
+          {
+            "node": "get room id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "get all devices by room",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 19,
+  "shared": [
+    {
+      "updatedAt": "2025-11-14T00:15:57.431Z",
+      "createdAt": "2025-11-14T00:15:57.431Z",
+      "role": "workflow:owner",
+      "workflowId": "3s9M8ASvdoVPrqCh",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-07-14T07:29:29.974Z",
+      "createdAt": "2025-07-14T07:29:29.974Z",
+      "id": "AFXjnq25FzE43zpj",
+      "name": "zap"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-07-18T02:09:39.832Z",
+      "createdAt": "2025-07-18T02:09:39.832Z",
+      "id": "leJIsCmBnuf24l8R",
+      "name": "updateapp_check"
+    },
+    {
+      "updatedAt": "2025-07-14T07:25:46.329Z",
+      "createdAt": "2025-07-14T07:25:46.329Z",
+      "id": "rBu7KINmPwm4bhDL",
+      "name": "sql"
+    }
+  ],
+  "activeVersion": null
+}

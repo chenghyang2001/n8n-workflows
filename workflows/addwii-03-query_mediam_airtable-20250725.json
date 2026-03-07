@@ -1,0 +1,327 @@
+{
+  "id": "4UwfUW5gbC1fQqxN",
+  "name": "addwii-03-query_mediam_airtable-20250725",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        80
+      ],
+      "id": "63fbe9c8-cb5a-42f3-8159-87d88cfbf18d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "https://airtable.com/appQ3aA6ZHzQq5RKN/tbl24v9fNW8yuQNYE/viwCuAsckxyYDrUnF?blocks=hide",
+          "mode": "url"
+        },
+        "table": {
+          "__rl": true,
+          "value": "https://airtable.com/appQ3aA6ZHzQq5RKN/tbl24v9fNW8yuQNYE/viwCuAsckxyYDrUnF?blocks=hide",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "co2": "={{ $json.co2 }}",
+            "Date": "={{ $json.created_at }}",
+            "room_id": "={{ $('set roomId_date').item.json.room_id }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "record_id",
+              "displayName": "record_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "co2",
+              "displayName": "co2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        80
+      ],
+      "id": "5e31f283-f2bb-4598-a054-e2453c8dfa19",
+      "name": "Create or update a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Simon-scrap-ai-20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT co2, m.created_at FROM median m WHERE  (m.room_id = {{ $json.room_id }} ) AND (DATE(m.created_at) = '{{ $json.date }}' )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -496,
+        80
+      ],
+      "id": "07dc3eae-e9e9-4a68-9682-fc9de9bb9e82",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "904ea8a3-e084-47f9-9f37-3a3d2223e42e",
+              "name": "room_id",
+              "value": "284",
+              "type": "string"
+            },
+            {
+              "id": "704b112d-1f2f-471d-8b37-cc49e312e50a",
+              "name": "date",
+              "value": "2025-10-08",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -736,
+        80
+      ],
+      "id": "80f4b035-5ce4-4fa8-9fcd-af484217dde1",
+      "name": "set roomId_date"
+    },
+    {
+      "parameters": {
+        "maxItems": 1500
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        80
+      ],
+      "id": "2c12d040-319f-4a7b-bba1-056de8fafd1a",
+      "name": "Limit 1500"
+    },
+    {
+      "parameters": {
+        "content": "## AirTable Web ;  ( table name : addwii-co2 )   url : https://airtable.com/appQ3aA6ZHzQq5RKN/tbl24v9fNW8yuQNYE/viwCuAsckxyYDrUnF\n\n### SQL query :      SELECT co2, m.created_at FROM median m WHERE  (m.room_id = {{ $json.room_id }} ) AND (DATE(m.created_at) = '{{ $json.date }}' )\n\n###  1 day = 24 hours,  1 hour = 60 minutes,  1 day = 1440 records /per second.    return 1438 due to reset at 3:00 AM \n\n## Draw Line-graph by Airtable Extension -> Chart \n\n## History : 2025-07-25  ",
+        "height": 360,
+        "width": 1660
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        -320
+      ],
+      "id": "0a9b5837-505b-45b4-b266-9131d341c5e5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddba27a0-a26c-4835-814e-953dd1230165",
+              "name": "co2",
+              "value": "={{ $json.co2 }}",
+              "type": "number"
+            },
+            {
+              "id": "f8f2e71d-cc49-4ccd-8220-756bcfa3f9cb",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        80
+      ],
+      "id": "0dece521-7896-4500-875b-ef0a69c64186",
+      "name": "set co2"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "set roomId_date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "set co2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set roomId_date": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit 1500": {
+      "main": [
+        [
+          {
+            "node": "Create or update a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set co2": {
+      "main": [
+        [
+          {
+            "node": "Limit 1500",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-07T05:15:39.545Z",
+      "createdAt": "2025-07-07T05:15:39.545Z",
+      "role": "workflow:owner",
+      "workflowId": "4UwfUW5gbC1fQqxN",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-07-01T06:00:22.350Z",
+      "createdAt": "2025-07-01T06:00:22.350Z",
+      "id": "na0TxcppD9SBpFMo",
+      "name": "airtable"
+    }
+  ],
+  "activeVersion": null
+}

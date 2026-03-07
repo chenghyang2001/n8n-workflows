@@ -1,0 +1,231 @@
+{
+  "id": "22axn0X9ZOGPc5WP",
+  "name": "damian-23-AI_Document_Summariser",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.id }}"
+      },
+      "id": "929a64dd-dc30-4678-8e79-0449aa7fbf0a",
+      "name": "Google Docs",
+      "type": "n8n-nodes-base.googleDocs",
+      "position": [
+        1060,
+        440
+      ],
+      "typeVersion": 2,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1bnCAcX2H4Du6yJYHhb87aADZItChEQfq4SsNoo64tJ8/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bnCAcX2H4Du6yJYHhb87aADZItChEQfq4SsNoo64tJ8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Documents Demo": "={{ $json.message.content }}"
+          },
+          "matchingColumns": [
+            "Documents Demo"
+          ],
+          "schema": [
+            {
+              "id": "Documents Demo",
+              "displayName": "Documents Demo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6226cc19-dbbe-4ec1-8601-2a8c2e46664d",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1660,
+        440
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1ffzfy4NW6SWyCx4BHJyacjl20dOwJ-AS",
+          "mode": "list",
+          "cachedResultName": "n8n document summary",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ffzfy4NW6SWyCx4BHJyacjl20dOwJ-AS"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "141b6f08-4bb5-4ad7-a5ff-cf4c319470f1",
+      "name": "Google Drive ",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        840,
+        440
+      ],
+      "notesInFlow": true,
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      },
+      "notes": "Received the doc"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "GPT-4"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarise the below content\n {{ $json.content }}\n\n請用繁體中文回應"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "56009893-f33f-45d9-b66d-c19b63d6983d",
+      "name": "Generate Summary AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1280,
+        440
+      ],
+      "typeVersion": 1.7,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        1368,
+        660
+      ],
+      "id": "fba7a5af-2c45-493f-a864-31aa0d99081a",
+      "name": "Wikipedia"
+    }
+  ],
+  "connections": {
+    "Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Generate Summary AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive ": {
+      "main": [
+        [
+          {
+            "node": "Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Summary AI": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-19T08:19:09.396Z",
+      "createdAt": "2025-05-19T08:19:09.396Z",
+      "role": "workflow:owner",
+      "workflowId": "22axn0X9ZOGPc5WP",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

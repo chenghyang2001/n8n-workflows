@@ -1,0 +1,359 @@
+{
+  "id": "8VYQ0SVjseGXH6Up",
+  "name": "peter-generate-gnew-01",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://gnews.io/api/v4/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.topic }}"
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            },
+            {
+              "name": "apikey",
+              "value": "05ea7b5bcb03b8c34f7f3870a8801a09"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ca7e688d-c909-438b-9354-686ac8346f2e",
+      "name": "Get GNews articles",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        5800,
+        40
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        5360,
+        -120
+      ],
+      "id": "327ffc17-ceb0-4168-be00-035541fd222d",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "topic",
+              "type": "string",
+              "value": "=technology",
+              "id": "f030ab1f-df47-49fd-9a2e-020622f8a8f6"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7927138d-fff9-4061-b77b-4b52e9709269",
+      "name": "Map to articles1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        5620,
+        40
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "jsCode": "const articles = items[0].json.articles || [];\n\nconst combinedTitles = articles\n  .map((article, index) => `${index + 1}. ${article.title}`)\n  .join('\\n');\n\nreturn [\n  {\n    json: {\n      combinedTitles\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6020,
+        40
+      ],
+      "id": "45d565c8-7e77-4c3f-8fd3-97ce2826a995",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $json.cleaned .replace(/\\n/g, '\\\\\\\\n') }} \"\n    }\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "e55ef7f8-8bb4-414c-ad07-62b04436f3ef",
+      "name": "Line : 推送訊息 Line使用者n8n-peter",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        6500,
+        40
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://gnews.io/api/v4/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.topic }}"
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            },
+            {
+              "name": "apikey",
+              "value": "05ea7b5bcb03b8c34f7f3870a8801a09"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "20a7669a-85c2-4be4-8b62-54cc3b57386f",
+      "name": "Get GNews articles1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        5820,
+        -260
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "topic",
+              "type": "string",
+              "value": "=technology",
+              "id": "f030ab1f-df47-49fd-9a2e-020622f8a8f6"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "43722020-e161-4f1c-b50a-11a01942b398",
+      "name": "Map to articles",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        5640,
+        -260
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = \"1. Toronto Zoo proposes biobank 'backup' for species at risk if Bill 5 passes\";\n\n// 移除所有非英文字母（含空格、標點、數字）\nconst cleaned = input.replace(/[^0-9a-zA-Z ,?]/g, \"\");\n\nreturn [\n  {\n    json: {\n      original: input,\n      cleaned: cleaned\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6040,
+        -260
+      ],
+      "id": "7f9cb18f-851d-4b16-949f-176bc7213f3e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $json.cleaned .replace(/\\n/g, '\\\\\\\\n') }} \"\n    }\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "767fb298-340d-4f39-bda8-479bd8b0835d",
+      "name": "Line : 推送訊息 Line使用者n8n-peter1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        6300,
+        -260
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json.combinedTitles;\n\n// 移除所有非英文字母（含空格、標點、數字）\nconst cleaned = input.replace(/[^0-9a-zA-Z ,?\\n]/g, \"\");\n\nreturn [\n  {\n    json: {\n      original: input,\n      cleaned: cleaned\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6240,
+        40
+      ],
+      "id": "7733d940-0b23-436f-bcd0-dcac1aa6396f",
+      "name": "Code1"
+    }
+  ],
+  "connections": {
+    "Get GNews articles": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Map to articles1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map to articles1": {
+      "main": [
+        [
+          {
+            "node": "Get GNews articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GNews articles1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map to articles": {
+      "main": [
+        [
+          {
+            "node": "Get GNews articles1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Trigger Every Day at 5am": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:22:02.596Z",
+      "createdAt": "2025-07-01T00:22:02.596Z",
+      "role": "workflow:owner",
+      "workflowId": "8VYQ0SVjseGXH6Up",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T07:58:49.915Z",
+      "createdAt": "2025-07-01T07:58:49.915Z",
+      "id": "TUvJoqeWJVX1A5Nx",
+      "name": "news"
+    }
+  ],
+  "activeVersion": null
+}

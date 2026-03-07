@@ -1,0 +1,517 @@
+{
+  "id": "7SzvWbSUpJ734qDL",
+  "name": "Slide-Olusola",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "replaceText",
+        "presentationId": "={{ $json.id }}",
+        "textUi": {
+          "textValues": [
+            {
+              "text": "{{proposalTitle}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.proposalTitle }}"
+            },
+            {
+              "text": "{{descriptionName}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.descriptionName }}"
+            },
+            {
+              "text": "{{oneParagraphProblemSummary}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.oneParagraphProblemSummary }}"
+            },
+            {
+              "text": "{{solutionHeadingOne}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.solutionHeadingOne }}"
+            },
+            {
+              "text": "{{solutionHeadingTwo}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.solutionHeadingTwo }}"
+            },
+            {
+              "text": "{{solutionHeadingThree}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.solutionHeadingThree }}"
+            },
+            {
+              "text": "{{solutionDescriptionOne}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.solutionDescriptionOne }}"
+            },
+            {
+              "text": "{{solutionDescriptionTwo}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.solutionDescriptionTwo }}"
+            },
+            {
+              "text": "{{solutionDescriptionThree}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.solutionDescriptionThree }}"
+            },
+            {
+              "text": "{{shortScopeTitleOne}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.shortScopeTitleOne }}"
+            },
+            {
+              "text": "{{shortScopeTitleTwo}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.shortScopeTitleTwo }}"
+            },
+            {
+              "text": "{{shortScopeTitleThree}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.shortScopeTitleThree }}"
+            },
+            {
+              "text": "{{shortScopeDescriptionOne}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.shortScopeDescriptionOne }}"
+            },
+            {
+              "text": "{{shortScopeDescriptionTwo}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.shortScopeDescriptionTwo }}"
+            },
+            {
+              "text": "{{shortScopeDescriptionThree}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.shortScopeDescriptionThree }}"
+            },
+            {
+              "text": "{{milestoneOneDay}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneOneDay }}"
+            },
+            {
+              "text": "{{milestoneTwoDay}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneTwoDay }}"
+            },
+            {
+              "text": "{{milestoneThreeDay}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneThreeDay }}"
+            },
+            {
+              "text": "{{milestoneFourDay}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneFourDay }}"
+            },
+            {
+              "text": "{{milestoneDescriptionOne}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneDescriptionOne }}"
+            },
+            {
+              "text": "{{milestoneDescriptionTwo}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneDescriptionTwo }}"
+            },
+            {
+              "text": "{{milestoneDescriptionThree}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneDescriptionThree }}"
+            },
+            {
+              "text": "{{milestoneDescriptionFour}}",
+              "replaceText": "={{ $('OpenAI').item.json.message.content.milestoneDescriptionFour }}"
+            },
+            {
+              "text": "{{cost}}",
+              "replaceText": "={{ $json.Cost }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "712f76e1-2520-46c7-8268-eaa601e22dff",
+      "name": "Replace Text",
+      "type": "n8n-nodes-base.googleSlides",
+      "position": [
+        1344,
+        464
+      ],
+      "typeVersion": 2,
+      "credentials": {
+        "googleSlidesOAuth2Api": {
+          "name": "Google Slides account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=您是 DaeX AI 執行長 David Olusola，一位為小型企業建立 AI 自動化系統的專家\n",
+              "role": "system"
+            },
+            {
+              "content": "=您的任務是利用客戶探索電話中的輸入數據，產生一份客製化的 AI 自動化提案。該提案應高度具體且專業，體現 DaeX AI 在 n8n 工作流程、Google 表格整合、訊息平台自動化和潛在客戶生成系統方面的專業知識。\n\n背景：DaeX AI 專注於幫助小型企業透過智慧自動化系統簡化營運、產生潛在客戶並個人化客戶互動。\n\n提案模板需要特定欄位。請用以下精確 JSON 格式傳回：\n\n{\n\"proposalTitle\": \"\",\n\"descriptionName\": \"\",\n\"oneParagraphProblemSummary\": \"\",\n\"solutionHeadingOne\": \"\",\n\"solutionDescriptionOne\": \"\",\n\"solutionHeadingTwo\": \"\",\n\"solutionDescriptionTwo\": \"\",\n\"solutionHeadingThree\": \"\",\n\"solutionDescriptionThree\":\"\",\n\"shortScopeTitleOne\": \"\",\n\"shortScopeTitleTwo\": \"\",\n\"shortScopeTitleThree\": \"\",\n\"shortScopeDescriptionOne\": \"\",\n\"shortScopeDescriptionTwo\": \"\",\n\"shortScopeDescriptionThree\": \"\",\n\"milestoneOneDay\": \"\",\n\"milestoneTwoDay\": \"\",\n\"milestoneThreeDay\": \"\",\n\"milestoneFourDay\": \"\",\n\"milestoneDescriptionOne\": \"\",\n\"milestoneDescriptionTwo\": \"\",\n\"milestoneDescriptionThree\": \"\",\n\"milestoneDescriptionFour\": \"\"\n}\n\n規則：\n1. 使用專業且平易近人的語氣，體現 DaeX AI 的專業知識\n2. 專注於 AI 自動化、工作流程優化和可衡量的業務成果\n3. 確保所有欄位均已填寫 - 不含空變量\n4. 描述簡潔（描述欄位最多 14 個字）\n5. 參考特定工具，例如 n8n、Google 表格和訊息平台（如適用）\n6. 依專案複雜程度，包含切合實際的時間表\n7. 一律用繁體中文輸出"
+            },
+            {
+              "content": "={\n  \"companyName\":\"TechStart Solutions\",\n  \"problem\": \"Manual lead qualification process taking 4+ hours daily, missing follow-ups, inconsistent customer communication\",\n  \"solution\": \"AI-powered lead scoring system, automated email sequences, integrated CRM with smart notifications\",\n  \"scope\": \"n8n workflow automation, Google Sheets integration, WhatsApp/Email automation, 30-day setup with training\",\n  \"currentDate\":\"June 20 2025\",\n  \"howSoon\": \"within 6 weeks\",\n  \"depositCost\": \"$2,500\",\n}",
+              "role": "=user"
+            },
+            {
+              "content": "{\n  \"proposalTitle\": \"AI Automation System for TechStart Solutions\",\n  \"descriptionName\": \"intelligent lead management and customer engagement automation designed to scale your operations\",\n  \"oneParagraphProblemSummary\": \"TechStart Solutions is currently spending 4+ hours daily on manual lead qualification, missing critical follow-ups, and struggling with inconsistent customer communication. This manual approach is preventing growth and creating inefficiencies that compound as your business scales. Our AI automation system will eliminate these bottlenecks and create a seamless, intelligent workflow that operates 24/7.\",\n  \"solutionHeadingOne\": \"AI-Powered Lead Scoring & Qualification\",\n  \"solutionDescriptionOne\": \"Automated system that scores and qualifies leads instantly using intelligent algorithms.\",\n  \"solutionHeadingTwo\": \"Smart Email & WhatsApp Automation\",\n  \"solutionDescriptionTwo\": \"Personalized messaging sequences that nurture leads and maintain consistent customer communication.\",\n  \"solutionHeadingThree\": \"Integrated CRM with Smart Notifications\",\n  \"solutionDescriptionThree\": \"Centralized system with intelligent alerts ensuring no opportunities are missed.\",\n  \"shortScopeTitleOne\": \"n8n Workflow Development\",\n  \"shortScopeTitleTwo\": \"Google Sheets CRM Integration\",\n  \"shortScopeTitleThree\": \"30-Day Setup with Training\",\n  \"shortScopeDescriptionOne\": \"Custom automation workflows built specifically for your lead management process.\",\n  \"shortScopeDescriptionTwo\": \"Seamless integration with your existing data and communication tools.\",\n  \"shortScopeDescriptionThree\": \"Complete setup, testing, and team training for immediate implementation.\",\n  \"milestoneOneDay\": \"July 1st, 2025\",\n  \"milestoneTwoDay\": \"July 15th, 2025\",\n  \"milestoneThreeDay\": \"July 25th, 2025\",\n  \"milestoneFourDay\": \"August 1st, 2025\",\n  \"milestoneDescriptionOne\": \"System architecture designed and n8n workflows built.\",\n  \"milestoneDescriptionTwo\": \"Google Sheets integration and messaging automation configured.\",\n  \"milestoneDescriptionThree\": \"Complete system testing and initial optimization.\",\n  \"milestoneDescriptionFour\": \"Team training completed and system fully operational.\"\n}",
+              "role": "assistant"
+            },
+            {
+              "content": "={\n  \"companyName\":\"{{ $json['Company Name'] }}\",\n  \"problem\": \"{{ $json.Problem }}\",\n  \"solution\": \"{{ $json.Solution}}\",\n  \"scope\": \"{{ $json.Scope }}\",\n  \"currentDate\":\"{{ $now.toLocaleString({ dateStyle: 'medium' }) }}\",\n  \"howSoon\": \"{{ $json['How soon?'] }}\",\n  \"depositCost\": \"{{ $json.Cost }}\",\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "id": "3bdb5c98-f074-4e0f-a132-aed892b0247e",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        672,
+        464
+      ],
+      "typeVersion": 1.6,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "=1fHzjDQtZouAwfv4kn5uvgpTWqwhTAlPrGkdtkbYBkNE",
+          "mode": "id"
+        },
+        "name": "={{ $json.message.content.proposalTitle }}",
+        "options": {
+          "copyRequiresWriterPermission": false
+        }
+      },
+      "id": "01abcd8b-f115-4ccf-b53e-3ba62740c760",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        992,
+        464
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "=ppt generated : name - {{ $('Google Drive').item.json.name }}\n\nURL : https://docs.google.com/presentation/d/{{ $('Move file').item.json.id }}",
+        "emailType": "text",
+        "message": "=Hi {{ $('On form submission').item.json['First Name'] }},\n\nGreat connecting with you today. I've put together a detailed automation proposal that addresses the specific challenges we discussed for {{ $('On form submission').item.json['Company Name'] }}.\n\nView your proposal here: https://docs.google.com/presentation/d/{{ $json.presentationId }}/edit\n\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "138339d1-bbac-4e94-83ac-bf613b5d8baf",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1520,
+        464
+      ],
+      "webhookId": "b989215e-e975-44a7-9dc7-fd51e7310cba",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "DaeX AI - Client Discovery Form",
+        "formDescription": "This form captures client requirements and automatically generates a customized AI automation proposal.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Website",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Problem",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Solution",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Scope",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Cost",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "How soon?",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "85344c7a-c7c2-4d0b-b6bf-7a7886b87b16",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        496,
+        464
+      ],
+      "webhookId": "24fd835d-9132-4faf-b715-755e75aee9be",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "## Automated Proposal Generator\n\n# Built by David Olusola\n",
+        "height": 168,
+        "width": 428,
+        "color": 7
+      },
+      "id": "caf30bb1-a385-491d-b17c-0e3a906063c8",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        416,
+        144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1xPtNqWFXmR5hv3GTz9YTDaXxTYBEhcOy",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1xPtNqWFXmR5hv3GTz9YTDaXxTYBEhcOy",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        464
+      ],
+      "id": "fdee7554-2eb3-476b-8592-55139c090f6c",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are David Olusola, CEO of DaeX AI - an expert in building AI automation systems for small businesses.\n一律用繁體中文輸出",
+              "role": "system"
+            },
+            {
+              "content": "=Your task is to generate a customized AI automation proposal using input data from a client discovery call. This proposal should be highly specific and professional, reflecting DaeX AI's expertise in n8n workflows, Google Sheets integration, messaging platform automation, and lead generation systems.\n\nContext: DaeX AI specializes in helping small businesses streamline operations, generate leads, and personalize customer engagement through intelligent automation systems.\n\nThe proposal template requires specific fields. Return them in this exact JSON format:\n\n{\n  \"proposalTitle\": \"\",\n  \"descriptionName\": \"\",\n  \"oneParagraphProblemSummary\": \"\",\n  \"solutionHeadingOne\": \"\",\n  \"solutionDescriptionOne\": \"\",\n  \"solutionHeadingTwo\": \"\",\n  \"solutionDescriptionTwo\": \"\",\n  \"solutionHeadingThree\": \"\",\n  \"solutionDescriptionThree\":\"\",\n  \"shortScopeTitleOne\": \"\",\n  \"shortScopeTitleTwo\": \"\",\n  \"shortScopeTitleThree\": \"\",\n  \"shortScopeDescriptionOne\": \"\",\n  \"shortScopeDescriptionTwo\": \"\",\n  \"shortScopeDescriptionThree\": \"\",\n  \"milestoneOneDay\": \"\",\n  \"milestoneTwoDay\": \"\",\n  \"milestoneThreeDay\": \"\",\n  \"milestoneFourDay\": \"\",\n  \"milestoneDescriptionOne\": \"\",\n  \"milestoneDescriptionTwo\": \"\",\n  \"milestoneDescriptionThree\": \"\",\n  \"milestoneDescriptionFour\": \"\"\n}\n\nRules:\n1. Use a professional but approachable tone that reflects DaeX AI's expertise\n2. Focus on AI automation, workflow optimization, and measurable business outcomes\n3. Ensure all fields are completed - no empty variables\n4. Keep descriptions concise (14 words max for description fields)\n5. Reference specific tools like n8n, Google Sheets, and messaging platforms when relevant\n6. Include realistic timelines based on project complexity"
+            },
+            {
+              "content": "={\n  \"companyName\":\"TechStart Solutions\",\n  \"problem\": \"Manual lead qualification process taking 4+ hours daily, missing follow-ups, inconsistent customer communication\",\n  \"solution\": \"AI-powered lead scoring system, automated email sequences, integrated CRM with smart notifications\",\n  \"scope\": \"n8n workflow automation, Google Sheets integration, WhatsApp/Email automation, 30-day setup with training\",\n  \"currentDate\":\"June 20 2025\",\n  \"howSoon\": \"within 6 weeks\",\n  \"depositCost\": \"$2,500\",\n}",
+              "role": "=user"
+            },
+            {
+              "content": "{\n  \"proposalTitle\": \"AI Automation System for TechStart Solutions\",\n  \"descriptionName\": \"intelligent lead management and customer engagement automation designed to scale your operations\",\n  \"oneParagraphProblemSummary\": \"TechStart Solutions is currently spending 4+ hours daily on manual lead qualification, missing critical follow-ups, and struggling with inconsistent customer communication. This manual approach is preventing growth and creating inefficiencies that compound as your business scales. Our AI automation system will eliminate these bottlenecks and create a seamless, intelligent workflow that operates 24/7.\",\n  \"solutionHeadingOne\": \"AI-Powered Lead Scoring & Qualification\",\n  \"solutionDescriptionOne\": \"Automated system that scores and qualifies leads instantly using intelligent algorithms.\",\n  \"solutionHeadingTwo\": \"Smart Email & WhatsApp Automation\",\n  \"solutionDescriptionTwo\": \"Personalized messaging sequences that nurture leads and maintain consistent customer communication.\",\n  \"solutionHeadingThree\": \"Integrated CRM with Smart Notifications\",\n  \"solutionDescriptionThree\": \"Centralized system with intelligent alerts ensuring no opportunities are missed.\",\n  \"shortScopeTitleOne\": \"n8n Workflow Development\",\n  \"shortScopeTitleTwo\": \"Google Sheets CRM Integration\",\n  \"shortScopeTitleThree\": \"30-Day Setup with Training\",\n  \"shortScopeDescriptionOne\": \"Custom automation workflows built specifically for your lead management process.\",\n  \"shortScopeDescriptionTwo\": \"Seamless integration with your existing data and communication tools.\",\n  \"shortScopeDescriptionThree\": \"Complete setup, testing, and team training for immediate implementation.\",\n  \"milestoneOneDay\": \"July 1st, 2025\",\n  \"milestoneTwoDay\": \"July 15th, 2025\",\n  \"milestoneThreeDay\": \"July 25th, 2025\",\n  \"milestoneFourDay\": \"August 1st, 2025\",\n  \"milestoneDescriptionOne\": \"System architecture designed and n8n workflows built.\",\n  \"milestoneDescriptionTwo\": \"Google Sheets integration and messaging automation configured.\",\n  \"milestoneDescriptionThree\": \"Complete system testing and initial optimization.\",\n  \"milestoneDescriptionFour\": \"Team training completed and system fully operational.\"\n}",
+              "role": "assistant"
+            },
+            {
+              "content": "={\n  \"companyName\":\"{{ $json['Company Name'] }}\",\n  \"problem\": \"{{ $json.Problem }}\",\n  \"solution\": \"{{ $json.Solution}}\",\n  \"scope\": \"{{ $json.Scope }}\",\n  \"currentDate\":\"{{ $now.toLocaleString({ dateStyle: 'medium' }) }}\",\n  \"howSoon\": \"{{ $json['How soon?'] }}\",\n  \"depositCost\": \"{{ $json.Cost }}\",\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "id": "55a37fa9-8c44-44c4-b79a-adba0e1c3483",
+      "name": "OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        672,
+        672
+      ],
+      "typeVersion": 1.6,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Output folder : https://drive.google.com/drive/folders/1xPtNqWFXmR5hv3GTz9YTDaXxTYBEhcOy",
+        "width": 1024,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        144
+      ],
+      "id": "a84bc6e4-451c-4f10-99e5-890c026c2331",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Text": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Replace Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": {
+    "templateId": "5082"
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-25T07:14:45.526Z",
+      "createdAt": "2025-08-25T07:14:45.526Z",
+      "role": "workflow:owner",
+      "workflowId": "7SzvWbSUpJ734qDL",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-08-26T02:48:57.610Z",
+      "createdAt": "2025-08-26T02:48:57.610Z",
+      "id": "0DKUp8nyIMrzldBJ",
+      "name": "olusola"
+    },
+    {
+      "updatedAt": "2025-08-25T06:42:10.289Z",
+      "createdAt": "2025-08-25T06:42:10.289Z",
+      "id": "2rTwegaLhSIuHuIT",
+      "name": "google-slide"
+    },
+    {
+      "updatedAt": "2025-08-26T01:10:33.617Z",
+      "createdAt": "2025-08-26T01:10:33.617Z",
+      "id": "Oa5KZjfP08X4s7Rv",
+      "name": "solomon"
+    },
+    {
+      "updatedAt": "2025-08-25T06:42:03.634Z",
+      "createdAt": "2025-08-25T06:42:03.634Z",
+      "id": "rBA6X6CNXyC52QTU",
+      "name": "slide"
+    }
+  ],
+  "activeVersion": null
+}

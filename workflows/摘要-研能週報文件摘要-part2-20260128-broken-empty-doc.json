@@ -1,0 +1,875 @@
+{
+  "id": "1Ww7iNdpcKS25h95",
+  "name": "摘要-研能週報文件摘要-part2-20260128-broken-empty-doc",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=你是一位資深的「技術專案經理（TPM）」，\n擅長將跨部門工程會議內容，整理成高密度、可決策的會議重點摘要。\n\n【輸入資料】\n\n{{ $json.document_content }}\n\n\n【任務目標】\n請依照以下 8 組 teams，分別產生「本次會議的重點總結」。\n\nTeams 清單如下：\n1. FAE\n2. 生產品檢\n3. 機構\n4. HW\n5. FW\n6. SW\n7. 系統測試\n8. AIGC\n\n【輸入資料範圍】\n- 僅根據我提供的會議簡報內容進行整理\n- 不可加入任何簡報中未出現的推測、建議或背景知識\n- 若某 team 在簡報中沒有明確內容，請直接標示「本週無實質更新」\n\n【輸出格式（務必遵守）】\n請針對每一個 team，使用以下固定結構：\n\n【Team 名稱】\n- 本週重點：\n- 已完成事項：\n- 進行中事項：\n- 問題／風險：\n- 後續待辦：\n\n【寫作要求】\n- 使用條列式\n- 每一點以「事實描述」為主，不使用形容詞\n- 不要寫結論段、不要加總評\n- 全文使用繁體中文\n- Team 名稱加上數字編號如下：\n1. FAE\n2. 生產品檢\n3. 機構\n4. HW\n5. FW\n6. SW\n7. 系統測試\n8. AIGC\n\n\n\n",
+        "hasOutputParser": true
+      },
+      "id": "90058e5a-0dc3-4804-9699-794402f2283a",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1152,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "folderId": "=1Htmb8aNFOdS-LpuAA4cQg5fZcXeAPsmX",
+        "title": "={{\n  $now.format('yyyy-MM-dd-HH-mm-ss-') +\n  'RD2-8組周報摘要-ChatGPT-' +\n  (\n    $('File Updated').item?.json?.name ??\n    $('File Created').item.json.name\n  )\n}}\n\n"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        1008
+      ],
+      "id": "3cfb1d7b-bb6e-45ee-91d6-e33448134d4b",
+      "name": "Create Summary Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=={{(() => {\n  const teamsData = $('Basic LLM Chain').item.json.output.teams;\n\n  const section = (title, arr) => {\n    if (!Array.isArray(arr) || arr.length === 0) return '';\n    return `【${title}】\\n` + arr.map(v => `- ${v}`).join('\\n') + '\\n\\n';\n  };\n\n  const renderTeam = (index, teamName, teamData) => {\n    if (!teamData) return '';\n\n    // ✅ Google Docs Insert 真正會生效的「分頁」\n    // 一定要是獨立段落：\\n\\f\\n\n    const pageBreak = index === 0 ? '' : '\\n\\f\\n';\n\n    return (\n      pageBreak +\n      `====================\\n` +\n      `【Team：${teamName}】\\n` +\n      `====================\\n\\n` +\n      section('本週重點', teamData['本週重點']) +\n      section('已完成事項', teamData['已完成事項']) +\n      section('進行中事項', teamData['進行中事項']) +\n      section('問題 / 風險', teamData['問題 / 風險']) +\n      section('後續待辦', teamData['後續待辦'])\n    ).trim() + '\\n\\n';\n  };\n\n  const teamOrder = [\n    'FAE',\n    '生產品檢',\n    '機構',\n    'HW',\n    'FW',\n    'SW',\n    'P760',\n    '系統測試',\n    'AIGC'\n  ];\n\n  return teamOrder\n    .map((teamName, idx) => renderTeam(idx, teamName, teamsData[teamName]))\n    .filter(Boolean)\n    .join('')\n    .trim();\n})()}}\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        1008
+      ],
+      "id": "2cfae074-adcd-4396-b799-7417502e3a76",
+      "name": "Insert Content",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. 來源文件目錄夾 : https://drive.google.com/drive/folders/1hA6gBMcpAXwSm1dK6cOUVuUXJJ0PHEv6\n\n## 2. 存到 Google Doc : ## https://drive.google.com/drive/folders/1Htmb8aNFOdS-LpuAA4cQg5fZcXeAPsmX \n\n## 3. demo email :     ,  steven_wu@microjet.com.tw ,  song_lin@microjet.com.tw  ,  kerwin_ma@microjet.com.tw ,   peter_yang@microjet.com.tw\n\n## update : 2026/01/27",
+        "height": 304,
+        "width": 1856,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        624
+      ],
+      "id": "6a3eb716-4ce4-4bc4-80ab-2a8adb30dc0f",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=ChatGPT-RD2-週報摘要 : {{ $('Create Summary Doc').item.json.name.replace('doc','pdf') }}",
+        "message": "=summary-RD2-週報摘要",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=data"
+              }
+            ]
+          }
+        }
+      },
+      "id": "eccf5954-a85e-42c1-ac1d-6ca6369ba1a5",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2272,
+        1008
+      ],
+      "webhookId": "73ab241f-e5eb-44e8-a0c0-9e2b042551db",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"required\":[\"is_match\", \"page_break\", \"team_order\", \"teams\"],\n  \"properties\": {\n    \"is_match\": {\n      \"type\": \"boolean\",\n      \"description\": \"是否成功依照指定的 8 個 teams 產生完整會議總結\"\n    },\n    \"page_break\": {\n      \"type\": \"string\",\n      \"description\": \"Google Docs 分頁符號；預設使用 Form Feed \\\\f（建議不要改）\",\n      \"default\": \"\\f\",\n      \"examples\": [\"\\f\"]\n    },\n    \"team_order\": {\n      \"type\": \"array\",\n      \"description\": \"8 個 teams 的顯示順序；輸出時可用 index+1 作為編號\",\n      \"minItems\": 8,\n      \"maxItems\": 8,\n      \"uniqueItems\": true,\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"FAE\",\n          \"生產品檢\",\n          \"機構\",\n          \"HW\",\n          \"FW\",\n          \"SW\",          \n          \"系統測試\",\n          \"AIGC\"\n        ]\n      },\n      \"default\": [\n        \"FAE\",\n        \"生產品檢\",\n        \"機構\",\n        \"HW\",\n        \"FW\",\n        \"SW\",        \n        \"系統測試\",\n        \"AIGC\"\n      ]\n    },\n    \"teams\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"FAE\",\n        \"生產品檢\",\n        \"機構\",\n        \"HW\",\n        \"FW\",\n        \"SW\",        \n        \"系統測試\",\n        \"AIGC\"\n      ],\n      \"properties\": {\n        \"FAE\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"生產品檢\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"機構\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"HW\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"FW\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"SW\": { \"$ref\": \"#/definitions/team_summary\" },        \n        \"系統測試\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"AIGC\": { \"$ref\": \"#/definitions/team_summary\" }\n      }\n    }\n  },\n  \"definitions\": {\n    \"team_summary\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"has_update\",\n        \"weekly_focus\",\n        \"completed\",\n        \"in_progress\",\n        \"issues_risks\",\n        \"next_actions\"\n      ],\n      \"properties\": {\n        \"has_update\": {\n          \"type\": \"boolean\",\n          \"description\": \"該 team 本週是否有實質更新\"\n        },\n        \"weekly_focus\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"本週重點事項（事實描述）\"\n        },\n        \"completed\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"已完成事項\"\n        },\n        \"in_progress\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"進行中事項\"\n        },\n        \"issues_risks\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"問題或風險；若無請留空陣列\"\n        },\n        \"next_actions\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"後續待辦事項\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        1168
+      ],
+      "id": "2b1576a9-7794-40ca-80ef-1f14188ffdb8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "624c4468-652d-48e0-8fb4-ee65eb1cb786",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "name": "file_extension",
+              "value": "={{ $json.name.split('.').pop().toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "58e929b1-2298-4c76-93a0-4e3bbc9a1266",
+      "name": "Set File Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -336,
+        1456
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "doc-condition-1",
+              "leftValue": "={{ $json.file_type }}",
+              "rightValue": "application/vnd.google-apps.document",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "52e70262-f70d-47c2-970e-c7a9aa7cf8a4",
+      "name": "If Google Document",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        1456
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "documentURL": "={{ $json.file_id }}"
+      },
+      "id": "07c80bb9-96f2-4c4f-a8a3-3c6220db0aa2",
+      "name": "Read Google Doc",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        208,
+        1312
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -560,
+        1456
+      ],
+      "id": "80177b31-589b-4f93-859e-69982756b825",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1hA6gBMcpAXwSm1dK6cOUVuUXJJ0PHEv6",
+          "mode": "url"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "id": "fdb78bcd-0272-4482-92d8-bf5d036f7ffa",
+      "name": "File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        1552
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Create Summary Doc').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "=data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "={{$('Create Summary Doc').item.json.name.replace('doc','pdf').replaceAll('\\n','')}}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2128,
+        1008
+      ],
+      "id": "f3a39f36-7a8a-4a42-a7f7-4aa1cbd9ce20",
+      "name": "Download as pdf",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-doc-content-1",
+              "name": "document_title",
+              "value": "={{ $('If Google Document').item.json.file_name }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-doc-content-2",
+              "name": "document_content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-doc-content-3",
+              "name": "content_type",
+              "value": "={{ $('If Google Document').item.json.file_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "631cab82-d8ae-4c19-b6f1-b95dc416dc2c",
+      "name": "Extract Doc Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        1312
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1hA6gBMcpAXwSm1dK6cOUVuUXJJ0PHEv6",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "373819ea-bfaf-4c03-893a-05b5992728dc",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        1360
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "=1Htmb8aNFOdS-LpuAA4cQg5fZcXeAPsmX",
+        "title": "={{\n  $now.format('yyyy-MM-dd-HH-mm-ss-') +\n  'RD2-8組周報摘要-Gemini-' +\n  (\n    $('File Updated').item?.json?.name ??\n    $('File Created').item.json.name\n  )\n}}\n\n"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        1520
+      ],
+      "id": "018b5097-4dc4-4036-99aa-0b3b82c3c5a9",
+      "name": "Create Summary Doc1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=={{(() => {\n  const teamsData = $('LLM Gemini').item.json.output.teams;\n\n  const section = (title, arr) => {\n    if (!Array.isArray(arr) || arr.length === 0) return '';\n    return `【${title}】\\n` + arr.map(v => `- ${v}`).join('\\n') + '\\n\\n';\n  };\n\n  const renderTeam = (index, teamName, teamData) => {\n    if (!teamData) return '';\n\n    // ✅ Google Docs Insert 真正會生效的「分頁」\n    // 一定要是獨立段落：\\n\\f\\n\n    const pageBreak = index === 0 ? '' : '\\n\\f\\n';\n\n    return (\n      pageBreak +\n      `====================\\n` +\n      `【Team：${teamName}】\\n` +\n      `====================\\n\\n` +\n      section('本週重點', teamData['本週重點']) +\n      section('已完成事項', teamData['已完成事項']) +\n      section('進行中事項', teamData['進行中事項']) +\n      section('問題 / 風險', teamData['問題 / 風險']) +\n      section('後續待辦', teamData['後續待辦'])\n    ).trim() + '\\n\\n';\n  };\n\n  const teamOrder = [\n    'FAE',\n    '生產品檢',\n    '機構',\n    'HW',\n    'FW',\n    'SW',\n    'P760',\n    '系統測試',\n    'AIGC'\n  ];\n\n  return teamOrder\n    .map((teamName, idx) => renderTeam(idx, teamName, teamsData[teamName]))\n    .filter(Boolean)\n    .join('')\n    .trim();\n})()}}\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        1520
+      ],
+      "id": "4498f4a7-53c1-4856-a03d-373c7fc189cc",
+      "name": "Insert Content1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=Gemini-RD2-週報摘要 : {{ $('Create Summary Doc1').item.json.name.replace('doc','pdf') }}",
+        "message": "=summary-RD2-週報摘要",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=data"
+              }
+            ]
+          }
+        }
+      },
+      "id": "0741e80b-b34b-4214-aa57-6c6eb6efcf31",
+      "name": "Send a message1",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2240,
+        1520
+      ],
+      "webhookId": "73ab241f-e5eb-44e8-a0c0-9e2b042551db",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"required\":[\"is_match\", \"page_break\", \"team_order\", \"teams\"],\n  \"properties\": {\n    \"is_match\": {\n      \"type\": \"boolean\",\n      \"description\": \"是否成功依照指定的 8 個 teams 產生完整會議總結\"\n    },\n    \"page_break\": {\n      \"type\": \"string\",\n      \"description\": \"Google Docs 分頁符號；預設使用 Form Feed \\\\f（建議不要改）\",\n      \"default\": \"\\f\",\n      \"examples\": [\"\\f\"]\n    },\n    \"team_order\": {\n      \"type\": \"array\",\n      \"description\": \"8 個 teams 的顯示順序；輸出時可用 index+1 作為編號\",\n      \"minItems\": 8,\n      \"maxItems\": 8,\n      \"uniqueItems\": true,\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"FAE\",\n          \"生產品檢\",\n          \"機構\",\n          \"HW\",\n          \"FW\",\n          \"SW\",          \n          \"系統測試\",\n          \"AIGC\"\n        ]\n      },\n      \"default\": [\n        \"FAE\",\n        \"生產品檢\",\n        \"機構\",\n        \"HW\",\n        \"FW\",\n        \"SW\",        \n        \"系統測試\",\n        \"AIGC\"\n      ]\n    },\n    \"teams\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"FAE\",\n        \"生產品檢\",\n        \"機構\",\n        \"HW\",\n        \"FW\",\n        \"SW\",        \n        \"系統測試\",\n        \"AIGC\"\n      ],\n      \"properties\": {\n        \"FAE\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"生產品檢\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"機構\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"HW\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"FW\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"SW\": { \"$ref\": \"#/definitions/team_summary\" },        \n        \"系統測試\": { \"$ref\": \"#/definitions/team_summary\" },\n        \"AIGC\": { \"$ref\": \"#/definitions/team_summary\" }\n      }\n    }\n  },\n  \"definitions\": {\n    \"team_summary\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"has_update\",\n        \"weekly_focus\",\n        \"completed\",\n        \"in_progress\",\n        \"issues_risks\",\n        \"next_actions\"\n      ],\n      \"properties\": {\n        \"has_update\": {\n          \"type\": \"boolean\",\n          \"description\": \"該 team 本週是否有實質更新\"\n        },\n        \"weekly_focus\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"本週重點事項（事實描述）\"\n        },\n        \"completed\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"已完成事項\"\n        },\n        \"in_progress\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"進行中事項\"\n        },\n        \"issues_risks\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"問題或風險；若無請留空陣列\"\n        },\n        \"next_actions\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" },\n          \"description\": \"後續待辦事項\"\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1376,
+        1728
+      ],
+      "id": "849ac2ef-ce52-42ca-92b3-fe661958941f",
+      "name": "Structured Output Parser1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Create Summary Doc1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "=data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "={{$('Create Summary Doc1').item.json.name.replace('doc','pdf').replaceAll('\\n','')}}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2096,
+        1520
+      ],
+      "id": "77b26200-beda-4ca6-8123-933554566b5a",
+      "name": "Download as pdf1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=你是一位資深的「技術專案經理（TPM）」，\n擅長將跨部門工程會議內容，整理成高密度、可決策的會議重點摘要。\n\n【輸入資料】\n\n{{ $json.document_content }}\n\n\n【任務目標】\n請依照以下 8 組 teams，分別產生「本次會議的重點總結」。\n\nTeams 清單如下：\n1. FAE\n2. 生產品檢\n3. 機構\n4. HW\n5. FW\n6. SW\n7. 系統測試\n8. AIGC\n\n【輸入資料範圍】\n- 僅根據我提供的會議簡報內容進行整理\n- 不可加入任何簡報中未出現的推測、建議或背景知識\n- 若某 team 在簡報中沒有明確內容，請直接標示「本週無實質更新」\n\n【輸出格式（務必遵守）】\n請針對每一個 team，使用以下固定結構：\n\n【Team 名稱】\n- 本週重點：\n- 已完成事項：\n- 進行中事項：\n- 問題／風險：\n- 後續待辦：\n\n【寫作要求】\n- 使用條列式\n- 每一點以「事實描述」為主，不使用形容詞\n- 不要寫結論段、不要加總評\n- 全文使用繁體中文\n- Team 名稱加上數字編號如下：\n1. FAE\n2. 生產品檢\n3. 機構\n4. HW\n5. FW\n6. SW\n7. 系統測試\n8. AIGC\n\n\n\n",
+        "hasOutputParser": true
+      },
+      "id": "4bc7e824-2bc1-4499-aa33-ca5d491b36ea",
+      "name": "LLM Gemini",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1120,
+        1520
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-pro-preview",
+        "options": {}
+      },
+      "id": "738541e0-b37c-4f96-8399-1795b184d06b",
+      "name": "OpenRouter-gemini-3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        1728
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5.2",
+        "options": {}
+      },
+      "id": "39b3ee16-5759-43e9-bd72-53062620d2ef",
+      "name": "ChatGPT52",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        1168
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create Summary Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Summary Doc": {
+      "main": [
+        [
+          {
+            "node": "Insert Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Content": {
+      "main": [
+        [
+          {
+            "node": "Download as pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File Info": {
+      "main": [
+        [
+          {
+            "node": "If Google Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Google Document": {
+      "main": [
+        [
+          {
+            "node": "Read Google Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Extract Doc Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Set File Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download as pdf": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Doc Content": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LLM Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Summary Doc1": {
+      "main": [
+        [
+          {
+            "node": "Insert Content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Content1": {
+      "main": [
+        [
+          {
+            "node": "Download as pdf1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "LLM Gemini",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download as pdf1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Gemini": {
+      "main": [
+        [
+          {
+            "node": "Create Summary Doc1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter-gemini-3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LLM Gemini",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatGPT52": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Google Drive Trigger3": {
+      "lastTimeChecked": "2025-08-04T01:39:52Z"
+    },
+    "node:Google Drive Trigger4": {
+      "lastTimeChecked": "2025-08-04T01:39:53Z"
+    },
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-09-08T01:22:47Z"
+    },
+    "node:Google Drive Trigger5": {
+      "lastTimeChecked": "2025-09-08T01:22:47Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 112,
+  "shared": [
+    {
+      "updatedAt": "2026-01-15T00:22:55.166Z",
+      "createdAt": "2026-01-15T00:22:55.166Z",
+      "role": "workflow:owner",
+      "workflowId": "1Ww7iNdpcKS25h95",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-08T02:17:22.079Z",
+      "createdAt": "2025-09-08T02:17:22.079Z",
+      "id": "1BqMKb0yiXZpLrIt",
+      "name": "open-router"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-08-15T02:55:51.292Z",
+      "createdAt": "2025-08-15T02:55:51.292Z",
+      "id": "DXXj4i5Qf2hT4g1M",
+      "name": "文件摘要"
+    },
+    {
+      "updatedAt": "2025-09-08T02:17:28.576Z",
+      "createdAt": "2025-09-08T02:17:28.576Z",
+      "id": "QApfBs3JJEjWqcnw",
+      "name": "openrouter"
+    },
+    {
+      "updatedAt": "2025-07-01T05:30:35.023Z",
+      "createdAt": "2025-07-01T05:30:35.023Z",
+      "id": "QD8iWXuhwLgT6gjM",
+      "name": "ocr"
+    },
+    {
+      "updatedAt": "2025-09-08T02:16:46.800Z",
+      "createdAt": "2025-09-08T02:16:46.800Z",
+      "id": "SsMfZo3dvzNQK5Av",
+      "name": "convertApi"
+    },
+    {
+      "updatedAt": "2025-07-03T03:10:58.688Z",
+      "createdAt": "2025-07-01T08:27:29.706Z",
+      "id": "bDs9H31IGhBDQ48K",
+      "name": "gdoc"
+    },
+    {
+      "updatedAt": "2025-08-08T05:58:45.041Z",
+      "createdAt": "2025-08-08T05:58:45.041Z",
+      "id": "ciOYNzebXw2ukKg5",
+      "name": "mistral"
+    },
+    {
+      "updatedAt": "2025-08-15T02:56:09.224Z",
+      "createdAt": "2025-08-15T02:56:09.224Z",
+      "id": "rgOAx3aAot7MxRhr",
+      "name": "convert-api"
+    }
+  ],
+  "activeVersion": null
+}

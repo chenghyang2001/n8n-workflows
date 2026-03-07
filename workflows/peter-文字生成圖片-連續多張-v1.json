@@ -1,0 +1,500 @@
+{
+  "id": "42Ha9kTWTJA5DDST",
+  "name": "peter-文字生成圖片-連續多張-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        515
+      ],
+      "id": "66a5cc78-8857-45f6-8433-3a1b372f5f9f",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        300,
+        340
+      ],
+      "id": "cfd9b256-a457-4ec3-a1ba-0bedff94c270",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "dall-e-3"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.prompt }}"
+            },
+            {
+              "name": "n",
+              "value": "={{ 1 }}"
+            },
+            {
+              "name": "response_format",
+              "value": "b64_json"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        340
+      ],
+      "id": "832f4d61-2493-442a-a205-53974c1dbdaf",
+      "name": "dall-e-3",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "=OpenAI-dall-3-{{ $now.format('yyyy-LL-dd-T-M')}}.png\n",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1RsEsBG_ZY0Ry8iRx9tC3gXmVPXoQqxfZ",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1RsEsBG_ZY0Ry8iRx9tC3gXmVPXoQqxfZ",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        520,
+        340
+      ],
+      "id": "2c09eea8-aa45-44e2-9682-3e0e0dc16d01",
+      "name": "Upload Image dall-e-3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc",
+          "mode": "list",
+          "cachedResultName": "實戰GPT-提示詞表單",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1717367222,
+          "mode": "list",
+          "cachedResultName": "生成圖片提示詞",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc/edit#gid=1717367222"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "todo"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "id": "30903ef2-6568-4bcd-8397-fb52ecd8cdf4",
+      "name": "取得待處理項目",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -580,
+        515
+      ],
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-items-exist",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "32345af7-fa9b-4a66-b470-1f479c554fa0",
+              "leftValue": "={{ $json.prompt.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -360,
+        440
+      ],
+      "id": "b8577179-248d-469e-b6d9-ecb60e2f9119",
+      "name": "檢查是否有待處理項目"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 為每個項目添加處理計數器\nconst items = $input.all();\nconst totalCount = items.length;\n\n// 為每個項目添加索引和總數\nconst processedItems = items.map((item, index) => ({\n  ...item.json,\n  itemIndex: index + 1,\n  totalItems: totalCount\n}));\n\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        340
+      ],
+      "id": "37f38d9e-6132-4cfd-95f2-cd2eaa51a59c",
+      "name": "準備處理項目"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"GPT 處理完成. 處理時間：{{ $now.format('yyyy-MM-dd HH:mm:ss') }}\\n所有待處理項目已完成 AI 回應生成。   \"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "2fa1e6c6-241d-4e3d-ad0b-bce380092d21",
+      "name": "發送已完成通知",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -140,
+        540
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        515
+      ],
+      "id": "697c3775-b58c-4718-80f0-00eb3c7cd595",
+      "name": "Wait",
+      "webhookId": "55c513cd-b96f-4b25-acab-acd01097d584"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc",
+          "mode": "list",
+          "cachedResultName": "實戰GPT-提示詞表單",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1717367222,
+          "mode": "list",
+          "cachedResultName": "生成圖片提示詞",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc/edit#gid=1717367222"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('取得待處理項目').item.json.row_number }}",
+            "status": "done"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "prompt",
+              "displayName": "prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "44af9329-ff12-49fb-b08f-8f8cdda3cc8e",
+      "name": "更新處理項目狀態",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        740,
+        340
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 生長圖片存放位置 in Google Drive\n# https://drive.google.com/drive/folders/1RsEsBG_ZY0Ry8iRx9tC3gXmVPXoQqxfZ\n\n## 提示詞 in Google Sheet\n# https://docs.google.com/spreadsheets/d/1wnqK9A8G5SIENn2wKjCJCSdftAhoyUPRxDrZam0PuNc/edit?gid=1717367222#gid=1717367222\n\n",
+        "height": 340,
+        "width": 2440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        780
+      ],
+      "id": "f38e5573-6f06-4dc4-bef7-5ddd77ee1e24",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "取得待處理項目",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload Image dall-e-3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dall-e-3": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image dall-e-3": {
+      "main": [
+        [
+          {
+            "node": "更新處理項目狀態",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "取得待處理項目": {
+      "main": [
+        [
+          {
+            "node": "檢查是否有待處理項目",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "檢查是否有待處理項目": {
+      "main": [
+        [
+          {
+            "node": "準備處理項目",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "發送已完成通知",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "準備處理項目": {
+      "main": [
+        [
+          {
+            "node": "dall-e-3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "取得待處理項目",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新處理項目狀態": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-29T17:24:01.191Z",
+      "createdAt": "2025-05-29T17:24:01.191Z",
+      "role": "workflow:owner",
+      "workflowId": "42Ha9kTWTJA5DDST",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T03:25:45.009Z",
+      "createdAt": "2025-07-01T03:25:45.009Z",
+      "id": "EfxErvE0y1SXqBwu",
+      "name": "useful"
+    }
+  ],
+  "activeVersion": null
+}

@@ -1,0 +1,194 @@
+{
+  "id": "1mKalaoPqyIye4Cq",
+  "name": "Puzzle-2",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🤖 Puzzle Challenge: Extract Structured Data Using AI\nYou received a chunk of messy, unstructured text from a customer support ticket.  \nYour goal is to use an **AI node** (such as the Information Extractor or OpenAI) to convert this into a clean, structured format.\n\n\n## 🟨 Input Text\nTicket : \"Hi my name is Jason Park. I run a digital marketing agency called Brightside Ads and we're looking for help with AI automation to improve lead qualification. You can reach me at jason@brightside.com. Thanks!\"\n\n\n## 🎯 Your Goal\nUse an **AI node** to extract and return structured data with these fields:\n- `name`\n- `company`\n- `email`\n- `request`\n\n\n### ✅ Expected Output\n  \"name\": \"Jason Park\",\n  \"company\": \"Brightside Ads\",\n  \"email\": \"jason@brightside.com\",\n  \"request\": \"help with AI automation to improve lead qualification\"\n\nGood luck!\n\nSOLUTION is below. Don't spoil it!\n\n\n",
+        "height": 640,
+        "width": 800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cad64b7f-21cd-426e-87a4-69d476357059",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        912,
+        240
+      ],
+      "id": "4cdc65da-40ba-420f-8274-c08a5f37527a",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.Ticket }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "name",
+              "description": "the full name of the person contacting us",
+              "required": true
+            },
+            {
+              "name": "company",
+              "description": "the name of the company they represent (if mentioned)"
+            },
+            {
+              "name": "email",
+              "description": "the person's email address"
+            },
+            {
+              "name": "request",
+              "description": "a concise summary of what they are asking for or need help with",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        240
+      ],
+      "id": "042fbdb6-d6cc-4882-bffd-a609d8ebdb79",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        448
+      ],
+      "id": "3a5a2249-b793-49aa-95d0-3dfad5d20f7c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "702f61e2-3d24-4e5e-81ff-c139ae4f3a1c",
+              "name": "Ticket",
+              "value": "Hi my name is Jason Park. I run a digital marketing agency called Brightside Ads and we're looking for help with AI automation to improve lead qualification. You can reach me at jason@brightside.com. Thanks!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        240
+      ],
+      "id": "235dd3c6-4c2b-48b9-a12e-9dd66fcc0ccc",
+      "name": "Ticket_"
+    },
+    {
+      "parameters": {
+        "content": "# Solution",
+        "height": 520,
+        "width": 1020,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        112
+      ],
+      "id": "6c0eeb6a-11ef-41e9-a521-f62dc0003e15",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Ticket_",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket_": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-10T20:19:05.490Z",
+      "createdAt": "2025-10-10T20:19:05.490Z",
+      "role": "workflow:owner",
+      "workflowId": "1mKalaoPqyIye4Cq",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

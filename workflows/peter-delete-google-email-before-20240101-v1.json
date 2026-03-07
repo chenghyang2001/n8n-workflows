@@ -1,0 +1,380 @@
+{
+  "id": "9ClTRRJVrUf6UXyo",
+  "name": "peter-delete-Google-Email-Before-20240101-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "limit": "={{ $json.count }}",
+        "additionalFields": {
+          "format": "full",
+          "q": "before:2025/01/01"
+        }
+      },
+      "id": "14296ec9-b7da-41b2-bd9c-c7bb91e1c6ce",
+      "name": "Fetch Old Gmail Messages",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// 過濾並處理要刪除的郵件\nconst emailsToDelete = [];\n\nfor (const item of items) {\n  if (!item.json.id) {\n    continue;\n  }\n\n  // 取得郵件日期\n  const payload = item.json.payload;\n  if (payload && payload.headers) {\n    const dateHeader = payload.headers.find(h => h.name.toLowerCase() === 'date');\n    \n    if (dateHeader?.value) {\n      const emailDate = new Date(dateHeader.value);\n      const cutoffDate = new Date('2025-01-01');\n      \n      // 只處理 2024/01/01 之前的郵件\n      if (emailDate < cutoffDate) {\n        emailsToDelete.push({\n          json: {\n            messageId: item.json.id,\n            date: dateHeader.value,\n            subject: payload.headers.find(h => h.name.toLowerCase() === 'subject')?.value || 'No Subject'\n          }\n        });\n      }\n    }\n  }\n}\n\nreturn emailsToDelete;"
+      },
+      "id": "e191acb2-45b7-4660-a701-49a043ae2457",
+      "name": "Filter Old Emails",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "delete",
+        "messageId": "={{ $json.messageId }}"
+      },
+      "id": "6e3ea8af-0dc7-427d-ae94-0e7238724484",
+      "name": "Delete Gmail Message",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1540,
+        40
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "messageId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -10
+      ],
+      "id": "d961173a-eb02-48b6-b0d5-cc842054afbd",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1320,
+        -10
+      ],
+      "id": "ba6d7eed-9b6a-4a58-8843-93e0e35ae548",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        -160
+      ],
+      "id": "3dad7feb-b581-4637-a70c-08c220e24cac",
+      "name": "All Batches Processed",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" now : {{ $now }} , Gmail delete email count : {{ $('Event-1').item.json.count }} ,  總共所需時間: {{ $json.duration }} \"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "id": "18e218a8-f2f8-4137-b958-69d3f91b9874",
+      "name": "Line : 推送訊息 Line使用者n8n-peter1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2200,
+        -160
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a57f7f8-3ff0-45c9-a635-bebe828f6c60",
+              "name": "time-start",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "f8dac916-bc92-4fa8-9039-a9ac301e9e77",
+              "name": "count",
+              "value": 500,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "690c5795-5261-4b5f-bf31-279bfe4ad02f",
+      "name": "Event-1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9703846-8e1c-448a-b19d-00157af0c2e5",
+              "name": "time-end",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        -160
+      ],
+      "id": "b2364be2-e4b1-42b1-89ee-53c987e133dd",
+      "name": "Event-2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event1StartTime = $(\"Event-1\").all()[0]?.json[\"time-start\"];\nconst event2EndTime = $input.all()[0]?.json[\"time-end\"];\n\nconst startTime = new Date(event1StartTime);\nconst endTime = new Date(event2EndTime);\n\nconst diffMs = endTime - startTime;\nconst diffHrs = Math.floor((diffMs % 86400000) / 3600000);\nconst diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);\nconst diffSecs = Math.round((((diffMs % 86400000) % 3600000) % 60000) / 1000);\n\nreturn { duration: `${diffHrs}h-${diffMins}m-${diffSecs}s` };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        -160
+      ],
+      "id": "688f0152-e565-402a-afc6-08cc44641b12",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        -10
+      ],
+      "id": "6470d778-1cb2-4145-9a64-e4e2b727b2fa",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "Fetch Old Gmail Messages": {
+      "main": [
+        [
+          {
+            "node": "Filter Old Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Old Emails": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Gmail Message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "All Batches Processed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Gmail Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Batches Processed": {
+      "main": [
+        [
+          {
+            "node": "Event-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event-1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Old Gmail Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event-2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Event-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:23:01.997Z",
+      "createdAt": "2025-07-01T00:23:01.997Z",
+      "role": "workflow:owner",
+      "workflowId": "9ClTRRJVrUf6UXyo",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-03T03:10:34.924Z",
+      "createdAt": "2025-07-01T06:14:34.048Z",
+      "id": "gMTupRRBNHm2YMzw",
+      "name": "gmail"
+    }
+  ],
+  "activeVersion": null
+}

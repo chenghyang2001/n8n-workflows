@@ -1,0 +1,317 @@
+{
+  "id": "BkbmQYtWU88mHFtM",
+  "name": "subFlow-google-doc",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        672
+      ],
+      "id": "0016a0da-5463-4d28-9910-78c1142392d6",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        672
+      ],
+      "id": "19dcf532-a6f4-430e-aecd-73f00909271e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "=https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $json.content }}\n\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        384,
+        672
+      ],
+      "id": "694800d1-bc44-4d5a-8e1e-104082896dca",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Gemini Node result\n## https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0",
+        "width": 1328,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        448
+      ],
+      "id": "21d8d42d-9e1a-4e91-bc62-b445ff34c4ef",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": "ce049f38-a8d6-4cef-901d-a0a69f41d71b",
+  "versionCounter": 18,
+  "shared": [
+    {
+      "updatedAt": "2025-08-06T05:20:25.746Z",
+      "createdAt": "2025-08-06T05:20:25.746Z",
+      "role": "workflow:owner",
+      "workflowId": "BkbmQYtWU88mHFtM",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-08-06T05:25:23.989Z",
+      "createdAt": "2025-08-06T05:25:23.989Z",
+      "id": "2ZVmibkkFEAxCyOx",
+      "name": "google-doc"
+    },
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    },
+    {
+      "updatedAt": "2025-07-01T08:14:11.963Z",
+      "createdAt": "2025-07-01T08:14:11.963Z",
+      "id": "QFvFTqOLs1VLlBts",
+      "name": "line"
+    },
+    {
+      "updatedAt": "2025-09-08T07:23:41.954Z",
+      "createdAt": "2025-09-08T07:23:41.954Z",
+      "id": "jd0Orljg3Py3MuzB",
+      "name": "Gemini Node result"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-22T07:09:28.000Z",
+    "createdAt": "2025-11-27T01:00:44.252Z",
+    "versionId": "ce049f38-a8d6-4cef-901d-a0a69f41d71b",
+    "workflowId": "BkbmQYtWU88mHFtM",
+    "nodes": [
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "content"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -64,
+          672
+        ],
+        "id": "0016a0da-5463-4d28-9910-78c1142392d6",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          160,
+          672
+        ],
+        "id": "19dcf532-a6f4-430e-aecd-73f00909271e",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentURL": "=https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0",
+          "actionsUi": {
+            "actionFields": [
+              {
+                "action": "insert",
+                "text": "={{ $json.content }}\n\n\n"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.googleDocs",
+        "typeVersion": 2,
+        "position": [
+          384,
+          672
+        ],
+        "id": "694800d1-bc44-4d5a-8e1e-104082896dca",
+        "name": "Update a document",
+        "credentials": {
+          "googleDocsOAuth2Api": {
+            "id": "9MupwfNU1Pydd1oM",
+            "name": "Google Docs account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## Gemini Node result\n## https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0",
+          "width": 1328,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          448
+        ],
+        "id": "21d8d42d-9e1a-4e91-bc62-b445ff34c4ef",
+        "name": "Sticky Note"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Update a document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": "Version v1",
+    "description": "v1 on 20251222",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2025-12-22T07:09:28.456Z",
+        "id": 117,
+        "workflowId": "BkbmQYtWU88mHFtM",
+        "versionId": "ce049f38-a8d6-4cef-901d-a0a69f41d71b",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      },
+      {
+        "createdAt": "2025-12-22T07:09:35.576Z",
+        "id": 118,
+        "workflowId": "BkbmQYtWU88mHFtM",
+        "versionId": "ce049f38-a8d6-4cef-901d-a0a69f41d71b",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    ]
+  }
+}

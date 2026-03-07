@@ -1,0 +1,208 @@
+{
+  "id": "3EVPLtJHOLxkeKOu",
+  "name": "alex-MCP-Trigger-email",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "email"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -100
+      ],
+      "id": "eb8ea48a-c1b5-49f6-82c7-2fd1bfd830b5",
+      "name": "MCP Server Trigger",
+      "webhookId": "6a58c10b-d901-4636-87e8-60cad79cc1ad"
+    },
+    {
+      "parameters": {
+        "content": "## Email 通知功能 (Gmail)\n",
+        "height": 320,
+        "width": 810,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        20
+      ],
+      "id": "16063ca1-bdbf-4fa9-a976-fbb4dca22bb7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1260,
+        180
+      ],
+      "id": "4b35185c-8419-49d8-b889-9e90a0062efe",
+      "name": "Gmail_Send",
+      "webhookId": "509e23cf-c448-48c8-8208-ea9fc543a44d"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1580,
+        180
+      ],
+      "id": "829508eb-2505-4818-ad00-ed3632bff9ab",
+      "name": "Gmail_Get",
+      "webhookId": "509e23cf-c448-48c8-8208-ea9fc543a44d"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 20,
+        "filters": {
+          "sender": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sender', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1740,
+        180
+      ],
+      "id": "66757cd2-57b1-44db-9a28-3b349cec842a",
+      "name": "Gmail_Get_By_Email",
+      "webhookId": "509e23cf-c448-48c8-8208-ea9fc543a44d"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 20,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1420,
+        180
+      ],
+      "id": "8f9910b5-1b89-41e3-8568-b61f8d69b3fe",
+      "name": "Gmail_List",
+      "webhookId": "509e23cf-c448-48c8-8208-ea9fc543a44d"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        180
+      ],
+      "id": "a9898057-75e7-400b-9b05-bc27508164dc",
+      "name": "Gmail_Reply_Email",
+      "webhookId": "509e23cf-c448-48c8-8208-ea9fc543a44d"
+    }
+  ],
+  "connections": {
+    "Gmail_Send": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail_List": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail_Get": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail_Get_By_Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail_Reply_Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-19T02:50:02.881Z",
+      "createdAt": "2025-05-19T02:50:02.881Z",
+      "role": "workflow:owner",
+      "workflowId": "3EVPLtJHOLxkeKOu",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

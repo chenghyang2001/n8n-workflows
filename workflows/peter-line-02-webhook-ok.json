@@ -1,0 +1,261 @@
+{
+  "id": "2gL0RLeg6c16YppV",
+  "name": "peter-line-02-webhook-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.body.events[0].message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        440,
+        -100
+      ],
+      "id": "7e4a8a58-ce92-433d-9f52-b313883c29ba",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line-message",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "980ba5ae-2cfd-4dad-b7ff-d0c1eb1e3161",
+      "name": "LINE Webhook",
+      "webhookId": "73aacf7f-372f-4576-b0cd-bfc9992f7dad"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={  \"replyToken\": \"{{ $('檢查message或圖片').first().json.body.events[0].replyToken }}\",  \"messages\": [    {      \"type\": \"text\",      \"text\": \" {{ $json.message.content.replace(/\\n/g, '\\\\\\\\n') }} \"    }  ]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        -100
+      ],
+      "id": "99f5de98-ce60-4fc9-af83-b72351fb3cca",
+      "name": "回覆Line使用者n8n-peter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ddf8bd12-6f66-45f0-997d-4f5a70b2534b",
+              "leftValue": "={{ $json.body.events[0].message.type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        200,
+        -80
+      ],
+      "id": "41521bd1-1623-4f1f-aed8-7808f2fc5478",
+      "name": "檢查message或圖片"
+    },
+    {
+      "parameters": {
+        "content": "### 因為 Line 帳戶管理 WebHood 設定的值沒有\"-test\". 所以這裡用 \"Test workflow\" 不會觸發. 一定要啟用 \"active\" 才會有反應.\n\n### 驗證 webhook link :\n### https://developers.line.biz/console/channel/2007417077/messaging-api\n",
+        "height": 240,
+        "width": 960,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -420
+      ],
+      "id": "25ecae03-1fd8-4dad-9123-8511c96ab415",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Line 相關連結\n\n- Line 開發者頁面 - https://developers.line.biz/console/\n- Line 官方帳號 - https://manager.line.biz/\n- Line Endpoint - https://api.line.me/v2/bot/message/",
+        "height": 240,
+        "width": 380,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        660,
+        -420
+      ],
+      "id": "8e14e2f6-c3bc-4b81-ba86-22d7f08e8b2b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"ok\"\n  \n}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "content-type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        -100
+      ],
+      "id": "50e00295-faaf-4f9a-9f8d-9374a6c91a7b",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "回覆Line使用者n8n-peter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LINE Webhook": {
+      "main": [
+        [
+          {
+            "node": "檢查message或圖片",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "檢查message或圖片": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "回覆Line使用者n8n-peter": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:22:47.673Z",
+      "createdAt": "2025-07-01T00:22:47.673Z",
+      "role": "workflow:owner",
+      "workflowId": "2gL0RLeg6c16YppV",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T08:14:11.963Z",
+      "createdAt": "2025-07-01T08:14:11.963Z",
+      "id": "QFvFTqOLs1VLlBts",
+      "name": "line"
+    }
+  ],
+  "activeVersion": null
+}

@@ -1,0 +1,1420 @@
+{
+  "id": "1dZU1eGdejju2QZy",
+  "name": "addwii-外部使用者-PM25-突然飆高異常-偵測-20251104-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2256,
+        1280
+      ],
+      "id": "57106990-f2b2-4cfc-b0e6-e888d8485be4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## Google Sheet : ## https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+        "height": 80,
+        "width": 1904,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        1760
+      ],
+      "id": "f3a5b37f-ce72-41a7-baa9-240d9bc61195",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "36d6df2c-8164-44ee-b64d-db182a16b89c",
+              "leftValue": "={{ $json.house_id }}",
+              "rightValue": 72,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1632,
+        512
+      ],
+      "id": "2bafe84b-192d-4a37-95e9-38344d8fac3d",
+      "name": "Filter",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Debug #1\n",
+        "height": 80,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        624
+      ],
+      "id": "7822b415-2d4f-4e70-be11-6d0527df5f6e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=196795943#gid=196795943",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=196795943#gid=196795943",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1936,
+        1072
+      ],
+      "id": "5e083801-adbe-45a4-bc61-a035438eb261",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "pm25",
+              "renameField": true,
+              "outputFieldName": "pm25"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        624,
+        864
+      ],
+      "id": "298c284d-9b52-4597-9755-381b81065dfb",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1040,
+        1072
+      ],
+      "id": "1989f67b-616a-4474-9019-fe823b303d5a",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "26b661ce-d921-4243-929c-8835f3eba8d7",
+              "name": "=date",
+              "value": "={{ $now.format('yyyy-MM-dd')}}",
+              "type": "string"
+            },
+            {
+              "id": "c750d63b-3399-4365-8f51-3c30300c58c9",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "84d21317-545a-4404-abe0-a67bdc607fa9",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        864
+      ],
+      "id": "fe70df48-fa92-4a70-b719-7130e97427b4",
+      "name": "config-house_room_date"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/5TgCpCi2jAUFV0lQ",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "外部使用者-資料收集-pm25 : DONE"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -1632,
+        288
+      ],
+      "id": "d44e8b05-0c92-411f-a609-d405690c700c",
+      "name": "Execute Workflow1",
+      "executeOnce": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        1072
+      ],
+      "id": "b1fc7d3f-e016-4ac4-86c9-7d0912880fc1",
+      "name": "Limit",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from house_user h where h.house_id = {{ $json.house_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        192,
+        1536
+      ],
+      "id": "48e03502-8d2f-488f-86fb-01293a482359",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from users where id= {{ $json.user_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        672,
+        1536
+      ],
+      "id": "5c77bf86-090d-456b-94f0-6d4cc03eea2c",
+      "name": "Execute a SQL query7",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "03cd5209-5c70-44cd-8aab-1e6e3a58b710",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "26b661ce-d921-4243-929c-8835f3eba8d7",
+              "name": "user_id",
+              "value": "={{ $json.user_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        1536
+      ],
+      "id": "be9dff1a-2816-4918-836a-e28281a879f0",
+      "name": "config-"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $('Get row(s) in sheet1').item.json.room_id }}",
+            "client_name": "={{ $json.name }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pm25_min",
+              "displayName": "pm25_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pm25_max",
+              "displayName": "pm25_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pm25_average",
+              "displayName": "pm25_average",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pm25_median",
+              "displayName": "pm25_median",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "non_zero_count",
+              "displayName": "non_zero_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "aqi_good",
+              "displayName": "aqi_good",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "aqi_moderate",
+              "displayName": "aqi_moderate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "aqi_unhealthySensitive",
+              "displayName": "aqi_unhealthySensitive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "aqi_unhealthy",
+              "displayName": "aqi_unhealthy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "aqi_veryUnhealthy",
+              "displayName": "aqi_veryUnhealthy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "aqi_hazardous",
+              "displayName": "aqi_hazardous",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        944,
+        1536
+      ],
+      "id": "2a73c143-8861-487f-b3ff-a2ee5a4c1e03",
+      "name": "更新 client name",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com",
+        "subject": "n8n-外部使用者- PM25 Max 大於 30 - 名單 ",
+        "message": "=room 總數 : {{ $json.room_id_count }} <BR><BR>\nRoom ID: <BR>\n{{ $json.original_data.room_id }} <BR><BR>\nClient Name : <BR>\n{{ $json.original_data.client_name }}\n\n<BR>\nn8n : <BR>\nhttps://chenghyang2001.app.n8n.cloud/workflow/R8hRk2PTkg0rXdkk\n\n\n",
+        "options": {
+          "appendAttribution": false
+        },
+        "path": "7ce242f2-bf5a-4b42-98b7-00093e9d627c"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1072,
+        1952
+      ],
+      "id": "d2e81958-ed88-4eb3-a0ea-b79f4ff19af9",
+      "name": "Send a message",
+      "webhookId": "7ce242f2-bf5a-4b42-98b7-00093e9d627c",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## send email",
+        "height": 240,
+        "width": 528,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        1872
+      ],
+      "id": "c78014cc-6da3-40cc-a772-447594430231",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1968,
+        1952
+      ],
+      "id": "d5a823cd-5508-4260-9d55-855dd81a2314",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "=room_id",
+              "renameField": true,
+              "outputFieldName": "room_id"
+            },
+            {
+              "fieldToAggregate": "client_name",
+              "renameField": true,
+              "outputFieldName": "client_name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        1952
+      ],
+      "id": "9ab6422f-7365-4c0a-a6e2-dd8535a19e34",
+      "name": "Aggregate1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得輸入資料\nconst inputData = $input.all();\n\n// 初始化結果陣列\nconst output = [];\n\n// 處理每個輸入項目\nfor (const item of inputData) {\n  const json = item.json;\n  \n  // 計算 room_id 陣列的大小\n  let roomIdCount = 0;\n  \n  if (json.room_id && Array.isArray(json.room_id)) {\n    roomIdCount = json.room_id.length;\n  }\n  \n  // 計算 client_name 陣列的大小（額外提供）\n  let clientNameCount = 0;\n  \n  if (json.client_name && Array.isArray(json.client_name)) {\n    clientNameCount = json.client_name.length;\n  }\n  \n  // 輸出結果\n  output.push({\n    json: {\n      room_id_count: roomIdCount,\n      client_name_count: clientNameCount,\n      original_data: json\n    }\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1296,
+        1952
+      ],
+      "id": "9f85517e-e251-4cf7-a1b8-7fc9d845be64",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "addwii-外部使用者-step-2-收集空汙資料 : DONE"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        1952
+      ],
+      "id": "ab293a85-2d6d-4c3a-8047-8738f312e859",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7babff0f-14c8-4a31-8d9f-5cbb488278f9",
+              "leftValue": "={{ $json.pm25_max }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1744,
+        1952
+      ],
+      "id": "7322e56a-c145-4266-be04-83d255a33002",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "\nselect room_id, pm25, created_at  from median m where m.room_id =  {{ $json.room_id }} and DATE(created_at) = DATE_SUB('{{ $json.date }}', INTERVAL 1 DAY)\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        416,
+        864
+      ],
+      "id": "47100c7e-c550-457e-951f-d2fadd138356",
+      "name": "query_pm25",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=1940894425#gid=1940894425",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "建立時間": "={{ $now.format('yyyy-MM-dd') }}",
+            "pm25_min": "={{ $json.pm25Statistics.minimum }}",
+            "pm25_max": "={{ $json.pm25Statistics.maximum }}",
+            "pm25_average": "={{ $json.pm25Statistics.average }}",
+            "pm25_median": "={{ $json.pm25Statistics.median }}",
+            "room_id": "={{ $('Get row(s) in sheet1').item.json.room_id }}",
+            "room_name": "={{ $('Get row(s) in sheet1').item.json.room_name }}",
+            "non_zero_count": "={{ $json.pm25Statistics.nonZeroCount }}",
+            "aqi_good": "={{ $json.aqiDistribution.good }}",
+            "aqi_moderate": "={{ $json.aqiDistribution.moderate }}",
+            "aqi_unhealthySensitive": "={{ $json.aqiDistribution.unhealthySensitive }}",
+            "aqi_unhealthy": "={{ $json.aqiDistribution.unhealthy }}",
+            "aqi_veryUnhealthy": "={{ $json.aqiDistribution.veryUnhealthy }}",
+            "aqi_hazardous": "={{ $json.aqiDistribution.hazardous }}",
+            "house_id": "={{ $('Get row(s) in sheet1').item.json.house_id }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "建立時間",
+              "displayName": "建立時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pm25_min",
+              "displayName": "pm25_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pm25_max",
+              "displayName": "pm25_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pm25_average",
+              "displayName": "pm25_average",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pm25_median",
+              "displayName": "pm25_median",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "room_name",
+              "displayName": "room_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "non_zero_count",
+              "displayName": "non_zero_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aqi_good",
+              "displayName": "aqi_good",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aqi_moderate",
+              "displayName": "aqi_moderate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aqi_unhealthySensitive",
+              "displayName": "aqi_unhealthySensitive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aqi_unhealthy",
+              "displayName": "aqi_unhealthy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aqi_veryUnhealthy",
+              "displayName": "aqi_veryUnhealthy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aqi_hazardous",
+              "displayName": "aqi_hazardous",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1232,
+        992
+      ],
+      "id": "d8e2e9ef-5fef-4dc4-90b6-adae4de1fb14",
+      "name": "更新 pm25",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node - PM2.5 Statistics Calculator (Integer Output)\n// This code calculates min, max, average, and median from the PM2.5 array as integers\n\nconst items = $input.all();\nlet pm25Values = [];\n\n// Extract PM2.5 values from each item\nfor (const item of items) {\n  // Check for different possible property names\n  if (item.json.PM25) {\n    if (Array.isArray(item.json.PM25)) {\n      pm25Values = pm25Values.concat(item.json.PM25);\n    } else {\n      pm25Values.push(item.json.PM25);\n    }\n  }\n  if (item.json.pm25) {\n    if (Array.isArray(item.json.pm25)) {\n      pm25Values = pm25Values.concat(item.json.pm25);\n    } else {\n      pm25Values.push(item.json.pm25);\n    }\n  }\n  if (item.json.PM2_5) {\n    if (Array.isArray(item.json.PM2_5)) {\n      pm25Values = pm25Values.concat(item.json.PM2_5);\n    } else {\n      pm25Values.push(item.json.PM2_5);\n    }\n  }\n  if (item.json.pm2_5) {\n    if (Array.isArray(item.json.pm2_5)) {\n      pm25Values = pm25Values.concat(item.json.pm2_5);\n    } else {\n      pm25Values.push(item.json.pm2_5);\n    }\n  }\n}\n\n// Convert all values to numbers and filter out invalid entries\npm25Values = pm25Values\n  .map(val => parseFloat(val))\n  .filter(val => !isNaN(val));\n\n// Function to calculate integer-based statistics\nfunction calculateStatistics(values) {\n  if (values.length === 0) {\n    return { \n      error: \"No valid PM2.5 values found\", \n      count: 0 \n    };\n  }\n\n  const sortedValues = [...values].sort((a, b) => a - b);\n\n  const min = Math.round(Math.min(...values));\n  const max = Math.round(Math.max(...values));\n  const sum = values.reduce((acc, val) => acc + val, 0);\n  const average = Math.round(sum / values.length);\n\n  let median;\n  const middleIndex = Math.floor(sortedValues.length / 2);\n\n  if (sortedValues.length % 2 === 0) {\n    median = Math.round((sortedValues[middleIndex - 1] + sortedValues[middleIndex]) / 2);\n  } else {\n    median = Math.round(sortedValues[middleIndex]);\n  }\n\n  // Calculate additional PM2.5 specific metrics\n  const nonZeroValues = values.filter(v => v > 0);\n  const nonZeroCount = nonZeroValues.length;\n  const nonZeroPercentage = Math.round((nonZeroCount / values.length) * 100);\n  \n  // AQI categories for PM2.5 (μg/m³) - ensure integer counts\n  const goodCount = values.filter(v => v >= 0 && v <= 12).length;\n  const moderateCount = values.filter(v => v > 12 && v <= 35).length;\n  const unhealthySensitiveCount = values.filter(v => v > 35 && v <= 55).length;\n  const unhealthyCount = values.filter(v => v > 55 && v <= 150).length;\n  const veryUnhealthyCount = values.filter(v => v > 150 && v <= 250).length;\n  const hazardousCount = values.filter(v => v > 250).length;\n\n  return {\n    min: Number(min),\n    max: Number(max),\n    average: Number(average),\n    median: Number(median),\n    count: Number(values.length),\n    nonZeroCount: Number(nonZeroCount),\n    nonZeroPercentage: Number(nonZeroPercentage),\n    goodCount: Number(goodCount),\n    moderateCount: Number(moderateCount),\n    unhealthySensitiveCount: Number(unhealthySensitiveCount),\n    unhealthyCount: Number(unhealthyCount),\n    veryUnhealthyCount: Number(veryUnhealthyCount),\n    hazardousCount: Number(hazardousCount),\n    allValues: values.map(v => Math.round(v))\n  };\n}\n\nconst statistics = calculateStatistics(pm25Values);\n\n// Create clean output with camelCase naming to avoid n8n parsing issues\nreturn [{\n  json: {\n    pm25Statistics: {\n      minimum: Number(statistics.min || 0),\n      maximum: Number(statistics.max || 0),\n      average: Number(statistics.average || 0),\n      median: Number(statistics.median || 0),\n      totalCount: Number(statistics.count || 0),\n      nonZeroCount: Number(statistics.nonZeroCount || 0),\n      nonZeroPercentage: Number(statistics.nonZeroPercentage || 0)\n    },\n    aqiDistribution: {\n      good: Number(statistics.goodCount || 0),\n      moderate: Number(statistics.moderateCount || 0),\n      unhealthySensitive: Number(statistics.unhealthySensitiveCount || 0),\n      unhealthy: Number(statistics.unhealthyCount || 0),\n      veryUnhealthy: Number(statistics.veryUnhealthyCount || 0),\n      hazardous: Number(statistics.hazardousCount || 0)\n    },\n    rawPm25Values: statistics.allValues || [],\n    calculatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        928
+      ],
+      "id": "7ca5dfd0-f730-4bb9-a112-0fc780a17d77",
+      "name": "Code for PM25"
+    },
+    {
+      "parameters": {
+        "content": "# Debug #2\n",
+        "height": 80,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        976
+      ],
+      "id": "f98b37be-257a-4638-8ddb-ead071722a1e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "28eca842-df05-8018-a20a-f4967b346a8f",
+          "mode": "list",
+          "cachedResultName": "addwii-外部使用者-資料收集-pm25",
+          "cachedResultUrl": "https://www.notion.so/28eca842df058018a20af4967b346a8f"
+        },
+        "title": "=資料收集-pm25",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "room_id|number",
+              "numberValue": "={{ $json.room_id }}"
+            },
+            {
+              "key": "建立時間|date",
+              "includeTime": false,
+              "date": "={{ $json['建立時間'] }}"
+            },
+            {
+              "key": "house_id|number",
+              "numberValue": "={{ $json.house_id }}"
+            },
+            {
+              "key": "pm25_min|number",
+              "numberValue": "={{ $json.pm25_min }}"
+            },
+            {
+              "key": "pm25_max|number",
+              "numberValue": "={{ $json.pm25_max }}"
+            },
+            {
+              "key": "={{ $json.pm25_average }}"
+            },
+            {
+              "key": "pm25_median|number",
+              "numberValue": "={{ $json.pm25_median }}"
+            },
+            {
+              "key": "room_name|title",
+              "title": "={{ $json.room_name }}"
+            },
+            {
+              "key": "non_zero_count|number",
+              "numberValue": "={{ $json.non_zero_count }}"
+            },
+            {
+              "key": "aqi_good|number",
+              "numberValue": "={{ $json.aqi_good }}"
+            },
+            {
+              "key": "aqi_moderate|number",
+              "numberValue": "={{ $json.aqi_moderate }}"
+            },
+            {
+              "key": "aqi_unhealthySensitive|number",
+              "numberValue": "={{ $json.aqi_unhealthySensitive }}"
+            },
+            {
+              "key": "aqi_unhealthy|number",
+              "numberValue": "={{ $json.aqi_unhealthy }}"
+            },
+            {
+              "key": "aqi_veryUnhealthy|number",
+              "numberValue": "={{ $json.aqi_veryUnhealthy }}"
+            },
+            {
+              "key": "aqi_hazardous|number",
+              "numberValue": "={{ $json.aqi_hazardous }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        1120
+      ],
+      "id": "218b619a-be82-4c94-97ff-b4f1a8b83d54",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=196795943#gid=196795943",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=196795943#gid=196795943",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "全天開機",
+              "lookupValue": "yes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1936,
+        832
+      ],
+      "id": "6677acc6-ea4a-4169-80e4-70652d68fffb",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2256,
+        1456
+      ],
+      "id": "ba221821-7ca8-49c3-9667-55bf2e246cec",
+      "name": "7:00AM"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Filter": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code for PM25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "config-house_room_date",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config-house_room_date": {
+      "main": [
+        [
+          {
+            "node": "query_pm25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "config-",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query7": {
+      "main": [
+        [
+          {
+            "node": "更新 client name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config-": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新 client name": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_pm25": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新 pm25": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code for PM25": {
+      "main": [
+        [
+          {
+            "node": "更新 pm25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7:00AM": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:1:35AM1": {
+      "recurrenceRules": []
+    },
+    "node:1:45AM": {
+      "recurrenceRules": []
+    },
+    "node:1:40AM": {
+      "recurrenceRules": []
+    },
+    "node:Test": {
+      "recurrenceRules": []
+    },
+    "node:3:00AM": {
+      "recurrenceRules": []
+    },
+    "node:4:00AM": {
+      "recurrenceRules": []
+    },
+    "node:7:30AM": {
+      "recurrenceRules": []
+    },
+    "node:7:00AM": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-04T00:36:17.598Z",
+      "createdAt": "2025-11-04T00:36:17.598Z",
+      "role": "workflow:owner",
+      "workflowId": "1dZU1eGdejju2QZy",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-10-21T05:41:28.994Z",
+      "createdAt": "2025-10-21T05:41:28.994Z",
+      "id": "pccpptgVt0kVE7KH",
+      "name": "突然飆高"
+    },
+    {
+      "updatedAt": "2025-07-14T07:25:46.329Z",
+      "createdAt": "2025-07-14T07:25:46.329Z",
+      "id": "rBu7KINmPwm4bhDL",
+      "name": "sql"
+    }
+  ],
+  "activeVersion": null
+}

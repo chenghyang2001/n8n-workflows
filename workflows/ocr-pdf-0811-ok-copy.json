@@ -1,0 +1,778 @@
+{
+  "id": "5bZEAq3g0R50VpQ7",
+  "name": "OCR-pdf-0811-ok-copy",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Google folder ( n8n-ocr-source-pdf ) : https://drive.google.com/drive/folders/1iesKjQvvk_8jQtS13HHIY8iiXg1oi8fb\n\n## 文字生成-pdf             : https://docs.google.com/document/d/1lkSJoEyNTQ1DdhBOe0I81RrbDtqOZqR-7SNMT_csWwE/edit?tab=t.0\n\n## by Google API : https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCv4cFOGT0JecS-f2iuze3e7Xy1OFz-ZLc\n\n## [Mistral OCR](https://mistral.ai/news/mistral-ocr)\n\n## api key : https://console.mistral.ai/api-keys\n\n# Anthropic Claude 3 Opus : \n## Credit : https://console.anthropic.com/settings/billing\n## api key : https://console.anthropic.com/settings/keys\n## api key : https://console.mistral.ai/api-keys\n\n## History : 20250808\n\n",
+        "height": 668,
+        "width": 1345,
+        "color": 7
+      },
+      "id": "57170349-6479-4a4b-bfd4-cbb9191903ba",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -1856
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.file_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        -864
+      ],
+      "id": "ba0c710d-d1af-40e4-82ff-8fe155d1a2c3",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "624c4468-652d-48e0-8fb4-ee65eb1cb786",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "name": "file_extension",
+              "value": "={{ $json.name.split('.').pop().toLowerCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3a6e06e-d060-43b8-8345-9deebb3271de",
+      "name": "Set File Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        -864
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1iesKjQvvk_8jQtS13HHIY8iiXg1oi8fb",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "8877e892-ee14-4c5a-b6ba-c148e4e93b89",
+      "name": "File Created1",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -816
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        784,
+        -816
+      ],
+      "id": "3bfd8d2c-1102-4881-957e-ae3553b58c22",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"{{ $json.url }}\"\n  },\n  \"include_image_base64\": true\n} ",
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2272,
+        -944
+      ],
+      "id": "33337a35-185b-494c-9d4d-aafd70859692",
+      "name": "Mistral OCR - Document",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "purpose",
+              "value": "ocr"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1840,
+        -944
+      ],
+      "id": "33312a6c-f3d0-4917-820d-61ae80dc4d2a",
+      "name": "Mistral - Upload File1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mistral.ai/v1/files/{{ $json.id }}/url ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expiry",
+              "value": "24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2048,
+        -944
+      ],
+      "id": "8b588ccf-3afa-479c-8781-566bf7811aac",
+      "name": "Get Signed Url1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "=https://docs.google.com/document/d/1lkSJoEyNTQ1DdhBOe0I81RrbDtqOZqR-7SNMT_csWwE/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=-----------------------------------------------------------\nBy OCR Mistral AI :\nfile : {{ $('Mistral - Upload File1').item.json.filename }}\n{{ $now.format('yyyy-MM-dd hh:mm:ss') }}\n\n{{ $json.pages[0].markdown }}\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2512,
+        -944
+      ],
+      "id": "e1932d45-04c7-4cfe-8ee4-730a2369bd39",
+      "name": "Update Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download file').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1z74YN70PtU2m2v86V0r5Yao16M_Fh-73",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2576,
+        -736
+      ],
+      "id": "d9b188db-fbcf-4e56-9887-6ffea41585ce",
+      "name": "Move file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "files-api-2025-04-14"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1840,
+        -736
+      ],
+      "id": "e365602f-2581-4017-8317-e3ea70dffba1",
+      "name": "UploadImage",
+      "retryOnFail": true,
+      "credentials": {
+        "anthropicApi": {
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "files-api-2025-04-14"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-3-5-sonnet-20241022\",\n  \"max_tokens\": 2048,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"document\",\n          \"source\": {\n            \"type\": \"file\",\n            \"file_id\": \"{{ $json.id }}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": \"請從圖片中提取全部文字內容。嚴格按照圖片中的原有格式和排版進行輸出。輸出中不得包含任何額外的說明文字、解釋、前言、後語或圖片中不存在的符號。只輸出純粹的提取結果。\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2096,
+        -736
+      ],
+      "id": "cd208612-1834-4a6e-93da-d3e5a274b2b3",
+      "name": "RequestDocumentExtraction",
+      "retryOnFail": true,
+      "credentials": {
+        "anthropicApi": {
+          "name": "Anthropic account"
+        },
+        "httpHeaderAuth": {
+          "name": "Anthropic Header Auth 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "=https://docs.google.com/document/d/1lkSJoEyNTQ1DdhBOe0I81RrbDtqOZqR-7SNMT_csWwE/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=-----------------------------------------------------------\nBy LLM Anthropic Claude Opus 3 :\nfile : {{ $('UploadImage').item.json.filename }}\n{{ $now.format('yyyy-MM-dd hh:mm:ss') }}\n\n{{ $json.content[0].text }}\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        -736
+      ],
+      "id": "388e944c-9256-49da-b473-808b0c3671af",
+      "name": "Update Docs2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        -1168
+      ],
+      "id": "f5526d18-2256-4f95-8f91-c3119b30ac45",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"請從圖片中提取全部文字內容。嚴格按照圖片中的原有格式和排版進行輸出。輸出中不得包含任何額外的說明文字、解釋、前言、後語或圖片中不存在的符號。只輸出純粹的提取結果。\"\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"application/pdf\",\n            \"data\": \"{{ $json.data }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.2,\n    \"maxOutputTokens\": 65536\n  }\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2048,
+        -1168
+      ],
+      "id": "304043fb-718c-4c68-9eca-35fa24a2ee74",
+      "name": "OCR-gemini-2.5-pro-pdf",
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "GeminiAPI Query"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "=https://docs.google.com/document/d/1lkSJoEyNTQ1DdhBOe0I81RrbDtqOZqR-7SNMT_csWwE/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=-----------------------------------------------------------\nBy OCR Gemini 2.5 Pro :\nfile : {{ $('Download file').item.json.file_name }}\n{{ $now.format('yyyy-MM-dd hh:mm:ss') }}\n\n{{ $json.candidates[0].content.parts[0].text }}\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        -1168
+      ],
+      "id": "1af5f1b0-9348-46c1-b099-f008d6a1fb3d",
+      "name": "Update Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=ocr-pdf DONE. file : {{ $('Download file').item.json.file_name }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2784,
+        -736
+      ],
+      "id": "8c1504ac-1653-405f-bd67-265e83dc591b",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "UploadImage",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mistral - Upload File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File Info": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Set File Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR - Document": {
+      "main": [
+        [
+          {
+            "node": "Update Docs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral - Upload File1": {
+      "main": [
+        [
+          {
+            "node": "Get Signed Url1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Signed Url1": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR - Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Docs1": {
+      "main": [
+        []
+      ]
+    },
+    "UploadImage": {
+      "main": [
+        [
+          {
+            "node": "RequestDocumentExtraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RequestDocumentExtraction": {
+      "main": [
+        [
+          {
+            "node": "Update Docs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Docs2": {
+      "main": [
+        [
+          {
+            "node": "Move file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "OCR-gemini-2.5-pro-pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR-gemini-2.5-pro-pdf": {
+      "main": [
+        [
+          {
+            "node": "Update Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "L9RQFagA7DehEy9F",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:00:05 daily1": {
+      "recurrenceRules": []
+    },
+    "node:00:00 daily1": {
+      "recurrenceRules": []
+    },
+    "node:17:20 daily": {
+      "recurrenceRules": []
+    },
+    "node:File Created1": {
+      "lastTimeChecked": "2025-08-11T01:23:12Z"
+    },
+    "node:File Updated1": {
+      "lastTimeChecked": "2025-08-07T06:54:08Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-11T01:34:56.738Z",
+      "createdAt": "2025-08-11T01:34:56.738Z",
+      "role": "workflow:owner",
+      "workflowId": "5bZEAq3g0R50VpQ7",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-03T03:10:42.076Z",
+      "createdAt": "2025-07-01T06:55:58.835Z",
+      "id": "B7JmgQBPpNqnDc7Z",
+      "name": "gdrive"
+    },
+    {
+      "updatedAt": "2025-08-08T05:58:55.781Z",
+      "createdAt": "2025-08-08T05:58:55.781Z",
+      "id": "Mi8RultWREhEIv2J",
+      "name": "ocr-image"
+    },
+    {
+      "updatedAt": "2025-07-01T05:30:35.023Z",
+      "createdAt": "2025-07-01T05:30:35.023Z",
+      "id": "QD8iWXuhwLgT6gjM",
+      "name": "ocr"
+    },
+    {
+      "updatedAt": "2025-08-08T05:58:45.041Z",
+      "createdAt": "2025-08-08T05:58:45.041Z",
+      "id": "ciOYNzebXw2ukKg5",
+      "name": "mistral"
+    },
+    {
+      "updatedAt": "2025-08-08T03:52:26.521Z",
+      "createdAt": "2025-08-08T03:52:26.521Z",
+      "id": "wnrBCfZ24MDhi7wl",
+      "name": "ocr-pdf"
+    }
+  ],
+  "activeVersion": null
+}

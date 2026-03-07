@@ -1,0 +1,412 @@
+{
+  "id": "Aasn3OT7PElM6uld",
+  "name": "scrape-01-web-data-firecrawl",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -180,
+        120
+      ],
+      "id": "ef379bd2-a2d0-4029-b94c-06705f9c57d6",
+      "name": "When chat message received",
+      "webhookId": "daddf490-77c5-4843-9152-371ebbf8c933"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"queries\": [\n    {\n      \"url\": \"https://www.zapier.com\",\n      \"prompt\": \"list all pricing tiers and their included features\"\n    },\n    {\n      \"url\": \"https://www.make.com\",\n      \"prompt\": \"describe the automation capabilities and integration options\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        440
+      ],
+      "id": "df135a85-4f9a-4303-a814-f8e146965442",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/scrape",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.url }}\",\n  \"formats\": [\n    \"json\"\n  ],\n  \"jsonOptions\": {\n    \"prompt\": \"{{ $json.prompt }}\"\n  }\n} ",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "id": "a775242e-9159-41e1-b917-f910169d55cc",
+      "name": "Scrape URL using Plain Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        120
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "unknown Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<data>\n{{ JSON.stringify($('Aggregate').item.json.data, null, 2) }}\n</data>\n\n<original question>\n{{ JSON.stringify($('Extract user queries').item.json.output.queries, null, 2) }}\n{{ $('When chat message received').item.json.chatInput }}\n</original question>",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Format the incoming data nicely, using Markdown. ONLY extract what was asked in the original questions. i.e. Answer the question with the information you have. Do not make any information up."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1420,
+        120
+      ],
+      "id": "90db455b-1f8e-479b-a1e0-f4d90f283871",
+      "name": "Format"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        180,
+        300
+      ],
+      "id": "a68fad0e-217c-49c2-9fb7-b477900314db",
+      "name": "Auto-fixing Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## Extract queries\nFrom user question - extracts url & desired info",
+        "height": 280,
+        "width": 380,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1a8252e5-d9a0-473b-891c-ca8bf16ee7e5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Given a user message as input, analyze it for URLs and questions. For each unique URL/question pair, generate a structured output.\n\n<rules>\n- Extract explicit URLs or infer them from company/service names\n- Transform questions into clear, attribute-focused queries\n- Remove specific company names from prompts\n- Handle multiple URLs and questions by creating separate outputs\n- Always use HTTPS URLs\n</rules>\n\n<output_format>\n{\n  \"queries\": [\n    {\n      \"url\": \"https://www.example.com\",\n      \"prompt\": \"transformed question\"\n    }\n  ]\n}\n</output_format>\n\n<examples>\nInput: \"Compare Zapier's pricing with Make.com's automation features\"\nOutput: {\n  \"queries\": [\n    {\n      \"url\": \"https://www.zapier.com\",\n      \"prompt\": \"list all pricing tiers and their features\"\n    },\n    {\n      \"url\": \"https://www.make.com\", \n      \"prompt\": \"describe all automation capabilities and features\"\n    }\n  ]\n}\n\nInput: \"What integrations does Zapier have?\"\nOutput: {\n  \"queries\": [\n    {\n      \"url\": \"https://www.zapier.com\",\n      \"prompt\": \"list all available software integrations and supported platforms\"\n    }\n  ]\n}\n</examples>\n\n<error_handling>\nIf URL is missing:\n\n1. Ask user to provide URL if unknown\n2. Infer URL from company/service name if known\n3. Return error message if URL cannot be determined\n</error_handling>"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        40,
+        120
+      ],
+      "id": "a759834c-fe2f-4df3-8df4-8e0b736f1487",
+      "name": "Extract user queries",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.queries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        480,
+        120
+      ],
+      "id": "f0f2d887-6b1e-498c-be3e-83a9bcf2a21c",
+      "name": "Split Out Queries"
+    },
+    {
+      "parameters": {
+        "content": "## Send queries to scraper",
+        "height": 240,
+        "width": 700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        420,
+        40
+      ],
+      "id": "658d5f93-0474-4bd7-b439-823f32b00ee1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Format data to answer original queries",
+        "height": 240,
+        "width": 620,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        40
+      ],
+      "id": "3c20f723-4ee7-4412-9b5e-9b4bed2f6a28",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        120
+      ],
+      "id": "6d3085c2-dac7-47de-973f-84d3f8b6dc95",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "model": "=openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        320
+      ],
+      "id": "472d894e-f7ce-4b1c-98e3-bd9d33a8ac48",
+      "name": "Openrouter",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "=openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        380
+      ],
+      "id": "d2b672a1-2490-4b0b-8c4f-04282808290d",
+      "name": "Openrouter - gpt",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        680,
+        120
+      ],
+      "id": "d37dddee-fcd4-4c61-ab85-b8f8b7e210eb",
+      "name": "Loop Over Items"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extract user queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape URL using Plain Text": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Extract user queries",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract user queries": {
+      "main": [
+        [
+          {
+            "node": "Split Out Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Queries": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Format",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter - gpt": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract user queries",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Scrape URL using Plain Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-28T19:08:07.400Z",
+      "createdAt": "2025-06-28T19:08:07.400Z",
+      "role": "workflow:owner",
+      "workflowId": "Aasn3OT7PElM6uld",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

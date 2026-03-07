@@ -1,0 +1,653 @@
+{
+  "id": "1TaDzaq9A9tFfZs2",
+  "name": "simon-nano-banana-20250910-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        96
+      ],
+      "id": "fd0f976e-7ffe-4fd3-8c82-20bb3f2e7138",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "Upload_Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "151084e9-7d53-455a-90da-eb5f614fe612",
+      "name": "Upload Img to ImgBB for URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1216,
+        384
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "ImgBB Query Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://api.resmush.it/ws.php?img={{ $json.data.url }}",
+        "options": {}
+      },
+      "id": "5860bdea-1d21-4303-8c59-b2fd4f826082",
+      "name": "ReSmush.it Image Optimisation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1392,
+        384
+      ],
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.dest }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "276e243e-4e13-4b6c-b9e1-30631a4dc637",
+      "name": "Store Optimised Image ImgBB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1568,
+        384
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "ImgBB Query Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Upload & Optimize \nUpload image to ImgBB, Optimise using ReSmush .it\n",
+        "height": 241,
+        "width": 570,
+        "color": 7
+      },
+      "id": "9d584f3b-0c4d-4c9c-a961-44e44cb025ca",
+      "name": "Sticky Note35",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Generate\nNano Banana (Gemini-2.5-Flash-Image-Preview)",
+        "height": 240,
+        "width": 512,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        0
+      ],
+      "id": "56ec8b41-55c5-4809-a412-ca6a83b88fb5",
+      "name": "Sticky Note42"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-2.5-flash-image-preview\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"{{ $json.image_prompt }}\"\n        }\n      ]\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        96
+      ],
+      "id": "fb27cf41-83ed-40f5-bbdd-da616a33ef27",
+      "name": "NanoBanana",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "1bbfc901-d527-4246-b05c-552fe864c626",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2ad35d52-e846-4a91-9400-6b5cb17f58dd",
+              "name": "image_prompt",
+              "value": "macbook with the words : Samsung sucks ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        96
+      ],
+      "id": "b0a1b5e4-c3fa-447f-af96-a2b377423abd",
+      "name": "Image Prompt"
+    },
+    {
+      "parameters": {
+        "content": "## Image generation Prompt",
+        "height": 240,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0217268a-d86e-48b6-a396-0e1ba3666157",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Storing and reducing file size\nFor FREE",
+        "height": 80,
+        "width": 576,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        192
+      ],
+      "id": "9086bac9-875d-4c6b-8195-43c557c56490",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2ad35d52-e846-4a91-9400-6b5cb17f58dd",
+              "name": "image_prompt",
+              "value": "convert to anime style and add the words hell yeah",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        384
+      ],
+      "id": "2cb12f3a-2743-4f7c-b8b4-fcdc3719f8aa",
+      "name": "Image Prompt1"
+    },
+    {
+      "parameters": {
+        "content": "## Prompt to edit",
+        "height": 240,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        288
+      ],
+      "id": "e15255c5-ddda-4063-8d79-aa94895d30a6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "formTitle": "Image Editing",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload Image",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        384
+      ],
+      "id": "e8de1662-965e-4966-916f-d54a35b26ec8",
+      "name": "Upload Image1",
+      "webhookId": "a30309f2-6433-421c-b897-d9f22a48ab80"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "Upload_Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e5a57c20-3817-4afe-a085-bca06e4a8b75",
+      "name": "Upload Img to ImgBB for URL2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        384
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "ImgBB Query Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        384
+      ],
+      "id": "2a59170d-7aee-45af-adca-f47ecaebac98",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Edits\nNano Banana (Gemini-2.5-Flash-Image-Preview)",
+        "height": 240,
+        "width": 512,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        288
+      ],
+      "id": "4b095dfd-421f-422c-9e12-fe8ac872d364",
+      "name": "Sticky Note43"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-2.5-flash-image-preview\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"{{ $json.image_prompt }}\"\n        },\n        {\n          \"type\": \"image_url\",\n          \"image_url\": {\n            \"url\": \"{{ $('Upload Img to ImgBB for URL2').item.json.data.url }}\"\n          }\n        }\n      ]\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        384
+      ],
+      "id": "ed204e34-0177-41f2-94f9-de1cec1ea7d2",
+      "name": "NanoBanana1",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "124f3a7c-735d-4121-a407-b559dbccdbfe",
+              "name": "data",
+              "value": "={{ $json.choices[0].message.images[0].image_url.url.split(',')[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        96
+      ],
+      "id": "2d2fcdf8-7fe9-4240-b024-ff84f402cbe5",
+      "name": "ExtractBase64"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "124f3a7c-735d-4121-a407-b559dbccdbfe",
+              "name": "data",
+              "value": "={{ $json.choices[0].message.images[0].image_url.url.split(',')[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        384
+      ],
+      "id": "6d5154b5-2bc7-4182-b0df-3d0c3f964342",
+      "name": "ExtractBase"
+    },
+    {
+      "parameters": {
+        "content": "## Upload to get url",
+        "height": 240,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        288
+      ],
+      "id": "0529ee11-be40-4969-a48b-dda55acead69",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## skoll url : https://www.skool.com/scrapes/nano-banana-try-it-in-2-mins",
+        "width": 1024,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -240
+      ],
+      "id": "beaebe56-cf6e-4285-8828-993b4fcaea39",
+      "name": "Sticky Note2"
+    }
+  ],
+  "connections": {
+    "Upload Img to ImgBB for URL": {
+      "main": [
+        [
+          {
+            "node": "ReSmush.it Image Optimisation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReSmush.it Image Optimisation": {
+      "main": [
+        [
+          {
+            "node": "Store Optimised Image ImgBB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NanoBanana": {
+      "main": [
+        [
+          {
+            "node": "ExtractBase64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "NanoBanana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image1": {
+      "main": [
+        [
+          {
+            "node": "Upload Img to ImgBB for URL2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NanoBanana1": {
+      "main": [
+        [
+          {
+            "node": "ExtractBase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Img to ImgBB for URL2": {
+      "main": [
+        [
+          {
+            "node": "Image Prompt1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Prompt1": {
+      "main": [
+        [
+          {
+            "node": "NanoBanana1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractBase64": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractBase": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-10T08:38:29.436Z",
+      "createdAt": "2025-09-10T08:38:29.436Z",
+      "role": "workflow:owner",
+      "workflowId": "1TaDzaq9A9tFfZs2",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-10T08:32:37.332Z",
+      "createdAt": "2025-09-10T08:32:37.332Z",
+      "id": "7FsRnJN6eoR9ofST",
+      "name": "nono-banana"
+    },
+    {
+      "updatedAt": "2025-09-10T08:32:46.700Z",
+      "createdAt": "2025-09-10T08:32:46.700Z",
+      "id": "FSFxGEaGdRFaxiEg",
+      "name": "imagebb"
+    },
+    {
+      "updatedAt": "2025-09-10T08:32:48.300Z",
+      "createdAt": "2025-09-10T08:32:48.300Z",
+      "id": "LzYuH4Z8SASaJsaR",
+      "name": "ibb"
+    }
+  ],
+  "activeVersion": null
+}

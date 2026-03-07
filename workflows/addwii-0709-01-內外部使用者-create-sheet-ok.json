@@ -1,0 +1,1200 @@
+{
+  "id": "2770lkt5lki6df7X",
+  "name": "addwii-0709-01-內外部使用者-create-sheet-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        1008
+      ],
+      "id": "f30daa2e-f1d3-49aa-a75a-4b6206b8dc98",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## Google Sheet :  https://docs.google.com/spreadsheets/d/1G0RWY9QZHwYw1M2XimkeOSnNFQoA6fQciWbb9soHqMM/edit?gid=0#gid=0\n\n## SQL query :     select model, d.mac_address , d.room_id , d.rssi, d.updated_at  from devices d WHERE d.rssi IS NOT NULL AND DATE(d.updated_at) = DATE(NOW());\n\n",
+        "height": 220,
+        "width": 1660
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        -304
+      ],
+      "id": "f1e854bb-18da-4112-bc56-3e4b6f2d4d60",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        80
+      ],
+      "id": "5567ab57-61df-4bea-8902-948416e80f5b",
+      "name": "Limit 500",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1G0RWY9QZHwYw1M2XimkeOSnNFQoA6fQciWbb9soHqMM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1G0RWY9QZHwYw1M2XimkeOSnNFQoA6fQciWbb9soHqMM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $json.room_id }}",
+            "model": "={{ $json.model }}",
+            "mac_address": "={{ $json.mac_address }}",
+            "rssi": "={{ $json.rssi }}",
+            "updated_at": "={{ $json.updated_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "model",
+              "displayName": "model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mac_address",
+              "displayName": "mac_address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rssi",
+              "displayName": "rssi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -16,
+        80
+      ],
+      "id": "d900e0e3-00f6-44f4-9b88-2c2996271206",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1088,
+        208
+      ],
+      "id": "305abe40-4088-4e5d-971b-b201f9e572ad",
+      "name": "Schedule Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select model, d.mac_address , d.room_id , d.rssi, d.updated_at  from devices d WHERE d.rssi IS NOT NULL AND DATE(d.updated_at) = DATE(NOW());\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -720,
+        80
+      ],
+      "id": "a3cbadd2-93f1-44a2-90a5-7bf9f7c5aa2d",
+      "name": "query_get_rssi",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT model, mac_address, room_id, rssi, updated_at\nFROM (\n    SELECT model, d.mac_address, d.room_id, d.rssi, d.updated_at,\n           ROW_NUMBER() OVER (PARTITION BY d.room_id ORDER BY d.updated_at DESC) as rn\n    FROM devices d\n    WHERE d.rssi IS NOT NULL \n    AND DATE(d.updated_at) = DATE(NOW())\n) ranked\nWHERE rn = 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -736,
+        480
+      ],
+      "id": "377c9716-3ed5-4285-bbb3-502e6e0a565d",
+      "name": "query_get_valid_room_id_count",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## get how many valid room_id with valid rssi",
+        "height": 300,
+        "width": 620,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        400
+      ],
+      "id": "27a5c1e8-0af7-475c-afb0-60af3c9f0879",
+      "name": "Sticky Note1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "142ac9ce-b246-409e-910a-89875b172efd",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "f2d7cb00-9415-44df-af6b-3ff27407977a",
+              "name": "model",
+              "value": "={{ $json.model }}",
+              "type": "string"
+            },
+            {
+              "id": "c04615d6-40f3-4bc0-b224-0c77364d2c04",
+              "name": "mac_address",
+              "value": "={{ $json.mac_address }}",
+              "type": "string"
+            },
+            {
+              "id": "fb5dc424-0845-41a9-804e-cb022149a6b4",
+              "name": "rssi",
+              "value": "={{ $json.rssi }}",
+              "type": "number"
+            },
+            {
+              "id": "4cd62162-f200-4d67-b52f-4eba834cbdfe",
+              "name": "updated_at",
+              "value": "={{ $json.updated_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        80
+      ],
+      "id": "7bb465ea-4388-4ea5-95b1-9abce579aa7e",
+      "name": "set rssi",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "142ac9ce-b246-409e-910a-89875b172efd",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        480
+      ],
+      "id": "6dfdf796-0f52-4082-a769-0f6ae5269b3b",
+      "name": "set room_id",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from room_user r where room_id = {{ $json.room_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -208,
+        480
+      ],
+      "id": "4b75ea48-249a-47ed-bd96-95ae6a64fed1",
+      "name": "query_get_user_id",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "142ac9ce-b246-409e-910a-89875b172efd",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "a793f94c-af0b-4239-b0ec-1a4a7b11f820",
+              "name": "user_id",
+              "value": "={{ $json.user_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        480
+      ],
+      "id": "2a6f6695-f2eb-4fc8-a3f0-1a07042c4795",
+      "name": "set user id",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from users u where id = {{ $json.user_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        272,
+        480
+      ],
+      "id": "4b70782f-cfa2-4a28-87e1-d43a731aefd5",
+      "name": "query_get_user_name",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d24c0b9b-99bd-4909-b8db-4c3a892a9cd7",
+              "name": "user_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9f306ac5-da9d-4846-b23a-92dad3ae06aa",
+              "name": "user_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "0956a49b-1ab0-4bb1-8590-fb2de7214c87",
+              "name": "room_id",
+              "value": "={{ $('set user id').item.json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "fdd44c8c-1541-47e6-aa6d-d284f593264a",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        480
+      ],
+      "id": "b2288b0d-8f1c-4d16-be1b-e6ca03c68c87",
+      "name": "set user name",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select house_id , update_software_version, version , online  from edges e where online = 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -768,
+        1008
+      ],
+      "id": "9154b544-c138-49d7-878c-fb1c0cb2fe27",
+      "name": "query_get_edges",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "42a88349-837e-4656-b0d0-05d5d7b27138",
+              "leftValue": "={{ $('Edit Fields1').item.json.update_software_version.length }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        1008
+      ],
+      "id": "79763431-7d30-4129-8b70-df69c2e44349",
+      "name": "If rd2 內部測試者"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "83922ba7-80e9-4652-9e99-e58ca29de60a",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "8e558e3b-ff44-4596-b829-3501585d48b3",
+              "name": "update_software_version",
+              "value": "={{ $json.update_software_version }}",
+              "type": "string"
+            },
+            {
+              "id": "86828291-2fe9-461e-84a7-8255a5920f7e",
+              "name": "app_version",
+              "value": "={{ $json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "930e76f6-6398-4167-baf6-4516f47ed0d4",
+              "name": "online",
+              "value": "={{ $json.online }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -544,
+        1008
+      ],
+      "id": "6479163b-233a-4369-9b32-73a2040db221",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from rooms r where house_id = {{ $json.house_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -320,
+        1008
+      ],
+      "id": "54383924-0999-4631-bb9b-2a3513dcdddc",
+      "name": "query_get_room_id",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "706e1978-0c1a-42d5-a049-50648f7475e8",
+              "name": "room_id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "a4a962fa-5ee3-476e-8f59-97595d76ceb7",
+              "name": "room_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "05e531f2-908b-4ca2-aa1f-850b631f8533",
+              "name": "house_id",
+              "value": "={{ $json.house_id }}",
+              "type": "number"
+            },
+            {
+              "id": "1416a6e6-bf33-4d1f-967c-e4888c18162f",
+              "name": "mode",
+              "value": "={{ $json.mode }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        1008
+      ],
+      "id": "e6fb59c1-ff63-4ab2-9287-307af73039a4",
+      "name": "set room id"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from room_user r where room_id = {{ $json.room_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        144,
+        1008
+      ],
+      "id": "beec27d5-30ef-4876-80fc-04a1aabd2293",
+      "name": "query_get_user_id1",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "706e1978-0c1a-42d5-a049-50648f7475e8",
+              "name": "room_id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "8e9f9f93-5dfd-472b-85f3-120c5ee9b014",
+              "name": "user_id",
+              "value": "={{ $json.user_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        1008
+      ],
+      "id": "20cacbae-af9a-412d-abf8-dae2613dc24b",
+      "name": "set user id1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from users r where id = {{ $json.user_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        560,
+        1008
+      ],
+      "id": "fdc53aba-c9cd-49b7-8468-9e6c34c1db4a",
+      "name": "query_get_user_name1",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe65ae21-9c01-44ee-ba08-ec68e5a7b167",
+              "name": "user_id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "04e5cb89-308f-4c3e-985a-2b6881c3f7cf",
+              "name": "phone_number",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "50b8a740-f53e-4184-8dd2-61c057679f09",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        1008
+      ],
+      "id": "d9d7a0ad-fd92-4d1b-9d4d-e310174bf097",
+      "name": "set user id2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1rt1D5omRPKy5fm07yDEEAb3b2PR8tbQgju_vio7JnTM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1rt1D5omRPKy5fm07yDEEAb3b2PR8tbQgju_vio7JnTM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_id": "={{ $json.user_id }}",
+            "email": "={{ $json.email }}",
+            "phone": "={{ $json.phone_number }}",
+            "name": "={{ $('query_get_user_name1').item.json.name }}",
+            "room_id": "={{ $('set user id1').item.json.room_id }}",
+            "house_id": "={{ $('set room id').item.json.house_id }}",
+            "mode": "={{ $('set room id').item.json.mode }}",
+            "version_update_app": "={{ $('query_get_edges').item.json.update_software_version }}",
+            "version_main_app": "={{ $('query_get_edges').item.json.version }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "version_update_app",
+              "displayName": "version_update_app",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "version_main_app",
+              "displayName": "version_main_app",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1312,
+        912
+      ],
+      "id": "3d9c8d4f-f135-4132-b6b2-1d1f603750db",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1R78e0hRlMZ40MV0HHXY2k2sAeI1XHu17i5Zd_aLVUvQ/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1R78e0hRlMZ40MV0HHXY2k2sAeI1XHu17i5Zd_aLVUvQ/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_id": "={{ $('set user id2').item.json.user_id }}",
+            "name": "={{ $('query_get_user_name1').item.json.name }}",
+            "email": "={{ $('set user id2').item.json.email }}",
+            "phone": "={{ $('set user id2').item.json.phone_number }}",
+            "room_id": "={{ $('query_get_user_id1').item.json.room_id }}",
+            "house_id": "={{ $('Edit Fields1').item.json.house_id }}",
+            "mode": "={{ $('set room id').item.json.mode }}",
+            "version_update_app": "={{ $('Edit Fields1').item.json.update_software_version }}",
+            "version_main_app": "={{ $('Edit Fields1').item.json.app_version }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "house_id",
+              "displayName": "house_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "version_update_app",
+              "displayName": "version_update_app",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "version_main_app",
+              "displayName": "version_main_app",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1312,
+        1104
+      ],
+      "id": "ac305027-c515-48da-a716-182313bbba1a",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "query_get_edges",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit 500": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "query_get_rssi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_rssi": {
+      "main": [
+        [
+          {
+            "node": "set rssi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_valid_room_id_count": {
+      "main": [
+        [
+          {
+            "node": "set room_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set rssi": {
+      "main": [
+        [
+          {
+            "node": "Limit 500",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set room_id": {
+      "main": [
+        [
+          {
+            "node": "query_get_user_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_user_id": {
+      "main": [
+        [
+          {
+            "node": "set user id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set user id": {
+      "main": [
+        [
+          {
+            "node": "query_get_user_name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_user_name": {
+      "main": [
+        [
+          {
+            "node": "set user name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_edges": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "query_get_room_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If rd2 內部測試者": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_room_id": {
+      "main": [
+        [
+          {
+            "node": "set room id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set room id": {
+      "main": [
+        [
+          {
+            "node": "query_get_user_id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_user_id1": {
+      "main": [
+        [
+          {
+            "node": "set user id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set user id1": {
+      "main": [
+        [
+          {
+            "node": "query_get_user_name1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_get_user_name1": {
+      "main": [
+        [
+          {
+            "node": "set user id2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set user id2": {
+      "main": [
+        [
+          {
+            "node": "If rd2 內部測試者",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "shared": [
+    {
+      "updatedAt": "2025-07-09T06:04:12.505Z",
+      "createdAt": "2025-07-09T06:04:12.505Z",
+      "role": "workflow:owner",
+      "workflowId": "2770lkt5lki6df7X",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-12-04T03:05:28.216Z",
+      "createdAt": "2025-12-04T03:05:28.216Z",
+      "id": "25qAnLqVUX1zkymC",
+      "name": "google-sheet"
+    },
+    {
+      "updatedAt": "2025-07-09T00:35:20.381Z",
+      "createdAt": "2025-07-09T00:35:20.381Z",
+      "id": "i3MvzYTRTpoQxWG5",
+      "name": "rssi"
+    },
+    {
+      "updatedAt": "2025-07-03T03:11:11.006Z",
+      "createdAt": "2025-07-01T08:26:49.709Z",
+      "id": "uCtYCA7Heh2wRkW2",
+      "name": "gsheet"
+    }
+  ],
+  "activeVersion": null
+}

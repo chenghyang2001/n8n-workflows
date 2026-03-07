@@ -1,0 +1,814 @@
+{
+  "id": "09eFeCfmg1h2RSzt",
+  "name": "prompt-提示詞生成-gpt5-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1488,
+        3568
+      ],
+      "id": "f25bdc39-6035-4567-ad28-d89386c544c9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a5f9801d-bd31-4417-b04c-a0705cef85e5",
+              "name": "query",
+              "value": "={{ $json.user_input }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1120,
+        3184
+      ],
+      "id": "dc8b74e5-5c0c-445e-b7b5-b6f9c94651c5",
+      "name": "config_prompt_gpt5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=你是一位專門為先進 AI 語言模型創建提示詞的專家級提示詞工程師。你的任務是接收我接下來提供的提示詞，並將其改進得更好。\n\n<input_query>\n{{ $json.query }}\n</input_query>\n\n一律用繁體中文輸出.\n使用類似 XML 的標籤（如 <background>, <task>）將提示詞的各個組成部分清晰地標示出來。\n以下是輸出範例:\n\n<background>我們公司正在考慮進入新市場</background>\n\n<task>分析這個市場報告，包含風險評估</task>\n\n<format>專業語調，格式清楚易讀</format>",
+        "hasOutputParser": true
+      },
+      "id": "0365d6f9-9fb8-40f7-9cf7-85ddf2b071a9",
+      "name": "gpt-4o",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -768,
+        3376
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=一律用繁體中文輸出.\n給我重點結論，100字以內. \n請深入思考這個問題 (think hard about this)\n{{ $json.text }}",
+        "hasOutputParser": true
+      },
+      "id": "83600589-87c0-4529-b14e-d722636f54a5",
+      "name": "gpt-5",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -416,
+        2672
+      ],
+      "typeVersion": 1.5,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=一律用繁體中文輸出.\n給我重點結論，目標是簡潔的3到5段解釋\n請深入思考這個問題 (think hard about this)\n{{ $json.text }}",
+        "hasOutputParser": true
+      },
+      "id": "2280897c-f8cf-421c-a03a-b5d6b24ae117",
+      "name": "gpt-",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -416,
+        3072
+      ],
+      "typeVersion": 1.5,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "id": "65d53492-0375-42b0-ada4-80e366f784d3",
+      "name": "gpt-5 model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -352,
+        3296
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=一律用繁體中文輸出.\n提供全面詳細的分析，約600到800字\n請深入思考這個問題 (think hard about this)\n{{ $json.text }}",
+        "hasOutputParser": true
+      },
+      "id": "a81e32b3-5de3-4500-a2f6-6bdf096da238",
+      "name": "gpt-1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -416,
+        3472
+      ],
+      "typeVersion": 1.5,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "id": "b53fac90-a861-462a-b5d4-a583b81b2dca",
+      "name": "gpt-5 model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -352,
+        3696
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        2784
+      ],
+      "id": "ab2f35ba-2a35-4152-b936-574be93217a4",
+      "name": "Call 'subFlow-line-n8n-peter-v1'1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        3184
+      ],
+      "id": "fc36fae5-59de-4986-8646-5f7abac6fc18",
+      "name": "Call 'subFlow-line-n8n-peter-v1'2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        3584
+      ],
+      "id": "77318797-9cef-40e7-8b70-a197fe271fcd",
+      "name": "Call 'subFlow-line-n8n-peter-v1'3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=一律用繁體中文輸出.\n提供全面詳細的分析，約600到800字\n請深入思考這個問題 (think hard about this)\n\n在開始之前，請先替本主題建立一個內部評分標準。然後，在內部反覆迭代和修改草稿，直到它在你的評分標準下獲得最高分。\n\n{{ $json.text }}",
+        "hasOutputParser": true
+      },
+      "id": "7358f348-1046-4af8-8d25-ac417bc82998",
+      "name": "gpt-2",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -416,
+        3984
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "id": "6508a0a4-0fcd-4c11-8d3a-add9e0ad12c4",
+      "name": "gpt-5 model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -352,
+        4208
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        3984
+      ],
+      "id": "a4951df3-27c1-4c1b-bf76-af65ace4a1c0",
+      "name": "Call 'subFlow-line-n8n-peter-v1'4"
+    },
+    {
+      "parameters": {
+        "formTitle": "🌍 旅遊創作主題選擇",
+        "formDescription": "=選擇您想創作的旅遊內容主題\n",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "user_input",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "我想創作關於**紐西蘭南島的壯麗景色**的內容，重點是**冰川健行**和**峽灣遊船**。"
+                  },
+                  {
+                    "option": "我想創作關於**日本京都的古都風情**的內容，重點是**寺廟巡禮**和**和服體驗**。"
+                  },
+                  {
+                    "option": "我想創作關於**泰國普吉島的海島度假**的內容，重點是**陽光沙灘**和**浮潛活動**。"
+                  },
+                  {
+                    "option": "我想創作關於**歐洲巴黎的浪漫之旅**的內容，重點是**艾菲爾鐵塔**和**羅浮宮藝術**。"
+                  },
+                  {
+                    "option": "我想創作關於**非洲肯亞的野性魅力**的內容，重點是**動物大遷徙**和**馬賽部落文化**。"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "確認選擇",
+          "path": "travel-content-selection",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "已成功提交您的創作主題選擇！"
+            }
+          },
+          "ignoreBots": false,
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 14px;\n\t--font-size-label: 16px;\n\t--font-size-test-notice: 14px;\n\t--font-size-input: 16px;\n\t--font-size-header: 26px;\n\t--font-size-paragraph: 16px;\n\t--font-size-link: 14px;\n\t--font-size-error: 14px;\n\t--font-size-html-h1: 32px;\n\t--font-size-html-h2: 24px;\n\t--font-size-html-h3: 18px;\n\t--font-size-html-h4: 16px;\n\t--font-size-html-h5: 14px;\n\t--font-size-html-h6: 12px;\n\t--font-size-subheader: 16px;\n\n\t/* Colors */\n\t--color-background: #f0f4f8;\n\t--color-test-notice-text: #ff9f43;\n\t--color-test-notice-bg: #fff5e7;\n\t--color-test-notice-border: #ffd89e;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #ced4da;\n\t--color-card-shadow: rgba(60, 64, 67, 0.15);\n\t--color-link: #007bff;\n\t--color-header: #333;\n\t--color-label: #555555;\n\t--color-input-border: #ced4da;\n\t--color-input-text: #495057;\n\t--color-focus-border: #007bff;\n\t--color-submit-btn-bg: #4CAF50;\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #dc3545;\n\t--color-required: #ff6d5a;\n\t--color-clear-button-bg: #6c757d;\n\t--color-html-text: #495057;\n\t--color-html-link: #007bff;\n\t--color-header-subtext: #6c757d;\n\n\t/* Border Radii */\n\t--border-radius-card: 12px;\n\t--border-radius-input: 8px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 12px;\n\n\t/* Spacing */\n\t--padding-container-top: 32px;\n\t--padding-card: 32px;\n\t--padding-test-notice-vertical: 16px;\n\t--padding-test-notice-horizontal: 32px;\n\t--margin-bottom-card: 24px;\n\t--padding-form-input: 16px;\n\t--card-padding: 32px;\n\t--card-margin-bottom: 24px;\n\n\t/* Dimensions */\n\t--container-width: 550px;\n\t--submit-btn-height: 52px;\n\t--checkbox-size: 20px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 6px 20px rgba(0, 0, 0, 0.1);\n\t--opacity-placeholder: 0.7;\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1488,
+        3088
+      ],
+      "id": "8cd72988-3d77-4f0c-bbfb-102c61ca6d4f",
+      "name": "旅遊創作主題選擇器",
+      "webhookId": "d02dc08e-ba8d-43ba-9b59-aa01449bbbfd"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a5f9801d-bd31-4417-b04c-a0705cef85e5",
+              "name": "query",
+              "value": "=請10個推薦與喜劇冒險電影《A Walk in the Woods》的類似的電影",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1152,
+        3568
+      ],
+      "id": "1c3504ce-519b-4e9a-afe7-ac4eed13e22a",
+      "name": "config_prompt_gpt"
+    },
+    {
+      "parameters": {
+        "content": "## 1. gamma : https://gamma.app/docs/5-ChatGPT--ju0ikhbhxshhfov?mode=present#card-98nqyj6en5nc5m1\n## 2. youtube : https://youtu.be/iRTK-jsfleg?list=TLGGE4ULc1SnZEYyNDA5MjAyNQ\n## 3. notebookLM : https://notebooklm.google.com/notebook/2999a61b-a53b-4487-9e43-aab2fb5a7427\n",
+        "height": 192,
+        "width": 1280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1936,
+        2768
+      ],
+      "id": "eea77fe9-bf61-40d6-95cd-d4fb2befb839",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "🎬 媒體推薦主題選擇",
+        "formDescription": "選擇您想要獲得推薦的媒體類型，基於《A Walk in the Woods》的風格特色\n",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "user_input",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "請推薦10部與喜劇冒險電影《A Walk in the Woods》類似的**電影**，重點是**中年友誼**和**戶外冒險**主題。"
+                  },
+                  {
+                    "option": "請推薦10首與《A Walk in the Woods》氛圍相似的**歌曲**，重點是**自然探索**和**人生反思**的感覺。"
+                  },
+                  {
+                    "option": "請推薦10本與《A Walk in the Woods》風格相近的**書籍**，重點是**旅行文學**和**幽默回憶錄**。"
+                  },
+                  {
+                    "option": "請推薦10幅與《A Walk in the Woods》意境相符的**繪畫作品**，重點是**自然風景**和**徒步旅行**主題。"
+                  },
+                  {
+                    "option": "請推薦10部與《A Walk in the Woods》類似的**紀錄片**，重點是**戶外探險**和**個人成長**故事。"
+                  },
+                  {
+                    "option": "請推薦10個與《A Walk in the Woods》相關的**播客節目**，重點是**旅行故事**和**生活哲學**分享。"
+                  },
+                  {
+                    "option": "請推薦10部與《A Walk in the Woods》風格相似的**電視劇**，重點是**友情喜劇**和**戶外冒險**元素。"
+                  },
+                  {
+                    "option": "請推薦10個與《A Walk in the Woods》精神相通的**旅遊目的地**，重點是**徒步路線**和**自然美景**。"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "獲取推薦",
+          "path": "media-recommendation-selection",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "已成功提交您的推薦需求！正在為您準備個性化推薦清單..."
+            }
+          },
+          "ignoreBots": false,
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 14px;\n\t--font-size-label: 16px;\n\t--font-size-test-notice: 14px;\n\t--font-size-input: 16px;\n\t--font-size-header: 26px;\n\t--font-size-paragraph: 16px;\n\t--font-size-link: 14px;\n\t--font-size-error: 14px;\n\t--font-size-html-h1: 32px;\n\t--font-size-html-h2: 24px;\n\t--font-size-html-h3: 18px;\n\t--font-size-html-h4: 16px;\n\t--font-size-html-h5: 14px;\n\t--font-size-html-h6: 12px;\n\t--font-size-subheader: 16px;\n\n\t/* Colors */\n\t--color-background: #f8f9fa;\n\t--color-test-notice-text: #e67e22;\n\t--color-test-notice-bg: #fef9e7;\n\t--color-test-notice-border: #f39c12;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #dee2e6;\n\t--color-card-shadow: rgba(0, 0, 0, 0.1);\n\t--color-link: #3498db;\n\t--color-header: #2c3e50;\n\t--color-label: #34495e;\n\t--color-input-border: #bdc3c7;\n\t--color-input-text: #2c3e50;\n\t--color-focus-border: #3498db;\n\t--color-submit-btn-bg: #27ae60;\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #e74c3c;\n\t--color-required: #e74c3c;\n\t--color-clear-button-bg: #95a5a6;\n\t--color-html-text: #2c3e50;\n\t--color-html-link: #3498db;\n\t--color-header-subtext: #7f8c8d;\n\n\t/* Border Radii */\n\t--border-radius-card: 15px;\n\t--border-radius-input: 10px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 15px;\n\n\t/* Spacing */\n\t--padding-container-top: 40px;\n\t--padding-card: 35px;\n\t--padding-test-notice-vertical: 18px;\n\t--padding-test-notice-horizontal: 35px;\n\t--margin-bottom-card: 28px;\n\t--padding-form-input: 18px;\n\t--card-padding: 35px;\n\t--card-margin-bottom: 28px;\n\n\t/* Dimensions */\n\t--container-width: 580px;\n\t--submit-btn-height: 55px;\n\t--checkbox-size: 22px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 8px 25px rgba(0, 0, 0, 0.12);\n\t--opacity-placeholder: 0.6;\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1472,
+        3312
+      ],
+      "id": "9af025ae-bcdd-4dfe-aa57-c40311cee7d8",
+      "name": "媒體推薦選擇器",
+      "webhookId": "f12ab34c-5d67-89e0-1234-567890abcdef"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "chatgpt-4o-latest"
+        },
+        "options": {}
+      },
+      "id": "fb2dfebd-825c-43ef-8496-164f28781d43",
+      "name": "gpt-4o2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -784,
+        3600
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "id": "588bf753-c1da-4774-b79f-c7714d2a17e5",
+      "name": "model gpt-5",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -352,
+        2896
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "config_prompt_gpt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_prompt_gpt5": {
+      "main": [
+        [
+          {
+            "node": "gpt-4o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o": {
+      "main": [
+        [
+          {
+            "node": "gpt-5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gpt-",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gpt-1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gpt-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5 model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "gpt-",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5 model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "gpt-1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-2": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5 model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "gpt-2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "旅遊創作主題選擇器": {
+      "main": [
+        [
+          {
+            "node": "config_prompt_gpt5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config_prompt_gpt": {
+      "main": [
+        [
+          {
+            "node": "gpt-4o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "媒體推薦選擇器": {
+      "main": [
+        [
+          {
+            "node": "config_prompt_gpt5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "gpt-4o",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "model gpt-5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "gpt-5",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 5,
+  "shared": [
+    {
+      "updatedAt": "2025-09-24T06:42:38.401Z",
+      "createdAt": "2025-09-24T06:42:38.401Z",
+      "role": "workflow:owner",
+      "workflowId": "09eFeCfmg1h2RSzt",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-24T06:42:52.616Z",
+      "createdAt": "2025-09-24T06:42:52.616Z",
+      "id": "5MJeWKYGxh41KnXu",
+      "name": "gpt5"
+    },
+    {
+      "updatedAt": "2025-09-15T01:45:16.093Z",
+      "createdAt": "2025-09-15T01:45:16.093Z",
+      "id": "e1k3F2RaLONsbxBw",
+      "name": "tool"
+    },
+    {
+      "updatedAt": "2025-09-18T06:05:18.877Z",
+      "createdAt": "2025-09-18T06:05:18.877Z",
+      "id": "guj8O1mfczUke6ya",
+      "name": "prompt-build"
+    },
+    {
+      "updatedAt": "2025-09-22T07:03:26.290Z",
+      "createdAt": "2025-09-22T07:02:37.303Z",
+      "id": "jjxX2fktmjluFjku",
+      "name": "提示詞生成"
+    }
+  ],
+  "activeVersion": null
+}

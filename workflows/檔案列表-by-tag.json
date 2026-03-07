@@ -1,0 +1,681 @@
+{
+  "id": "5rpKsjrGiBKBL2vW",
+  "name": "檔案列表-by-tag",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -16
+      ],
+      "id": "8c75caa2-6293-4222-846c-1c3954388d38",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        944,
+        -384
+      ],
+      "id": "93ed82a2-cbe5-4b67-b026-cb7e4c72e71a",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "maxItems": 30
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -384
+      ],
+      "id": "76c8f936-1898-461e-9c9e-3642d636efe5",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "26cca842-df05-8042-ac83-f546cc513919",
+          "mode": "list",
+          "cachedResultName": "n8n-檔案列表-開發用",
+          "cachedResultUrl": "https://www.notion.so/26cca842df058042ac83f546cc513919"
+        },
+        "title": "={{ $json.name }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "建立日期|date",
+              "includeTime": false,
+              "date": "={{ $now.format('yyyy-MM-dd') }}"
+            },
+            {
+              "key": "檔案id|rich_text",
+              "textContent": "={{ $('return non-active').item.json.id }}"
+            },
+            {
+              "key": "工作流檔案-網址|url",
+              "urlValue": "=https://chenghyang2001.app.n8n.cloud/workflow/{{ $('return non-active').item.json.id }}"
+            },
+            {
+              "key": "名稱|title",
+              "title": "={{ $json.name }}"
+            },
+            {
+              "key": "檔案名稱|rich_text",
+              "textContent": "={{ $json.name }}"
+            },
+            {
+              "key": "active|rich_text",
+              "textContent": "={{ $json.active.toString() }}"
+            },
+            {
+              "key": "tag_name|rich_text",
+              "textContent": "={{ $('config').item.json.tag_search }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        -336
+      ],
+      "id": "88a2badb-d19f-4672-adec-bd600b0581f5",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=n8n-檔案列表-開發用-DONE"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        -528
+      ],
+      "id": "b6bd4a66-2cf0-449c-8d86-18f2bcadc5f4",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -384
+      ],
+      "id": "028de2e3-7e39-47a6-aacb-d5b96cfbdaeb",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e807768-995e-468c-95fa-e12689181c4d",
+              "name": "tag_search",
+              "value": "form",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        -16
+      ],
+      "id": "ed637c5e-9df8-4251-bc4c-f3152a61c537",
+      "name": "config"
+    },
+    {
+      "parameters": {
+        "content": "## 1. 在 config 設定條件\n## 1. form\n## 2. nate\n",
+        "height": 256,
+        "width": 336,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        240
+      ],
+      "id": "539110f1-9fd2-404b-82be-3a6e4e74818f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Notion n8n-檔案列表-開發用 : https://www.notion.so/26cca842df058042ac83f546cc513919?v=26cca842df058160b559000c79dd9674",
+        "width": 1664,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        384
+      ],
+      "id": "8c469f44-8e4e-4cf6-ab9b-3aaa4f2a51aa",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "filters": {
+          "activeWorkflows": false,
+          "tags": "={{ $json.tag_search }}"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -384
+      ],
+      "id": "7139d349-34c8-43a6-a395-b506b8a0da3f",
+      "name": "return non-active",
+      "credentials": {
+        "n8nApi": {
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filters": {
+          "activeWorkflows": true,
+          "tags": "={{ $json.tag_search }}"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        240,
+        400
+      ],
+      "id": "dcf4efce-5f7f-40ed-b5a3-2ffeb3c198b2",
+      "name": "return only-active",
+      "credentials": {
+        "n8nApi": {
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        464,
+        400
+      ],
+      "id": "741abbea-83ea-488e-a6d8-32e35606a569",
+      "name": "Sort1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        912,
+        400
+      ],
+      "id": "770f6d78-6598-4735-8ff0-f38255af1bf8",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "maxItems": 30
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        688,
+        400
+      ],
+      "id": "ce4f5b6f-930a-406b-bb67-a31f591918fa",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "26cca842-df05-8042-ac83-f546cc513919",
+          "mode": "list",
+          "cachedResultName": "n8n-檔案列表-開發用",
+          "cachedResultUrl": "https://www.notion.so/26cca842df058042ac83f546cc513919"
+        },
+        "title": "={{ $json.name }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "建立日期|date",
+              "includeTime": false,
+              "date": "={{ $now.format('yyyy-MM-dd') }}"
+            },
+            {
+              "key": "檔案id|rich_text",
+              "textContent": "={{ $('return only-active').item.json.id }}"
+            },
+            {
+              "key": "工作流檔案-網址|url",
+              "urlValue": "=https://chenghyang2001.app.n8n.cloud/workflow/{{ $('return only-active').item.json.id }}"
+            },
+            {
+              "key": "名稱|title",
+              "title": "={{ $json.name }}"
+            },
+            {
+              "key": "檔案名稱|rich_text",
+              "textContent": "={{ $json.name }}"
+            },
+            {
+              "key": "active|rich_text",
+              "textContent": "={{ $json.active.toString() }}"
+            },
+            {
+              "key": "tag_name|rich_text",
+              "textContent": "={{ $('config').item.json.tag_search }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        448
+      ],
+      "id": "a38e2c8f-48c5-413d-a1a2-7bd380bd3e4c",
+      "name": "Create a database page1",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=n8n-檔案列表-開發用-DONE"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        256
+      ],
+      "id": "a85e6b20-94ed-470d-b65c-026b36ececde",
+      "name": "Execute Workflow1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "content": "# search : Non-active workflow with tag ",
+        "height": 80,
+        "width": 688,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -512
+      ],
+      "id": "a658b47b-f911-4ec2-9b91-d472c77319f4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Active workflow - with tag search",
+        "height": 80,
+        "width": 704,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        272
+      ],
+      "id": "1de7cace-b577-48e5-abcb-2879e4361fa6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# 1. email-\n# 2. 郵件",
+        "width": 432,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        -400
+      ],
+      "id": "c812d1f3-d486-41f4-a9c5-8a885910498d",
+      "name": "Sticky Note6"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config": {
+      "main": [
+        [
+          {
+            "node": "return non-active",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "return only-active",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "return non-active": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "return only-active": {
+      "main": [
+        [
+          {
+            "node": "Sort1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a database page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Daily_5_30_am": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-22T05:17:46.794Z",
+      "createdAt": "2025-09-22T05:17:46.794Z",
+      "role": "workflow:owner",
+      "workflowId": "5rpKsjrGiBKBL2vW",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-22T05:34:33.969Z",
+      "createdAt": "2025-09-22T05:34:33.969Z",
+      "id": "O9qewEaEyssSmAxz",
+      "name": "by-tag"
+    },
+    {
+      "updatedAt": "2025-09-15T01:23:17.526Z",
+      "createdAt": "2025-09-15T01:23:17.526Z",
+      "id": "mK4hS9ccfe0CifL0",
+      "name": "檔案列表"
+    },
+    {
+      "updatedAt": "2025-09-15T01:23:08.672Z",
+      "createdAt": "2025-09-15T01:23:08.672Z",
+      "id": "u1VUJRPm4nn84Rel",
+      "name": "開發工具"
+    },
+    {
+      "updatedAt": "2025-09-15T01:24:14.410Z",
+      "createdAt": "2025-09-15T01:24:14.410Z",
+      "id": "ygW3sQiPqWyfUSnf",
+      "name": "n8n-node"
+    }
+  ],
+  "activeVersion": null
+}

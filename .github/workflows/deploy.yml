@@ -1,0 +1,44 @@
+name: Deploy n8n Workflows
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'workflows/**.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get changed workflow files
+        id: changed
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'workflows/*.json' | tr '\n' ' ')
+          echo "files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed files: $CHANGED"
+
+      - name: Deploy changed workflows
+        env:
+          N8N_HOST: ${{ vars.N8N_HOST }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          CHANGED="${{ steps.changed.outputs.files }}"
+          if [ -z "$CHANGED" ]; then
+            echo "No workflow files changed."
+            exit 0
+          fi
+          for FILE in $CHANGED; do
+            echo "Deploying $FILE ..."
+            python scripts/deploy.py "$FILE"
+          done

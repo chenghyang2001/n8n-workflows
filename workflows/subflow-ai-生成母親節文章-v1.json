@@ -1,0 +1,204 @@
+{
+  "id": "4Y1TL9Om2bzmyzrA",
+  "name": "subFlow-ai-生成母親節文章-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=請用繁體中文回覆.",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.prompt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        320,
+        -180
+      ],
+      "id": "c68c8967-ee93-486f-9f1f-4cfc3ab8d358",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 產生99乘法表的javacript寫法\n### 改成python語法\n### 你現在是javascript的專家，我將會請教您這方面的問題？跳出警示要怎麼寫\n### 從下面文章中提取關鍵詞，黑底黑陶器是一種源於20世紀至21世紀的陶藝傳統，由新墨西哥州北部的普韋布洛美洲原住民陶藝家所發展。幾個世紀以來，普韋布洛的藝術家們一直在製作傳統的黑色還原燒陶器。在上個世紀，這種陶器的表面通常經過光滑處理，並透過選擇性拋光或應用耐火漿料來展現設計。此外，另一種風格則涉及雕刻或切割設計，並對凸起的部分進行選擇性拋光，形成獨特的藝術效果。\n### 寫一篇母親節的文章",
+        "height": 280,
+        "width": 740
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        60
+      ],
+      "id": "34e93950-e3b8-4ebf-9735-cb81c70d63b9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{  $json.message.content.replace(/\\n/g, '\\\\\\\\n') }} \"\n    }\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "4a2691af-e3c4-41d4-80b4-d1f1bf5c30e1",
+      "name": "Line : 推送訊息 Line使用者n8n-peter",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        700,
+        -180
+      ],
+      "typeVersion": 4.2,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -140,
+        -180
+      ],
+      "id": "40994611-1f1f-4107-9395-e052c858eba8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "85d9d8cc-6ba3-483f-949a-f639b83e4cc1",
+              "name": "prompt",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        -180
+      ],
+      "id": "a326b31a-217a-4657-a988-d9b86188257d",
+      "name": "prompt"
+    }
+  ],
+  "connections": {
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prompt": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 5,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T01:06:13.877Z",
+      "createdAt": "2025-07-01T01:06:13.877Z",
+      "role": "workflow:owner",
+      "workflowId": "4Y1TL9Om2bzmyzrA",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    }
+  ],
+  "activeVersion": null
+}

@@ -1,0 +1,267 @@
+{
+  "id": "0kaNTeVQudsWxYpu",
+  "name": "@notion_note_workflow",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39c2f302-03be-4464-a17a-d7cc481d6d44",
+              "name": "=response",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae170608-f9dd-400e-8da5-13ab77d4ba01",
+      "name": "Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        32
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "66a5ba7f-94c5-4515-b74f-04064c46d562",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        528,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "={{ $json.db_url }}",
+          "mode": "url"
+        },
+        "title": "={{ $json.headline }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "重點摘要|rich_text",
+              "textContent": "={{ $json.highlights_text }}"
+            },
+            {
+              "key": "影響|rich_text",
+              "textContent": "={{ $json.impact }}"
+            },
+            {
+              "key": "資訊來源列表|rich_text",
+              "textContent": "={{ $json.source_text }}"
+            },
+            {
+              "key": "類別|select",
+              "selectValue": "={{ $json.category }}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        224
+      ],
+      "id": "845a432e-eee9-49a6-9777-0da5f8605f74",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1648,
+        288
+      ],
+      "id": "31202f76-4dec-4ba2-a760-ad7a45e7e600",
+      "name": "Wait",
+      "webhookId": "e2a3ef90-5d51-48fe-aea9-cf77266a951b"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Function node code\n// 假設整包 JSON 存在 $json 變數\nconst articlesArr = $json.response.articles;    // 注意你這個是包在 response 裡\n\n// 目標：每個 article 變成一個 item\nreturn articlesArr.map(article => ({\n  headline: article.headline,\n  highlights: article.highlights,\n  impact_suggestion: article.impact_suggestion,\n  source_list: article.source_list,\n  // 可自行加其他欄位, 比如 title/database\n  title: $json.response.title,\n  database: $json.database,\n  category: $json.category\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        224
+      ],
+      "id": "7350a782-63a0-4ea5-b09a-5c429c3f8bdb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        976,
+        224
+      ],
+      "id": "08e3da94-2465-4686-a81e-fc22899df884",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json\n  \nreturn [\n  {\n    headline: item.headline,\n    highlights_text: item.highlights.join(\"\\n• \"),\n    impact: item.impact_suggestion,\n    source_text: item.source_list.join(\"\\n\"),\n    db_url: item.database,\n    category: item.category\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        224
+      ],
+      "id": "d7aa3790-9888-43cd-9267-527785dad287",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "content": "## n8n Notion自動化工作流 - 摘要說明\n\n- 手動或自動觸發，啟動流程\n- 支援 JavaScript 資料前處理及轉換\n- 迴圈處理多筆資料，動態建立 Notion 頁面\n- 流程執行成功後標記並可手動確認\n- 執行結束前可自定義等待時間，利於分批處理或定時同步\n\n***\n\n### 功能流程\n1. 工作流觸發（Execute Workflow Trigger）\n2. 資料前處理（Code in JavaScript）\n3. 逐筆迴圈資料（Loop Over Items）\n4. 進階資料處理（Code in JavaScript1）\n5. 寫入 Notion 資料庫（Create a database page）\n6. 流程結束等待（Wait），必要時可手動標記成功（Success）\n\n***\n\n### 主要用途\n- 批次資料自動寫入 Notion 資料庫\n- 支援客製化 JavaScript 處理流程\n- 精簡自動化，無須人工複製貼上\n- 適合多資料來源同步、知識管理自動化\n",
+        "height": 592,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "b3a93228-97b6-41ff-a607-d8ac5ab548b0",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 3,
+  "shared": [
+    {
+      "updatedAt": "2025-12-04T08:34:01.857Z",
+      "createdAt": "2025-12-04T08:34:01.857Z",
+      "role": "workflow:owner",
+      "workflowId": "0kaNTeVQudsWxYpu",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

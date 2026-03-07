@@ -1,0 +1,367 @@
+{
+  "id": "6Nh8EtGRaJdooDk9",
+  "name": "subFlow-line-n8n-peter-v1",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $now.format('yyyy/M/d') + ' at ' + $now.format('HH:mm:ss a') }}   {{ $json.content.replace(/\\n/g, '\\\\n') }} \" \n    }\n\n\n  ]\n}\n\n\n",
+        "options": {}
+      },
+      "id": "f626cc12-93bf-46db-bf5d-87f1f23d168b",
+      "name": "Line : 推送訊息 Line使用者n8n-peter",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        528,
+        672
+      ],
+      "typeVersion": 4.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        464
+      ],
+      "id": "3725953c-07ec-4e4a-bf07-8bf7c652ef24",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        464
+      ],
+      "id": "db7e8a78-c4fe-4fbb-97a7-d3325b99cbf4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "to": "U8ca91ed1c30228e776d83179a1893fb0",
+        "messages": {
+          "values": [
+            {
+              "text": "={{ $json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+      "typeVersion": 1,
+      "position": [
+        528,
+        464
+      ],
+      "id": "5964bbb7-0ae4-4a34-883b-706e147a3843",
+      "name": "Line Messaging",
+      "credentials": {
+        "lineMessagingApi": {
+          "name": "20251023-Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## user id :  U8ca91ed1c30228e776d83179a1893fb0",
+        "width": 704,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        256
+      ],
+      "id": "300557e6-71e3-4836-ae72-d15da730cc49",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Line Messaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": "8dc33a72-8933-463c-b719-3fa84be4b16a",
+  "versionCounter": 18,
+  "shared": [
+    {
+      "updatedAt": "2025-07-28T03:33:02.414Z",
+      "createdAt": "2025-07-28T03:33:02.414Z",
+      "role": "workflow:owner",
+      "workflowId": "6Nh8EtGRaJdooDk9",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    },
+    {
+      "updatedAt": "2025-07-01T08:14:11.963Z",
+      "createdAt": "2025-07-01T08:14:11.963Z",
+      "id": "QFvFTqOLs1VLlBts",
+      "name": "line"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-22T07:06:40.000Z",
+    "createdAt": "2025-11-27T01:00:44.252Z",
+    "versionId": "8dc33a72-8933-463c-b719-3fa84be4b16a",
+    "workflowId": "6Nh8EtGRaJdooDk9",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/push",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $now.format('yyyy/M/d') + ' at ' + $now.format('HH:mm:ss a') }}   {{ $json.content.replace(/\\n/g, '\\\\n') }} \" \n    }\n\n\n  ]\n}\n\n\n",
+          "options": {}
+        },
+        "id": "f626cc12-93bf-46db-bf5d-87f1f23d168b",
+        "name": "Line : 推送訊息 Line使用者n8n-peter",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          528,
+          672
+        ],
+        "typeVersion": 4.2,
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "content"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          464
+        ],
+        "id": "3725953c-07ec-4e4a-bf07-8bf7c652ef24",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          464
+        ],
+        "id": "db7e8a78-c4fe-4fbb-97a7-d3325b99cbf4",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "send",
+          "to": "U8ca91ed1c30228e776d83179a1893fb0",
+          "messages": {
+            "values": [
+              {
+                "text": "={{ $json.content }}"
+              }
+            ]
+          }
+        },
+        "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+        "typeVersion": 1,
+        "position": [
+          528,
+          464
+        ],
+        "id": "5964bbb7-0ae4-4a34-883b-706e147a3843",
+        "name": "Line Messaging",
+        "credentials": {
+          "lineMessagingApi": {
+            "id": "IzjUSzUeM9ZUt3vk",
+            "name": "20251023-Line Messaging account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## user id :  U8ca91ed1c30228e776d83179a1893fb0",
+          "width": 704,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          16,
+          256
+        ],
+        "id": "300557e6-71e3-4836-ae72-d15da730cc49",
+        "name": "Sticky Note"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Line Messaging",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": "Version v1",
+    "description": "Version v1 20251222",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2025-12-22T07:06:40.728Z",
+        "id": 115,
+        "workflowId": "6Nh8EtGRaJdooDk9",
+        "versionId": "8dc33a72-8933-463c-b719-3fa84be4b16a",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      },
+      {
+        "createdAt": "2025-12-22T07:06:53.203Z",
+        "id": 116,
+        "workflowId": "6Nh8EtGRaJdooDk9",
+        "versionId": "8dc33a72-8933-463c-b719-3fa84be4b16a",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    ]
+  }
+}

@@ -1,0 +1,463 @@
+{
+  "id": "B6OtQv3r5tFvFZBm",
+  "name": "meeting-summarizer-transcript",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1ZuEleOPvjK8ksPRWipgfUdPCaKhxf_X1",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {
+          "fileType": "application/vnd.google-apps.document"
+        }
+      },
+      "id": "f7afd441-62c2-422e-a267-38d547ea7ee5",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        704,
+        400
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "92e99dd6-1d6f-4b08-a44a-c73ab89eabdc",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        640
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "={{ $('Information Extractor').item.json.output.Title }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "08b4f9b8-314b-41e4-bbcb-316f47db5bb7",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1984,
+        400
+      ],
+      "webhookId": "4de661e1-360e-465b-bd6e-eb5e776d76e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.name }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Email",
+              "description": "All Attendees Email IDs"
+            },
+            {
+              "name": "Title",
+              "description": "Meeting Title"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert email extraction algorithm.\nOnly extract attendees email IDs & meeting title from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "id": "45d2bf89-d2ce-42cd-81b0-ba214b89401f",
+      "name": "Information Extractor",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        864,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a detailed meeting summary from a <transcript> with the following structure, with no additional supporting text:\n\n1. <strong>👥 Attendees</strong>\nList all participants\n\n2. <strong>✨ Summary</strong>\nProvide a 100-150 word overview of key meeting points and decisions\n\n3. <strong>🎯 Key Actions</strong>\nList action items with:\n- Owner\n- Task\n- Due date/timeline\n\n4. <strong>📋 Outline</strong>\nFor each discussion topic include:\n- Timestamp\n- Main points discussed (100-400 words)\n- Notable details (names, dates, technical specifics, prices, times, events)\n- IMPORTANT: Call out all key discussion points and facts e.g. if pricing was mentioned, call out the price and quantity.\n- IMPORTANT: Assess whether you think something is important to decide whether to include it in the output summary.\n\nFormat using HTML tags for bold headers (<strong>) and line breaks (<br>)\n\n<transcript>\n{{ $json.data }}\n</transcript>\n\n<example output>\n<strong>✨ Summary</strong><br>\nThe meeting centered on Daniel Chen's expertise in cloud infrastructure and his ongoing work with containerization solutions, particularly Kubernetes and Docker. Sarah Martinez joined to discuss security implementation strategies. Key decisions included exploring automated deployment pipelines and potential infrastructure scaling solutions. The meeting also covered the implementation of a new monitoring system and challenges with log aggregation. All parties discussed collaboration opportunities for upcoming projects, emphasizing the need for robust documentation and training materials for the operations team.<br><br>\n\n<strong>🎯 Key Actions</strong><br>\n1. Daniel Chen to prepare a proposal for the automated deployment pipeline by next Friday<br>\n2. Sarah Martinez to review current security protocols and provide recommendations within 2 weeks<br>\n3. James Wilson to allocate budget for new monitoring tools in Q3<br>\n4. Team to schedule a follow-up workshop on Istio implementation<br>\n5. Documentation team to begin creating training materials for the new monitoring system<br><br>\n\n<strong>📋 Outline</strong><br>\n<strong>1. Background and Experience • 0:00:33</strong><br>\n* Daniel Chen brings extensive experience in cloud architecture, having worked with AWS and Azure at major tech companies in Seattle and Singapore.<br>\n* He is currently seeking to transition into a DevOps leadership role and has been experimenting with infrastructure-as-code tools.<br><br>\n\n<strong>2. Cloud Architecture Vision • 0:03:31</strong><br>\n* Daniel aims to develop a more resilient infrastructure that can auto-scale based on real-time metrics.<br>\n* He believes that implementing infrastructure-as-code can help overcome challenges related to configuration drift.<br><br>\n\n<strong>3. Current Work and Challenges with Kubernetes • 0:14:21</strong><br>\n* Daniel has been working on implementing service mesh with Istio but faced limitations with the current networking policies.<br>\n* Sarah Martinez suggested switching from ELK Stack to Grafana Loki for better log aggregation and visualization capabilities.<br><br>\n\n<strong>4. Custom Monitoring Solution Development • 0:19:23</strong><br>\n* Daniel developed a custom monitoring solution using Prometheus to handle metrics more effectively, allowing for better alert correlation.<br>\n* He demonstrated that his solution successfully captures system health metrics by aggregating data from multiple clusters.<br><br>\n\n<strong>5. Alert Configuration for System Health • 0:21:44</strong><br>\n* The discussion focused on creating alert templates for system health monitoring that incorporate contextual data.<br>\n* Daniel Chen suggested that a centralized metrics store is necessary to provide accurate historical data when investigating incidents.<br><br>\n\n<strong>6. System Response Simulation • 0:22:05</strong><br>\n* James Wilson inquired about the system's ability to handle cascading failures.<br>\n* Daniel Chen provided a demonstration of the system's failover capabilities, outlining the recovery process.<br><br>\n\n<strong>7. Metrics Storage • 0:27:07</strong><br>\n* Daniel Chen mentioned that they are storing metrics in a time-series database and updating dashboards in real-time.<br>\n* This process aims to improve the visibility and troubleshooting capabilities of the operations team.<br><br>\n\n<strong>8. Challenges with Log Management • 0:31:00</strong><br>\n* Daniel Chen explained the limitations of the current logging system, particularly regarding retention and search capabilities.<br>\n* He noted that while basic logging works well, complex queries often timeout due to the volume of data.<br><br>\n\n<strong>9. Future Collaboration Opportunities • 0:34:30</strong><br>\n* James Wilson expressed interest in potentially bringing Daniel Chen on as a technical advisor as the infrastructure grows.<br>\n* Sarah indicated her team could benefit from Daniel's expertise in security implementation.<br><br>\n\n<strong>10. Documentation and Team Training • 0:40:04</strong><br>\n* James Wilson emphasized the importance of creating comprehensive runbooks and training materials for the operations team.<br>\n* He shared his approach to documentation, which includes creating video tutorials and interactive workshops to help team members understand the infrastructure better.<br><br>\n</example output>"
+      },
+      "id": "7ba19efd-c43e-4d9b-826c-0d5f30874f32",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1600,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Meeting summarizer based on a transcript file\n\n## Use Case\nTransform meeting transcription into AI-friendly markdown format:\n- You need to process meeting transcripts for LLM analysis\n- You want to extract Meeting Title and Attendee's email from transcript\n- You need to send email to all the attendees with meeting summarize & key topics outline\n\n## What this Workflow Does\nThe workflow uses Open AI to summarize meeting transcripts:\n- Download the transcript file from Google Drive\n- Converts transcript to markdown format\n- Send email to all the attendees\n\n## Setup\n1. Create a [TimeOS.ai](https://www.TimeOS.ai/) account \n2. Add your Google Calendar to Sync with TimeOS\n3. Connect your Google Drive & Google Docs for transcript file to be uploaded after meeting is ended.\n4. Configure your preferred LLM connection\n\n\n## How to Adjust it to Your Needs\n- Customize output format for your specific use case\n\n",
+        "height": 818.5240734585421,
+        "width": 581.9949654101088,
+        "color": 4
+      },
+      "id": "a4a0da76-a222-4ef2-b7d7-db06744f3427",
+      "name": "Sticky Note38",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### To Extract the Attendees' Email and Meeting Title",
+        "height": 239,
+        "width": 297,
+        "color": 7
+      },
+      "id": "8593aacd-da80-416e-aa72-720bd40a503d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        848,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Download the Meeting \nTranscript",
+        "height": 239.35628742514973,
+        "width": 217.72455089820343,
+        "color": 7
+      },
+      "id": "c6de6804-b86f-49cc-ba02-4e86e67f6644",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Extract the data from downloaded file\n",
+        "height": 239.35628742514973,
+        "width": 194.05688622754485,
+        "color": 7
+      },
+      "id": "1a3673c5-f56b-4ba5-859a-19e411b04b67",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Summarize the meeting & convert the data into Markdown format \n",
+        "height": 239.35628742514973,
+        "width": 311.002994011976,
+        "color": 7
+      },
+      "id": "f056dabd-895f-4bd1-b83f-71e3dcbc6388",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Send email to all attendees \n",
+        "height": 239,
+        "width": 271,
+        "color": 7
+      },
+      "id": "6e2b194b-8867-4fbb-b45c-28d8d844666e",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('File Created').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "id": "2d1ca7a1-7c5c-408b-8cd1-7eb87ced393c",
+      "name": "Download Transcript",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        400
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "ca45da2c-eaad-4b90-88e0-bba7e2960646",
+      "name": "Extract Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Upload summary to GDrive\n",
+        "height": 239,
+        "width": 451,
+        "color": 7
+      },
+      "id": "2a40e53b-89f5-4dd6-9d1f-d51c19f6b18b",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "folderId": "1ZuEleOPvjK8ksPRWipgfUdPCaKhxf_X1",
+        "title": "={{ $('Information Extractor').item.json.output.Title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        640
+      ],
+      "id": "605759c3-a41d-4d32-a559-37b7f2025218",
+      "name": "Create Summary Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Basic LLM Chain').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        640
+      ],
+      "id": "796101e0-f4fe-4ca8-9e22-62b1b36b4e3d",
+      "name": "Insert Content",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Download Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Summary Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Transcript": {
+      "main": [
+        [
+          {
+            "node": "Extract Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Summary Doc": {
+      "main": [
+        [
+          {
+            "node": "Insert Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "shared": [
+    {
+      "updatedAt": "2025-06-28T04:54:31.049Z",
+      "createdAt": "2025-06-28T04:54:31.049Z",
+      "role": "workflow:owner",
+      "workflowId": "B6OtQv3r5tFvFZBm",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-01-06T07:43:45.567Z",
+      "createdAt": "2026-01-06T07:43:45.567Z",
+      "id": "PFtfnxYSnbX2mLdm",
+      "name": "會議記錄"
+    },
+    {
+      "updatedAt": "2025-07-01T05:43:00.286Z",
+      "createdAt": "2025-07-01T05:42:34.424Z",
+      "id": "TdNNYFQCYcaCe34J",
+      "name": "simon"
+    }
+  ],
+  "activeVersion": null
+}

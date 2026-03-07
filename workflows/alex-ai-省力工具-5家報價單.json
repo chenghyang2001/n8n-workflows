@@ -1,0 +1,894 @@
+{
+  "id": "35Z5QP4rFD9LcJJ0",
+  "name": "alex-AI-省力工具-5家報價單",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        352
+      ],
+      "id": "4cbe6371-c6d2-4615-bf83-ee48e2b65776",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html lang=\"zh-TW\">\n<head>\n  <meta charset=\"utf-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>報價單 {{$json.quoteNo}}</title>\n</head>\n<body style=\"font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;margin:0;padding:0.5rem;\">\n  <div style=\"max-width:700px;margin:auto;padding:1.5rem;background:#fff;box-shadow:0 4px 6px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.08);\">\n    <!-- Header -->\n    <div style=\"text-align:center;margin-bottom:1.5rem;\">\n      <h1 style=\"font-size:2rem;font-weight:bold;color:#2d3748;\">報價單</h1>\n      <div style=\"display:flex;justify-content:space-around;font-size:.75rem;color:#718096;line-height:1.5;margin-top:.5rem;\">\n        <p>報價單號：<span style=\"color:#4a5568;font-weight:600;\">{{$json.quoteNo}}</span></p>\n        <p>報價日期：<span style=\"color:#4a5568;font-weight:600;\">{{$json.date}}</span></p>\n        <p>有效期限：<span style=\"color:#4a5568;font-weight:600;\">{{$json.dueDays}} 天</span></p>\n      </div>\n    </div>\n\n    <!-- Parties -->\n    <div style=\"display:flex;justify-content:space-between;margin-bottom:1.5rem;padding:1rem;background:#f7fafc;border-radius:.5rem;\">\n      <div style=\"flex:1;margin-right:1rem;\">\n        <h2 style=\"font-size:1rem;font-weight:bold;color:#4a5568;margin-bottom:.5rem;\">報價廠商</h2>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">公司名稱：{{$json.issuer.company}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">統一編號：{{$json.issuer.taxId}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">地址：{{$json.issuer.address}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">聯絡人：{{$json.issuer.contact}}{{$json.issuer.phone ? '｜' + $json.issuer.phone : ''}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">Email：{{$json.issuer.email}}</p>\n      </div>\n      <div style=\"flex:1;margin-left:1rem;\">\n        <h2 style=\"font-size:1rem;font-weight:bold;color:#4a5568;margin-bottom:.5rem;\">客戶</h2>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">客戶名稱：{{$json.customer.company}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">聯絡人：{{$json.customer.contact}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">電話：{{$json.customer.phone}}</p>\n        <p style=\"font-size:.8rem;color:#4a5568;line-height:1.5;\">Email：{{$json.customer.email}}</p>\n      </div>\n    </div>\n\n    <!-- Items -->\n    <div style=\"overflow-x:auto;\">\n      <table style=\"width:100%;text-align:left;border-collapse:collapse;\">\n        <thead>\n          <tr style=\"background:#e2e8f0;\">\n            <th style=\"padding:.75rem;white-space:nowrap;border-top-left-radius:.5rem;font-size:.8rem;\">品名/服務項目</th>\n            <th style=\"padding:.75rem;white-space:nowrap;font-size:.8rem;\">規格</th>\n            <th style=\"padding:.75rem;white-space:nowrap;text-align:right;font-size:.8rem;\">數量</th>\n            <th style=\"padding:.75rem;white-space:nowrap;text-align:right;font-size:.8rem;\">單價</th>\n            <th style=\"padding:.75rem;white-space:nowrap;text-align:right;border-top-right-radius:.5rem;font-size:.8rem;\">小計</th>\n          </tr>\n        </thead>\n        <tbody>\n          {{\n            $json.items\n              .map(i => {\n                const money = (n) => 'NT$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2 });\n                return `\n                <tr>\n                  <td style=\"padding:.75rem;border-bottom:1px solid #e2e8f0;white-space:nowrap;font-size:.8rem;\">${i.name || ''}</td>\n                  <td style=\"padding:.75rem;border-bottom:1px solid #e2e8f0;white-space:nowrap;font-size:.8rem;\">${i.spec || ''}</td>\n                  <td style=\"padding:.75rem;border-bottom:1px solid #e2e8f0;white-space:nowrap;text-align:right;font-size:.8rem;\">${i.qty}</td>\n                  <td style=\"padding:.75rem;border-bottom:1px solid #e2e8f0;white-space:nowrap;text-align:right;font-size:.8rem;\">${money(i.unitPrice)}</td>\n                  <td style=\"padding:.75rem;border-bottom:1px solid #e2e8f0;white-space:nowrap;text-align:right;font-size:.8rem;\">${money(i.lineTotal)}</td>\n                </tr>`;\n              })\n              .join('')\n          }}\n        </tbody>\n      </table>\n    </div>\n\n    <!-- Totals -->\n    <div style=\"display:flex;justify-content:flex-end;margin-top:1.5rem;\">\n      <div style=\"width:100%;max-width:15rem;\">\n        <div style=\"display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;\">\n          <span style=\"font-size:.75rem;color:#4a5568;font-weight:600;\">總金額（未稅）：</span>\n          <span style=\"font-size:.75rem;color:#4a5568;font-weight:600;\">\n            {{ (n => 'NT$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2}))($json.subtotal) }}\n          </span>\n        </div>\n        <div style=\"display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;\">\n          <span style=\"font-size:.75rem;color:#4a5568;font-weight:600;\">營業稅（{{Math.round($json.taxRate*100)}}%）：</span>\n          <span style=\"font-size:.75rem;color:#4a5568;font-weight:600;\">\n            {{ (n => 'NT$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2}))($json.tax) }}\n          </span>\n        </div>\n        <div style=\"display:flex;justify-content:space-between;align-items:center;padding-top:.75rem;border-top:2px solid #cbd5e0;\">\n          <span style=\"font-size:1rem;font-weight:bold;color:#2d3748;\">總計（含稅）：</span>\n          <span style=\"font-size:1.125rem;font-weight:bold;color:#3182ce;\">\n            {{ (n => 'NT$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2}))($json.total) }}\n          </span>\n        </div>\n      </div>\n    </div>\n\n    <!-- Notes -->\n    <div style=\"margin-top:1.5rem;padding:1rem;background:#f7fafc;border-radius:.5rem;\">\n      <h3 style=\"font-size:1rem;font-weight:bold;color:#4a5568;margin-bottom:.5rem;\">備註</h3>\n      <ul style=\"list-style-type:disc;padding-left:1.25rem;font-size:.8rem;color:#4a5568;\">\n        <li style=\"line-height:1.5;\">付款條件：簽約時 50%，驗收完成 50%。</li>\n        <li style=\"line-height:1.5;\">交期：簽約後 30 個工作天內完成。</li>\n        <li style=\"line-height:1.5;\">此報價有效期限為 {{$json.dueDays}} 天。</li>\n      </ul>\n      {{ $json.errors && $json.errors.length\n          ? `<div style=\"margin-top:.5rem;color:#b91c1c;font-size:.8rem;\"><strong>注意：</strong>${$json.errors.join('；')}</div>`\n          : '' }}\n    </div>\n  </div>\n</body>\n</html>\n"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        256
+      ],
+      "id": "1f2e78ef-fae2-4b39-81e2-feb0db652016",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "html",
+        "options": {
+          "fileName": "index.html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        256
+      ],
+      "id": "2a713a83-159f-4c22-8fbf-e22f7854577c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1248,
+        208
+      ],
+      "id": "57261270-f6a1-4fff-ac20-af17ff4d9a64",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit?gid=1683411102#gid=1683411102",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1683411102,
+          "mode": "list",
+          "cachedResultName": "公司資訊",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit#gid=1683411102"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        160
+      ],
+      "id": "972bdf80-b631-4662-b076-2268275cac0c",
+      "name": "公司資訊",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit?gid=1683411102#gid=1683411102",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 484858913,
+          "mode": "list",
+          "cachedResultName": "報價品項",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit#gid=484858913"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        544
+      ],
+      "id": "d7820a99-5495-46a1-81f9-af60e6d90b4d",
+      "name": "品項資訊",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit?gid=1683411102#gid=1683411102",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "客戶資訊",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        352
+      ],
+      "id": "183a717b-107a-4766-8324-fbdf63ed2759",
+      "name": "客戶資訊",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 單一輸入：合併後的列（公司/客戶/品項混在同一陣列）\nconst rows = $input.all().map(i => i.json);\n\n// 分類\nconst issuerRow   = rows.find(r => String(r['類型']).trim() === '服務廠商') || {};\nconst customerRows= rows.filter(r => String(r['類型']).trim() === '客戶');\nconst itemRowsAll = rows.filter(r => r['單號'] !== undefined);\n\n// 組 issuer（你的抬頭）\nconst issuer = {\n  company: issuerRow['公司名稱'] || '',\n  taxId:   issuerRow['統一編號'] || '',\n  address: issuerRow['地址'] || '',\n  contact: issuerRow['聯絡人'] || '',\n  phone:   issuerRow['電話'] || '',\n  email:   issuerRow['電子郵件'] || '',\n  taxRate: 0.05,  // 若要公司化可在 issuerRow 加欄 '稅率'\n  dueDays: 15,    // 同上，可加 '有效期限(天)'\n};\n\n// 客戶對照（key = 公司名稱）\nconst customerMap = new Map(customerRows.map(r => [\n  r['公司名稱'],\n  {\n    company: r['公司名稱'],\n    contact: r['聯絡人'] || '',\n    phone:   r['電話']   || '',\n    email:   r['電子郵件'] || '',\n    address: r['地址'] || '',\n  }\n]));\n\n// 僅處理未寄送/未勾選\nconst itemRows = itemRowsAll.filter(r => {\n  const s = String(r['狀態']).trim().toLowerCase();\n  return !(s === 'true' || s === '1' || s === '是' || s === '已寄送' || s === '已勾選');\n});\n\n// 以「單號」分組（同單號＝同一張）\nconst byQuote = new Map();\nfor (const r of itemRows) {\n  const q = r['單號'] || 'NO_QUOTE';\n  if (!byQuote.has(q)) byQuote.set(q, []);\n  byQuote.get(q).push(r);\n}\n\n// 輸出每張報價單 1 item\nconst out = [];\nfor (const [quoteNo, rowsOfQuote] of byQuote.entries()) {\n  const errors = [];\n\n  // 檢查同單號內廠商一致\n  const vendors = [...new Set(rowsOfQuote.map(x => (x['廠商'] || '').trim()))].filter(Boolean);\n  if (vendors.length === 0) errors.push(`單號 ${quoteNo} 缺少「廠商」欄位`);\n  if (vendors.length > 1)  errors.push(`單號 ${quoteNo} 含多個廠商：${vendors.join(', ')}`);\n\n  const vendor = vendors[0] || '';\n  const customer = customerMap.get(vendor);\n  if (!customer)           errors.push(`單號 ${quoteNo} 的廠商「${vendor}」在客戶清單找不到相同公司名稱`);\n  else if (!customer.email)errors.push(`單號 ${quoteNo} 的客戶「${vendor}」缺少電子郵件`);\n\n  // 依 row_number 排序（若有）\n  rowsOfQuote.sort((a,b) => (Number(a.row_number||0) - Number(b.row_number||0)));\n\n  // 明細\n  const items = rowsOfQuote.map(x => {\n    const qty = Number(String(x['數量'] ?? 1).replace(/[^0-9.\\-]/g,'')) || 1;\n    const unitPrice = Number(String(x['單價'] ?? 0).replace(/[^0-9.\\-]/g,'')) || 0;\n    return {\n      name: x['品名/服務項目'],\n      spec: x['規格'],\n      qty,\n      unitPrice,\n      lineTotal: Number((qty * unitPrice).toFixed(2)),\n    };\n  });\n\n  // 金額\n  const subtotal = Number(items.reduce((s, it) => s + it.lineTotal, 0).toFixed(2));\n  const tax      = Number((subtotal * issuer.taxRate).toFixed(2));\n  const total    = Number((subtotal + tax).toFixed(2));\n\n  out.push({\n    json: {\n      valid: errors.length === 0,\n      errors,\n      quoteNo,\n      date: new Date().toISOString().slice(0,10),\n      issuer,\n      customer: customer || { company: vendor },\n      items,\n      subtotal,\n      taxRate: issuer.taxRate,\n      tax,\n      total,\n      dueDays: issuer.dueDays,\n      _rowsToUpdate: rowsOfQuote.map(x => x.row_number).filter(n => n !== undefined), // 供回寫\n    }\n  });\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        352
+      ],
+      "id": "f0744b5d-7b2b-41cf-be1e-def19da86237",
+      "name": "報價單整理"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        512,
+        336
+      ],
+      "id": "f9755c27-a2db-4b94-8034-97b4d28f0d57",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b7e93a41-f02f-4a99-8dc4-48a45e547255",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        352
+      ],
+      "id": "1ccbfb2d-3211-4d26-9ac2-9536930d770b",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=[報價單] {{ $('Loop Over Items').item.json.quoteNo }} - {{ $('Loop Over Items').item.json.issuer.company }}",
+        "message": "=<p>您好，{{ $('Loop Over Items').item.json.customer.contact}}：</p>  \n\n<p>附件為貴公司（{{$('Loop Over Items').item.json.customer.company}}）之報價單，請查閱。</p>  \n\n<ul>   <li>報價單號：{{$('Loop Over Items').item.json.quoteNo}}</li>   <li>報價日期：{{$('Loop Over Items').item.json.date}}</li>   <li>有效期限：{{$('Loop Over Items').item.json.dueDays}} 天</li>   <li>報價金額 (含稅)：NT${{ $('Loop Over Items').item.json.total }}</li> </ul>  \n\n\n<p>如有任何問題，歡迎與我聯繫。</p>  <p>此致<br/>{{$('Loop Over Items').item.json.issuer.company}}</p>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2800,
+        256
+      ],
+      "id": "e507e59f-0acd-444c-9585-7b7496b75d36",
+      "name": "Send a message",
+      "webhookId": "116df4b7-665c-4ede-965c-69f216e080a7",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 這個節點要接在 Convert to PDF 後面；binary property 名稱是 \"data\"\nconst item = $input.item;\n\n// 從 JSON 取單號、客戶公司\nconst quoteNo  = $('Loop Over Items').first().json.quoteNo || 'NOQUOTE';\nconst customer = ($('Loop Over Items').first().json.customer.company ) || 'CUSTOMER';\n\n// 去除檔名禁用字元（/ \\ : * ? \" < > |）與多餘空白\nconst sanitize = s =>\n  String(s).replace(/[\\/\\\\:*?\"<>|]/g, '').replace(/\\s+/g, ' ').trim();\n\n// 依「位元組」長度做截斷（避免中英混合超過系統限制）\nfunction truncateByBytes(str, maxBytes) {\n  let out = '', bytes = 0;\n  for (const ch of str) {\n    const b = Buffer.from(ch, 'utf8').length;\n    if (bytes + b > maxBytes) break;\n    bytes += b;\n    out += ch;\n  }\n  return out;\n}\n\n// 組檔名（保留 .pdf 4 bytes，這裡預留 4；總長度上限可自行微調）\nconst base = `報價單-${sanitize(quoteNo)}-${sanitize(customer)}`;\nconst limited = truncateByBytes(base, 120 - 4);   // 120 bytes 內（含中文安全）\nconst finalName = `${limited}.pdf`;\n\n// 寫回 binary 檔名\nif (item.binary?.data) {\n  item.binary.data.fileName = finalName;\n} else {\n  throw new Error('找不到 binary property: data');\n}\n\nreturn item;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        256
+      ],
+      "id": "e5972b56-5530-45e5-9752-1f4fd944de42",
+      "name": "報價單名稱"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit?gid=1683411102#gid=1683411102",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 484858913,
+          "mode": "list",
+          "cachedResultName": "報價品項",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit#gid=484858913"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.rowNumber }}",
+            "狀態": "={{ $json.status }}",
+            "寄送時間": "={{ $json.sentAt }}",
+            "寄送結果": "={{ $json.result }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "狀態",
+              "displayName": "狀態",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "單號",
+              "displayName": "單號",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "廠商",
+              "displayName": "廠商",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "品名/服務項目",
+              "displayName": "品名/服務項目",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "規格",
+              "displayName": "規格",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "數量",
+              "displayName": "數量",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "單價",
+              "displayName": "單價",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "寄送時間",
+              "displayName": "寄送時間",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "寄送結果",
+              "displayName": "寄送結果",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3280,
+        496
+      ],
+      "id": "518ee243-e00c-4001-bc7f-1c6704cf6a53",
+      "name": "Update 狀態",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 整理資料與彙整，讓每個報價單逐項匯出\n## 1. 報價單 Excel URL : https://docs.google.com/spreadsheets/d/1xPMl1STXDmbjted3WIRtg_HPiPbgOjqfl1ib3UUfjCs/edit?gid=484858913#gid=484858913\n## 2. Youtube : https://youtu.be/pXAcMlhU8cs\n## 3. Skoll : https://www.skool.com/ai-brain-alex?c=85a2a8d3d7e04e4a8c00a9f95095ca89&s=newest-cm&fl=\n## 4. 只用到 Google Sheet, Gmail, code node, convertAPI to pdf. 只有自動化,沒有AI",
+        "height": 240,
+        "width": 2192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "80fd2f8f-15aa-45db-a049-3ae9dd5f6856",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 報價單轉換成 pdf - \n",
+        "height": 80,
+        "width": 304,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2080,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "0d337d20-d004-41fa-9f7c-ec47ca146340",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 寄送 Email 給對方公司\n",
+        "height": 80,
+        "width": 384,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2784,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "731ff10c-cae2-4d5f-97ae-30129796b020",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 讀取客戶、報價資料\n",
+        "height": 80,
+        "width": 304,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "165d760b-7d75-4f0e-9e04-c3a1cfbf14f0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 來自報價單整理的：_rowsToUpdate = [2,3,4]\nconst sentAt = new Date().toISOString();\nconst rows = ($('Loop Over Items').first().json._rowsToUpdate || [])\n  .filter(n => n !== undefined && n !== null)\n  .map(n => ({\n    json: {\n      rowNumber: n,          // ← 這是 Google Sheet 的列號\n      status: true,          // 勾選\n      sentAt,                // 寄送時間\n      result: 'OK',          // 寄送結果\n    }\n  }));\n\nreturn rows;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        256
+      ],
+      "id": "dc9d04bf-0f04-498d-8b4c-cadf74b426f9",
+      "name": "狀態整理"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://v2.convertapi.com/convert/html/to/pdf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "StoreFile",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1904,
+        256
+      ],
+      "id": "fa53970f-36dd-4890-af9e-a610326bb0d5",
+      "name": "ConvertAPI HTTP Request1",
+      "credentials": {
+        "convertApi": {
+          "name": "ConvertAPI 20250801"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pdf-url",
+              "name": "pdf_url",
+              "value": "={{ $json.Files[0].Url }}",
+              "type": "string"
+            },
+            {
+              "id": "pdf-name",
+              "name": "pdf_name",
+              "value": "={{ $json.Files[0].FileName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2160,
+        256
+      ],
+      "id": "13a822c1-91ee-4d6f-a2d7-f96194c06ec4",
+      "name": "Extract PDF URL"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract PDF URL').item.json.pdf_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2384,
+        256
+      ],
+      "id": "45b2f7b1-dc6d-47e4-bc26-76edc362a1b8",
+      "name": "Download PDF"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "alex-報價單系統-DONE"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        32
+      ],
+      "id": "e80b6902-e680-4351-9bf2-5a6c4c1f2d41",
+      "name": "Call 'subFlow-line-n8n-peter-v1'",
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "公司資訊",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "品項資訊",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "客戶資訊",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "ConvertAPI HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "公司資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "品項資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "客戶資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "報價單整理": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "報價單整理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "狀態整理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "報價單名稱": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update 狀態": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "狀態整理": {
+      "main": [
+        [
+          {
+            "node": "Update 狀態",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF URL": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "報價單名稱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-25T02:01:48.495Z",
+      "createdAt": "2025-09-25T02:01:48.495Z",
+      "role": "workflow:owner",
+      "workflowId": "35Z5QP4rFD9LcJJ0",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-10-03T08:52:00.299Z",
+      "createdAt": "2025-10-03T08:52:00.299Z",
+      "id": "ah3sT4MPTmdQsana",
+      "name": "html-node"
+    },
+    {
+      "updatedAt": "2025-09-25T02:38:45.785Z",
+      "createdAt": "2025-09-25T02:38:45.785Z",
+      "id": "oVURZ4WXQYm4iOuH",
+      "name": "alex"
+    },
+    {
+      "updatedAt": "2025-09-25T02:39:06.745Z",
+      "createdAt": "2025-09-25T02:39:06.745Z",
+      "id": "sF72jCMFGDNrzm3X",
+      "name": "html-to-pdf"
+    },
+    {
+      "updatedAt": "2025-10-03T08:51:38.352Z",
+      "createdAt": "2025-10-03T08:51:38.352Z",
+      "id": "uL6hWxc6Rti0vGAq",
+      "name": "merge"
+    },
+    {
+      "updatedAt": "2025-09-25T02:38:55.624Z",
+      "createdAt": "2025-09-25T02:38:55.624Z",
+      "id": "zC6AhCBxMK48IvGV",
+      "name": "報價單"
+    }
+  ],
+  "activeVersion": null
+}

@@ -1,0 +1,1302 @@
+{
+  "id": "B5NuHnrUNbKTnT35",
+  "name": "語音摘要-雲端硬碟檔案-Gemini-flash-only",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "folderId": "=19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+        "title": "=m4a-{{ $('Google Drive Trigger').item.json.originalFilename }}-逐字稿-{{ $now.format('yyyy-MM-dd') }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        864,
+        -320
+      ],
+      "id": "c5450dfd-8599-45ce-a2e8-e2daa3de2131",
+      "name": "Create Docs2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('gemini-2-5-flash').item.json.content.parts[0].text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -320
+      ],
+      "id": "773f2356-a726-45d9-adf2-833906564d7f",
+      "name": "Update Docs2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -320
+      ],
+      "id": "7b41c165-eb6b-4819-87d5-0b156ebe01fd",
+      "name": "gemini-2-5-flash",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "id": "b66be9da-5be9-4de5-8db1-1779174923f7",
+      "name": "OpenRouter-gpt-4o",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        -96
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -96
+      ],
+      "id": "c813faab-5dfe-406f-9273-41124f28c0bd",
+      "name": "claude-3.7-sonnet1",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=以下是需要摘要的內容：\n{{ $('gemini-2-5-flash').item.json.content.parts[0].text }}\n\n\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=你是專業的摘要助理。請用繁體中文將提供的文字內容進行摘要，並以清楚的數字條列式輸出。\n遵循下列規格：\n所有輸出一律使用繁體中文,不能使用其他語言(例如簡體中文)\n先給出3–7 點關鍵要點（每點不超過 20 字）。\n嚴禁杜撰或推測；若原文未提及，請標記為「未提及」。\n若原文超過 2000 字，先產生高階摘要，再視需要補充細節摘要。\n保持中立客觀，避免加入主觀評論。\n輸出格式範例（請套用到我的內容）：\n關鍵要點\n…\n…\n\nWhat Changed:\n明確規定語言（繁體中文）與輸出結構（要點）。\n設定每點長度與總點數範圍，確保精煉。\n\n加入關鍵資訊抽取欄位，避免遺漏數據與名詞。\n\n規範長文處理策略（高階→細節），提升可用性。\n\n要求中立與防杜撰，增強可靠性。"
+            }
+          ]
+        }
+      },
+      "id": "c8177e0f-4757-49d1-b56a-59263a08314a",
+      "name": "summary aac",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1376,
+        -320
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"properties\": {\n    \"關鍵要點\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"列出所有關鍵要點\"\n    }\n  },\n  \"required\": [\"關鍵要點\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1568,
+        -96
+      ],
+      "id": "86c45d20-7b31-4231-96b1-04208690e490",
+      "name": "Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node - 修正版本\n\nconst data = $input.first().json;\n\n// 正確提取資料 - 注意欄位名稱\nconst 關鍵要點 = data?.output?.關鍵要點 || data?.關鍵要點 || [];\nconst 總結 = data?.output?.一句話總結 || data?.一句話總結 || '';\n\n// 除錯：查看實際資料結構\nconsole.log('原始資料:', JSON.stringify(data, null, 2));\nconsole.log('關鍵要點:', 關鍵要點);\n\n\n// 生成 HTML 內容\nconst htmlContent = `\n<!DOCTYPE html>\n<html lang=\"zh-TW\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>報告摘要</title>\n    <style>\n        body {\n            font-family: \"Microsoft JhengHei\", \"Arial\", sans-serif;\n            line-height: 1.6;\n            color: #333;\n            max-width: 800px;\n            margin: 0 auto;\n            padding: 20px;\n            background-color: #f5f5f5;\n        }\n        .container {\n            background-color: white;\n            padding: 30px;\n            border-radius: 8px;\n            box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n        }\n        h1 {\n            color: #2c3e50;\n            border-bottom: 3px solid #3498db;\n            padding-bottom: 10px;\n            margin-bottom: 25px;\n        }\n        h2 {\n            color: #34495e;\n            margin-top: 25px;\n            margin-bottom: 15px;\n            font-size: 1.3em;\n            border-left: 4px solid #3498db;\n            padding-left: 12px;\n        }\n        .key-points {\n            background-color: #ecf0f1;\n            padding: 15px;\n            border-radius: 5px;\n            margin-bottom: 20px;\n        }\n        .key-points ul {\n            margin: 10px 0;\n            padding-left: 20px;\n        }\n        .key-points li {\n            margin-bottom: 8px;\n            line-height: 1.5;\n        }\n        .info-section {\n            background-color: #e8f4f8;\n            padding: 15px;\n            border-radius: 5px;\n            margin-bottom: 20px;\n        }\n        .info-item {\n            margin-bottom: 10px;\n            padding: 8px;\n            background-color: white;\n            border-radius: 3px;\n        }\n        .info-label {\n            font-weight: bold;\n            color: #2980b9;\n            display: inline-block;\n            min-width: 100px;\n        }\n        .terms {\n            display: flex;\n            flex-wrap: wrap;\n            gap: 8px;\n            margin-top: 10px;\n        }\n        .term-badge {\n            background-color: #3498db;\n            color: white;\n            padding: 5px 12px;\n            border-radius: 15px;\n            font-size: 0.9em;\n        }\n        .summary {\n            background-color: #fff3cd;\n            border-left: 4px solid #ffc107;\n            padding: 15px;\n            margin-top: 20px;\n            border-radius: 5px;\n        }\n        .summary-text {\n            font-size: 1.1em;\n            font-weight: 500;\n            color: #856404;\n        }\n        .footer {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #ddd;\n            text-align: center;\n            color: #7f8c8d;\n            font-size: 0.9em;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h1>📊 報告摘要</h1>\n        \n        <h2>🔑 關鍵要點</h2>\n        <div class=\"key-points\">\n            ${關鍵要點.length > 0 ? `\n            <ul>\n                ${關鍵要點.map((item, index) => `<li><strong>要點 ${index + 1}:</strong> ${item}</li>`).join('')}\n            </ul>\n            ` : '<p>無關鍵要點資料</p>'}\n        </div>\n        \n       \n        \n        <h2>💡 一句話總結</h2>\n        <div class=\"summary\">\n            <p class=\"summary-text\">${總結 || '無總結資料'}</p>\n        </div>\n        \n        <div class=\"footer\">\n            <p>報告生成時間: ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}</p>\n        </div>\n    </div>\n</body>\n</html>\n`;\n\n// 生成純文字版本\nconst textContent = `\n報告摘要\n============\n\n【關鍵要點】\n${關鍵要點.length > 0 ? 關鍵要點.map((item, index) => `${index + 1}. ${item}`).join('\\n') : '無資料'}\n\n\n【一句話總結】\n${總結 || '無資料'}\n\n---\n報告生成時間: ${new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}\n`;\n\nreturn {\n  json: {\n    htmlContent: htmlContent,\n    textContent: textContent,\n    subject: '報告摘要 - ' + new Date().toLocaleDateString('zh-TW'),\n    關鍵要點數量: 關鍵要點.length,\n    \n    // 除錯資訊\n    debug: {\n      原始資料結構: Object.keys(data),\n      關鍵要點: 關鍵要點\n    \n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        -320
+      ],
+      "id": "ca85eeab-04ad-4c3e-a83f-2c804bc48b34",
+      "name": "clean data"
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com,peter_yang@microjet.com.tw ",
+        "subject": "=audio summary - {{ $('Download File2').item.json.name }}",
+        "message": "={{ $json.htmlContent }}\n<br><br>\n{{ $json.textContent }}\n<br><br>\n逐字稿內容:\n<br><br>\n{{ $('gemini-2-5-flash').item.json.content.parts[0].text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2000,
+        -224
+      ],
+      "id": "954cb092-d59e-4612-a7be-0cd517662a0f",
+      "name": "Send message",
+      "webhookId": "c935a230-5155-45ce-85c6-1f60afc2fdfe",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1yd5kXfkTAHlEH7-aIb0lCk9zPKM5xrzM",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        192
+      ],
+      "id": "347e3bdc-0a41-4774-93bb-b251459ea618",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -32,
+        -320
+      ],
+      "id": "a7189b90-fca3-484a-b426-1a67ae476f1a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0501328-5e74-435f-afc3-a5796612c52d",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6989f772-441d-4284-84a1-dbb37dd1541d",
+              "name": "createdTime",
+              "value": "={{ $json.createdTime }}",
+              "type": "string"
+            },
+            {
+              "id": "150cfee5-e9a7-40af-ba0f-114bd1485681",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -320
+      ],
+      "id": "d0f9e58c-b550-4dc3-a6c4-1d5137625100",
+      "name": "SetFileId"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=audio 摘要 DONE - {{ $json.name }} "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        -512
+      ],
+      "id": "e30d5309-763f-4579-ad98-24b233e0e3d0",
+      "name": "Execute Workflow1"
+    },
+    {
+      "parameters": {
+        "content": "# 把檔案放到 n8n cloud 上以便做處理",
+        "height": 80,
+        "width": 624,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -432
+      ],
+      "id": "5a082a6e-53b7-42da-abb3-0e47a888a1d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('SetFileId').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        416,
+        -320
+      ],
+      "id": "38c9f60f-7848-4ebb-8a4c-d09d418967bb",
+      "name": "Download File2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download File2').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/129GOquESlg3D28oA-sH5Jm9f9XAqCgEK",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/129GOquESlg3D28oA-sH5Jm9f9XAqCgEK",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        -96
+      ],
+      "id": "945b75b3-aa38-4e5c-a3ca-d472c29e013c",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Google folder 聲音來源檔案夾 : https://drive.google.com/drive/folders/1yd5kXfkTAHlEH7-aIb0lCk9zPKM5xrzM\n## Google folder 生成逐字文件夾 : https://drive.google.com/drive/folders/19SBK2ab-Qj_glDExXQzj3fD78I00Roix\n## n8n 用表單上傳 : https://chenghyang2001.app.n8n.cloud/workflow/WpEAcDV8F9KNUPde\n## 1. 逐字稿 : OpenAI 限制多 ( type acc not work, file size 26230664 > 26214400, can not work ) , Whisper 沒有逗號與句點.\n## 2. Gemini 2.5 Pro : 有時間Stamp. Gemini 2.5 flash 與 OpenAI 結果相似.\n\n## 20251009",
+        "height": 368,
+        "width": 2064,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -928
+      ],
+      "id": "d380e06f-7832-46eb-89ba-6aa965e597b7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "html": "{{ $json.htmlContent }}"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2000,
+        -416
+      ],
+      "id": "50cb95ec-f84e-48dd-99ab-56dd8ddf9c45",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "html",
+        "options": {
+          "fileName": "index.html"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2224,
+        -416
+      ],
+      "id": "228e7b98-e64f-4d83-a708-f8f64a17797d",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=pdf file - {{ $('Create Docs2').item.json.name }}",
+        "message": "= \n\n<p>附件為文件，請查閱。</p>  \n",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3120,
+        -416
+      ],
+      "id": "9c0e7d31-c81e-41cc-9f13-bda80dec4c96",
+      "name": "Send a message",
+      "webhookId": "116df4b7-665c-4ede-965c-69f216e080a7",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://v2.convertapi.com/convert/html/to/pdf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "StoreFile",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2448,
+        -416
+      ],
+      "id": "a25ab65a-bd62-49d8-8b91-c912d25ec84a",
+      "name": "ConvertAPI HTTP Request1",
+      "credentials": {
+        "convertApi": {
+          "name": "ConvertAPI 20250801"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pdf-url",
+              "name": "pdf_url",
+              "value": "={{ $json.Files[0].Url }}",
+              "type": "string"
+            },
+            {
+              "id": "pdf-name",
+              "name": "pdf_name",
+              "value": "={{ $json.Files[0].FileName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2672,
+        -416
+      ],
+      "id": "bf11a137-605e-49d7-937d-45f7c92c493b",
+      "name": "Extract PDF URL"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract PDF URL').item.json.pdf_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2896,
+        -416
+      ],
+      "id": "a5cd5932-fd49-4e28-ba60-ecfd8e715edc",
+      "name": "Download PDF"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "m4a",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "70ce3c30-81ae-430c-8bd7-66c6b8c06399"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "m4a"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "39d026d7-5f9c-439b-a34d-582dfccc2633",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "mp4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mp4"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ec4d81c0-133e-4da0-add6-97599399fd00",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Other"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -560,
+        192
+      ],
+      "id": "d4bf46e4-b7e3-43be-9bd0-f0ab981efdb9",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "视频中的内容是一場簡報的內容，幫我把每一張簡報的頁碼編號與簡報頁面內容截取,把這些資料整理成文字, 用條列式輸出.",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        544,
+        304
+      ],
+      "id": "ef1b3934-173c-418f-91e2-28880e16ea77",
+      "name": "Analyze video",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -272,
+        208
+      ],
+      "id": "b5fc5511-a69f-4e8c-94be-8bffdc3ec5eb",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set config mp4').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        304
+      ],
+      "id": "0e442064-ccd3-4d03-8950-237ab89bd027",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Analyze video').item.json.candidates[0].content.parts[0].text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        304
+      ],
+      "id": "c06fd5c8-a165-4530-8c10-d2a7e259d44a",
+      "name": "Update Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "=19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+        "title": "=mp4-{{ $('Google Drive Trigger').item.json.originalFilename }}-逐字稿-{{ $now.format('yyyy-MM-dd') }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        800,
+        304
+      ],
+      "id": "715ed3af-979a-4011-a4da-382899950800",
+      "name": "Create Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set config mp4').item.json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/129GOquESlg3D28oA-sH5Jm9f9XAqCgEK",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/129GOquESlg3D28oA-sH5Jm9f9XAqCgEK",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1296,
+        320
+      ],
+      "id": "d99a4a76-cf97-4387-9d07-7eca8526a4cd",
+      "name": "Move file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=video 摘要 DONE - {{ $json.name }} "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        128
+      ],
+      "id": "4429b144-78bd-4a3c-837f-3e95a8f60368",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0501328-5e74-435f-afc3-a5796612c52d",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6989f772-441d-4284-84a1-dbb37dd1541d",
+              "name": "createdTime",
+              "value": "={{ $json.createdTime }}",
+              "type": "string"
+            },
+            {
+              "id": "150cfee5-e9a7-40af-ba0f-114bd1485681",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        304
+      ],
+      "id": "bc505284-1025-4d69-ad84-385327dcdc3b",
+      "name": "Set config mp4"
+    }
+  ],
+  "connections": {
+    "Create Docs2": {
+      "main": [
+        [
+          {
+            "node": "Update Docs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini-2-5-flash": {
+      "main": [
+        [
+          {
+            "node": "Create Docs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter-gpt-4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary aac",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude-3.7-sonnet1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary aac",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "summary aac": {
+      "main": [
+        [
+          {
+            "node": "clean data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "summary aac",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean data": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Docs2": {
+      "main": [
+        [
+          {
+            "node": "summary aac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SetFileId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFileId": {
+      "main": [
+        [
+          {
+            "node": "Download File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File2": {
+      "main": [
+        [
+          {
+            "node": "gemini-2-5-flash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "ConvertAPI HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF URL": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video": {
+      "main": [
+        [
+          {
+            "node": "Create Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set config mp4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Analyze video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Docs": {
+      "main": [
+        [
+          {
+            "node": "Update Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Docs": {
+      "main": [
+        [
+          {
+            "node": "Move file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set config mp4": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-09-09T00:46:45Z"
+    },
+    "node:File Updated": {
+      "lastTimeChecked": "2025-09-09T00:46:45Z"
+    },
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-10-16T03:51:19Z"
+    },
+    "node:Google Drive Trigger5": {
+      "lastTimeChecked": "2025-10-08T06:20:06Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-08T05:59:55.200Z",
+      "createdAt": "2025-10-08T05:59:55.200Z",
+      "role": "workflow:owner",
+      "workflowId": "B5NuHnrUNbKTnT35",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-10-07T01:03:33.794Z",
+      "createdAt": "2025-10-07T01:03:33.794Z",
+      "id": "FWnJ1SwnKoqVgR0Q",
+      "name": "影片摘要"
+    },
+    {
+      "updatedAt": "2025-10-07T00:38:35.482Z",
+      "createdAt": "2025-10-07T00:38:35.482Z",
+      "id": "XidjQBlJoltf7hDb",
+      "name": "mp4"
+    },
+    {
+      "updatedAt": "2025-10-07T00:38:41.545Z",
+      "createdAt": "2025-10-07T00:38:41.545Z",
+      "id": "ffkk0Pzq6OTleXKI",
+      "name": "m4a"
+    },
+    {
+      "updatedAt": "2025-10-07T01:03:22.962Z",
+      "createdAt": "2025-10-07T01:03:22.962Z",
+      "id": "jCaJGEWacSRMWW6R",
+      "name": "語音摘要"
+    },
+    {
+      "updatedAt": "2025-09-04T01:24:41.243Z",
+      "createdAt": "2025-09-04T01:24:41.243Z",
+      "id": "nez7NseJcSX5jswy",
+      "name": "聲音轉文字"
+    },
+    {
+      "updatedAt": "2025-09-25T02:39:06.745Z",
+      "createdAt": "2025-09-25T02:39:06.745Z",
+      "id": "sF72jCMFGDNrzm3X",
+      "name": "html-to-pdf"
+    }
+  ],
+  "activeVersion": null
+}

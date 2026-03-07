@@ -1,0 +1,226 @@
+{
+  "id": "3hfEXflQXcGlN0Il",
+  "name": "addwii-0715-zap-table-rooms-delete-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        840
+      ],
+      "id": "6f6f4041-a020-4d2a-94b0-72c03140cf7d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "# currently, there is no way to delete the data content in notion database",
+        "width": 1360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        600
+      ],
+      "id": "6ff0b4a7-d6ba-4b4b-a758-7439202df53f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "230ca842-df05-805f-b706-e7800200e3ae",
+          "mode": "list",
+          "cachedResultName": "zap_table_rooms",
+          "cachedResultUrl": "https://www.notion.so/230ca842df05805fb706e7800200e3ae"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -740,
+        840
+      ],
+      "id": "e27b74c7-94ea-46da-a382-cd176cd8cb34",
+      "name": "Get All Records from zap_table_rooms",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "operation": "getAll",
+        "blockId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -500,
+        840
+      ],
+      "id": "1184b993-8791-4b90-9d01-ce50715b885a",
+      "name": "Delete Each Record",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -220,
+        840
+      ],
+      "id": "572b306f-b1a4-49f5-afd8-63f83f6f68ce",
+      "name": "Process in Batches"
+    },
+    {
+      "parameters": {
+        "amount": 0.2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        840
+      ],
+      "id": "80e64165-0449-4e81-be11-0085f8138dd7",
+      "name": "Wait 200ms",
+      "webhookId": "b8de828a-7383-4b86-bfc4-41405eeef1e2"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get All Records from zap_table_rooms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Records from zap_table_rooms": {
+      "main": [
+        [
+          {
+            "node": "Process in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process in Batches": {
+      "main": [
+        [
+          {
+            "node": "Delete Each Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Each Record": {
+      "main": [
+        [
+          {
+            "node": "Wait 200ms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 200ms": {
+      "main": [
+        [
+          {
+            "node": "Process in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-15T02:53:14.931Z",
+      "createdAt": "2025-07-15T02:53:14.931Z",
+      "role": "workflow:owner",
+      "workflowId": "3hfEXflQXcGlN0Il",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-07-14T07:29:29.974Z",
+      "createdAt": "2025-07-14T07:29:29.974Z",
+      "id": "AFXjnq25FzE43zpj",
+      "name": "zap"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-07-14T07:25:46.329Z",
+      "createdAt": "2025-07-14T07:25:46.329Z",
+      "id": "rBu7KINmPwm4bhDL",
+      "name": "sql"
+    }
+  ],
+  "activeVersion": null
+}

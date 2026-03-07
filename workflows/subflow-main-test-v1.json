@@ -1,0 +1,174 @@
+{
+  "id": "3VMtRXGM6Z0u3b4f",
+  "name": "subFlow-main-test-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -160
+      ],
+      "id": "2869495b-43f9-4060-b1da-203fd41acd9f",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f703895d-d469-447f-9e0b-4d4925a5f561",
+              "name": "firstName",
+              "value": "peter",
+              "type": "string"
+            },
+            {
+              "id": "8924f313-1bc1-47e6-b973-d52876c24721",
+              "name": "lastName",
+              "value": "Doe",
+              "type": "string"
+            },
+            {
+              "id": "0fa639f1-a9af-4dae-8f3e-c2a283547434",
+              "name": "email",
+              "value": "john.doe@example.com",
+              "type": "string"
+            },
+            {
+              "id": "699fbecb-d5ed-4ffb-b817-48852e8a016d",
+              "name": "phone",
+              "value": "(123)  456-7890​",
+              "type": "string"
+            },
+            {
+              "id": "4a296f0b-2eec-4cac-8ed3-734cf0f718de",
+              "name": "content",
+              "value": "write an article to celebrate Mother's Day",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -160
+      ],
+      "id": "7c4fbb75-1884-49b9-97a1-6d5c19bcae76",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "WQGfjVMaW6VGGNOK",
+          "mode": "list",
+          "cachedResultName": "subFlow-ai-生成母親節文章"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        300,
+        -160
+      ],
+      "id": "5f3ecbfa-4942-46be-9ac9-e020e9d39dfb",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T01:06:32.045Z",
+      "createdAt": "2025-07-01T01:06:32.045Z",
+      "role": "workflow:owner",
+      "workflowId": "3VMtRXGM6Z0u3b4f",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    }
+  ],
+  "activeVersion": null
+}

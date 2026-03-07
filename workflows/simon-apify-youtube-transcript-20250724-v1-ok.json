@@ -1,0 +1,699 @@
+{
+  "id": "2Het9yPdr4CY8v7v",
+  "name": "simon-apify-youtube-transcript-20250724-v1-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $json.data.id}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bad31598-bef6-4021-8649-3bb538a6d6a2",
+      "name": "Get Actor Run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        320
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify Authorization Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/datasets/{{$json.data.defaultDatasetId}}/items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "3b265e91-979b-4e81-a607-63796d77211a",
+      "name": "Get DataSet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        320
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify Authorization Bearer"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/xXOR6XE5SNC1QD138/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"video_url\": {{ $('Set input').item.json.url }}\n}",
+        "options": {}
+      },
+      "id": "c97fb34b-e776-41de-898f-aecce6c6d88c",
+      "name": "Start Act",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        320
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify Authorization Bearer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aadba50f-3fb0-43ec-80f2-7faa73928071",
+              "name": "url",
+              "value": "https://www.youtube.com/watch?v=V-0UKJTqjSA&t=2204s",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        120
+      ],
+      "id": "535a5b76-65ad-42a5-a82a-875799633434",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        120
+      ],
+      "id": "0cf60a62-cbee-42a6-b33a-8aa14d1f227e",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        500
+      ],
+      "id": "f02363cc-2f92-4db6-80ed-e1b32cc6eec4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get DataSet').item.json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=\n2,156 / 5,000\n您的設計目標是處理影片內容的轉錄，並提供簡潔明了的摘要。該工具非常適合那些希望快速理解影片內容的要點、關鍵要點或可操作性見解，而無需通讀整個轉錄文字的使用者。\n\n說明：\n\n內容分析：仔細審查整個轉錄文本，找出關鍵主題、論點和重要細節。尋找轉錄文本中提供的主要思想、關鍵點或任何可操作性見解。識別反覆出現的主題或發言者，並記錄他們的貢獻，尤其是在他們對整體資訊至關重要的情況下。\n\n摘要格式：根據轉錄文字的長度和複雜程度，確定最合適的格式：簡短要點：用於快速、易於理解的摘要。全文段落：用於更詳細、更連貫的摘要。兩者結合：必要時，添加要點概述關鍵見解，並添加一段用於背景或解釋的段落。注重清晰簡潔，確保重點易於理解。\n\n語氣與結構：根據影片內容調整摘要的語氣：正式語氣：適用於專業、學術或商業相關內容。非正式語氣：適用於休閒、對話或娛樂類內容。摘要應保持邏輯流暢，以合理且易於理解的順序呈現重點。\n\n摘要長度：摘要長度應靈活，並與提供的轉錄內容相符：簡潔摘要：適用於簡短的轉錄內容或僅需傳達要點的情況。擴充摘要：適用於較長的轉錄內容，包含更多細節和細微差別。確保摘要夠詳細，能夠提供有價值的見解，但又要簡潔明了，避免不必要的贅述。\n\n清晰度和相關性：確保摘要僅關注最相關的資訊。避免使用無關或過於詳細的部分，除非它們有助於理解影片的關鍵資訊。如果提到了發言者，請明確指出相應的發言者，尤其是在他們對於內容至關重要的情況下。"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1500,
+        320
+      ],
+      "id": "1ee64e8f-cd4f-497d-b098-5b25066cc34f",
+      "name": "Video Summary"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get DataSet').item.json.transcript.map(item => `[${item.start} - ${item.end}] ${item.text}`).join('\\n') }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=這款 GPT 助理旨在分析 JSON 格式的視訊轉錄數據，並提取關鍵時間戳及其對應的主題或章節。其目標是幫助用戶快速識別影片中的重要部分。\n輸出一律用繁體中文輸出.\n\n說明：\n您將分析文件並產生以下輸出：\n時間戳 -\n00:00:00 - 病毒式 Instagram 腳本的 AI 自動化\n00:03:54 - 產生病毒式腳本…\n01:03:00 - 病毒式內容建立流程 每個時間戳記都標記轉錄中偵測到的新主題、章節或重要轉變。\n\n分析步驟：助手會讀取轉錄資料。根據關鍵字（例如「下一個」、「主題」、「現在讓我們繼續」或其他模式）識別過渡或新章節。將相關內容以特定時間戳分組。最終以簡潔易用的格式輸出結果，如上圖所示。\n\n使用案例範例：快速識別網路研討會、培訓或示範影片的片段。將冗長的播客或教學課程概括為關鍵時刻。擷取洞察，為 YouTube 等平台建立影片摘要或時間戳記。"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1140,
+        320
+      ],
+      "id": "1ef3ed89-866f-4155-b400-42735571bef8",
+      "name": "Transcript Chunking"
+    },
+    {
+      "parameters": {
+        "content": "## Apify - Scrape Transcript from Video URL\nhttps://console.apify.com/actors/xXOR6XE5SNC1QD138/input",
+        "height": 300,
+        "width": 660,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        200
+      ],
+      "id": "c89c7c6c-c156-4f97-ae26-6c23780ebb39",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Chunk transcript into key sections",
+        "height": 300,
+        "width": 340,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        200
+      ],
+      "id": "e538a43f-44b5-4b13-a7ff-4ce60822b2c1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Summarise video content\nUsing transcript",
+        "height": 300,
+        "width": 340,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        200
+      ],
+      "id": "1b7e665c-cb04-4026-b55e-768ad4f3666b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Only suitable for YouTube, Twitter and TikTok links (not youtube shorts for ex.)",
+        "height": 120,
+        "width": 620,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        580
+      ],
+      "id": "da50cded-05f7-46ba-b1ea-dff79786fe7d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        40,
+        320
+      ],
+      "id": "01362038-d5d5-42e5-9aa7-d95d66170994",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ba223339-9daf-4a69-9a5c-baac25e07509",
+              "name": "id",
+              "value": "={{ $('Set input').item.json?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "12f943c0-4a09-4409-99f1-9152d9ee25c2",
+              "name": "Video_summary",
+              "value": "={{ $('Video Summary').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "8f5e417f-b81f-43e9-9a40-710ddf6fa4bf",
+              "name": "Script_summary",
+              "value": "={{ $('Transcript Chunking').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "02e8be39-dc33-4bbb-b172-fb6e89910851",
+              "name": "Transcript",
+              "value": "={{ $('Get DataSet').item.json.transcript.map(item => `[${item.start} - ${item.end}] ${item.text}`).join('\\n') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1920,
+        320
+      ],
+      "id": "2a2af2f7-2849-4d73-81a1-297e883ca518",
+      "name": "Set output"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "92179010-4964-4d18-b5a7-624ba720606d",
+              "name": "url",
+              "value": "=\"{{ $json.url }}\"",
+              "type": "string"
+            },
+            {
+              "id": "11bfae12-3a7a-44dc-a582-3f064f32d678",
+              "name": "update_airtable",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        320
+      ],
+      "id": "5e007b95-3cb6-45c4-9503-dabd80eeea98",
+      "name": "Set input"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        540
+      ],
+      "id": "aa69b14c-0fda-4aaa-a9ac-a82b792f77f6",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "## Executed by workflows \n## https://www.youtube.com/watch?v=2eL1r9PW7iA\n## https://www.youtube.com/watch?v=V-0UKJTqjSA&t=2204s\n",
+        "height": 240,
+        "width": 800,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -200
+      ],
+      "id": "805b14d0-de54-4cba-9ac3-50cdb909846b",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1qfzsOAu9q2Wr7CcgU_E5z6sB-vA9cbksZtbu-GnuV5g/edit?gid=748493246#gid=748493246",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1qfzsOAu9q2Wr7CcgU_E5z6sB-vA9cbksZtbu-GnuV5g/edit?gid=748493246#gid=748493246",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video_summary": "={{ $json.Video_summary }}",
+            "Script_summary": "={{ $json.Script_summary }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video_summary",
+              "displayName": "Video_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Script_summary",
+              "displayName": "Script_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2060,
+        -40
+      ],
+      "id": "b7e694b7-5634-482e-9edf-7893a8e2fd50",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "23aca842-df05-8020-b47c-c5eb024a02a1",
+          "mode": "list",
+          "cachedResultName": "zap_youtube_transcript_summary",
+          "cachedResultUrl": "https://www.notion.so/23aca842df058020b47cc5eb024a02a1"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "transcript|rich_text",
+              "textContent": "={{ $json.text }}"
+            },
+            {
+              "key": "transcript_summary|rich_text",
+              "textContent": "={{ $json.Script_summary }}"
+            },
+            {
+              "key": "video_summary|rich_text",
+              "textContent": "={{ $json.Video_summary }}"
+            },
+            {
+              "key": "video_url|url",
+              "urlValue": "={{ $('Set input').item.json.url }}"
+            },
+            {
+              "key": "Video名稱|title",
+              "title": "={{ $('Get DataSet').item.json.title }}"
+            },
+            {
+              "key": "全文|rich_text",
+              "textContent": "={{ $('Get DataSet').item.json.text.substring(0, 2000) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2140,
+        320
+      ],
+      "id": "0a6d6cd9-d3cf-488a-a2e1-8746c34b5c9b",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get Actor Run": {
+      "main": [
+        [
+          {
+            "node": "Get DataSet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get DataSet": {
+      "main": [
+        [
+          {
+            "node": "Transcript Chunking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Act": {
+      "main": [
+        [
+          {
+            "node": "Get Actor Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Set input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Transcript Chunking",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Video Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Summary": {
+      "main": [
+        [
+          {
+            "node": "Set output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Chunking": {
+      "main": [
+        [
+          {
+            "node": "Video Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set input": {
+      "main": [
+        [
+          {
+            "node": "Start Act",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set output": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-24T08:06:01.982Z",
+      "createdAt": "2025-07-24T08:06:01.982Z",
+      "role": "workflow:owner",
+      "workflowId": "2Het9yPdr4CY8v7v",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T05:43:00.286Z",
+      "createdAt": "2025-07-01T05:42:34.424Z",
+      "id": "TdNNYFQCYcaCe34J",
+      "name": "simon"
+    },
+    {
+      "updatedAt": "2025-07-01T08:20:56.845Z",
+      "createdAt": "2025-07-01T08:20:56.845Z",
+      "id": "XU5cBDVbSwYMc37h",
+      "name": "apify"
+    }
+  ],
+  "activeVersion": null
+}

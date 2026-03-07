@@ -1,0 +1,284 @@
+{
+  "id": "1A0PejrYSHF1fjSw",
+  "name": "peter-文字生成音頻-ElevenLabs",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -180
+      ],
+      "id": "9b99360a-4cc1-40b2-bd5a-9091286535eb",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalizeText = input => {\n  return input\n    .replace(/[·•×・]/g, '-')                \n    .replace(/[、，。,．]/g, ',')             \n    .replace(/[（﹝〔【]/g, '(')              \n    .replace(/[）﹞〕】]/g, ')')              \n    .replace(/[“”「」『』]/g, '\"')            \n    .replace(/[^\\u4e00-\\u9fa5a-zA-Z0-9 \\n\\-():,._'\"\\/]/g, '') \n    .replace(/\\n/g, '\\\\n')  // for JSON-safe string\n    .trim();\n};\n\nconst randomScenes = [\n  \"時尚的美國美女穿著現代的休閒服，站在自由女神像的基座上，背後是熙來攘往的紐約港和城市天際線。\",\n  \"優雅的日本老婦人穿著和服，站在京都金閣寺的湖邊，背景是映著金閣寺的寧靜湖面和優美的日本庭園。\",\n  \"活潑的印度小男孩穿著狂歡節的服裝，站在里約熱內盧的基督像的基座上，背景是壯觀的里約市區和遼闊的大西洋。\"\n];\n\nconst selected = randomScenes[Math.floor(Math.random() * randomScenes.length)];\nconst normalized = normalizeText(selected);\n\nreturn [\n  {\n    json: {\n      randomScene: selected,\n      normalizedScene: normalized\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        -180
+      ],
+      "id": "0c575b9d-f8e0-4e4d-8733-a87177a181dd",
+      "name": "gen text"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/LcfcDJNUP1GQjkzn1xUU",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": " sk_2863c46dd20e30bb5066dfd1532001349e62b69fd4dda4c5"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.randomScene}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        -180
+      ],
+      "id": "8e3231ae-c98b-4dc6-93a4-9f6e458cffd5",
+      "name": "ElevenLabs Audio",
+      "credentials": {
+        "httpCustomAuth": {
+          "name": "Custom Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1177472123,
+          "mode": "list",
+          "cachedResultName": "elevenLabs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit#gid=1177472123"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.webContentLink }}",
+            "timestamp": "={{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ddf09c74-c16c-4faf-9bcf-9121968fcb08",
+      "name": "Sheets ElevenLabs",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        380,
+        -180
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $('Upload Audio').item.json.webContentLink }} \"\n    },\n{\n        \"type\": \"text\",\n        \"text\": \" {{ $('gen text').item.json.normalizedScene }} \"\n      },\n{\n        \"type\": \"text\",\n        \"text\": \" ElevenLabs 產生音頻 : {{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }} \"\n      }\n\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "82288728-dbcd-4023-be6f-36b40caead47",
+      "name": "Line : 推送訊息 Line使用者n8n-peter5",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        600,
+        -180
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "name": "={{ \"eleven\" +  $json.id }}",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1zFXQGKDgLQCQ0uPtzHOknaTt-o0Vcw7i",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1zFXQGKDgLQCQ0uPtzHOknaTt-o0Vcw7i",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        160,
+        -180
+      ],
+      "id": "4dc309f3-0afb-4544-b185-f878ebe7184a",
+      "name": "Upload Audio",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "gen text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gen text": {
+      "main": [
+        [
+          {
+            "node": "ElevenLabs Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ElevenLabs Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets ElevenLabs": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio": {
+      "main": [
+        [
+          {
+            "node": "Sheets ElevenLabs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:20:02.071Z",
+      "createdAt": "2025-07-01T00:20:02.071Z",
+      "role": "workflow:owner",
+      "workflowId": "1A0PejrYSHF1fjSw",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

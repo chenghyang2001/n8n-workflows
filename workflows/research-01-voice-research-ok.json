@@ -1,0 +1,415 @@
+{
+  "id": "08dk3z16bNbKxImw",
+  "name": "research-01-voice-research-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "2b78ced5-d2c3-4640-8f48-91abbdca4d4d",
+      "name": "Transcribe",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.6,
+      "position": [
+        180,
+        80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an advanced AI planning assistant. Your task is to take a user query and execute a research plan to find answers i.e. return relevant research. Follow these steps:\n\n1. Analyze the user query to understand the research goal.\n2. Break down the query into smaller, actionable research tasks that can be executed by the Tools Agent.\n3. Formulate a clear research query specifying the specific topics or questions to research, any constraints or focus areas (e.g., cost, features, popularity).\n4. Conduct the research\n5. Return a detailed summary of the research results\n\n**Input Query:** \"{{$json.text}}\"\n\n**The date today is:** {{ $now }}\n\n**Output:**\nYour findings (only the executed research query), keeping it under 4096 characters. Always response in trandition chinese."
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        420,
+        180
+      ],
+      "id": "e8ac990f-c5b7-4a47-af3b-139e21d31d90",
+      "name": "Deepseek Planner"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "e20706f2-c373-484b-b1d5-bd1574042ad1",
+      "name": "Telegram_Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        180
+      ],
+      "webhookId": "282ce8fb-e9d0-46e0-bb0e-24f5f64a2282",
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "=openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        440,
+        520
+      ],
+      "id": "7c94551f-8760-4964-9235-350fd17c74f2",
+      "name": "OpenRouter Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}"
+      },
+      "id": "86bbde2c-a72a-4c42-b9e2-d6581437fb6f",
+      "name": "DownloadAudio",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        40,
+        80
+      ],
+      "webhookId": "4e8fc065-9e2f-430c-a559-e077a0f5f12c",
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c844924-b2ed-48b0-935c-c66a8fd0c778",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5eb63fab-f870-4198-a17c-28171eb29981",
+      "name": "VoiceOrText",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -160,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram_Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "reply_to_message_id": "={{ $('Telegram_Trigger').item.json.message.message_id }}"
+        }
+      },
+      "id": "1df66224-2ef4-492f-ae5b-59f703db91a6",
+      "name": "Response_Output",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        180
+      ],
+      "webhookId": "ec256e24-6f2f-4bf6-aee0-53f210b66c75",
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "=deepseek/deepseek-r1:online",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        320
+      ],
+      "id": "9b80bb8d-75ff-4962-a0a2-75cd4e75eece",
+      "name": "DEEPSEEK R1",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Media type\nAudio or Text",
+        "height": 400,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e6e7ecb8-6fc5-456e-a663-80578ce65765",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe7ecc99-e1e8-4a5e-bdd6-6fce9757b234",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fa5002ee-62df-4eb5-b174-5b9be0a38089",
+      "name": "SetText",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Execute research\nGenerate research with attached model, provide response",
+        "height": 300,
+        "width": 560,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        100
+      ],
+      "id": "12c4876f-589b-4b23-90c2-9bc65380cd34",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Deepseek Planner": {
+      "main": [
+        [
+          {
+            "node": "Response_Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe": {
+      "main": [
+        [
+          {
+            "node": "Deepseek Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram_Trigger": {
+      "main": [
+        [
+          {
+            "node": "VoiceOrText",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadAudio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VoiceOrText": {
+      "main": [
+        [
+          {
+            "node": "DownloadAudio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SetText",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DEEPSEEK R1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Deepseek Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetText": {
+      "main": [
+        [
+          {
+            "node": "Deepseek Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "ejM6l2NEeKLq0rSi"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-28T19:32:37.023Z",
+      "createdAt": "2025-06-28T19:32:37.023Z",
+      "role": "workflow:owner",
+      "workflowId": "08dk3z16bNbKxImw",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-03T02:58:25.173Z",
+      "createdAt": "2025-07-03T02:58:25.173Z",
+      "id": "ECx8yP3LzhFc81Na",
+      "name": "research"
+    },
+    {
+      "updatedAt": "2025-07-01T05:43:00.286Z",
+      "createdAt": "2025-07-01T05:42:34.424Z",
+      "id": "TdNNYFQCYcaCe34J",
+      "name": "simon"
+    },
+    {
+      "updatedAt": "2025-07-01T07:08:00.893Z",
+      "createdAt": "2025-07-01T07:08:00.893Z",
+      "id": "XJNpizuhs74WRPBC",
+      "name": "telegrame"
+    },
+    {
+      "updatedAt": "2025-07-01T03:40:24.997Z",
+      "createdAt": "2025-07-01T03:40:24.997Z",
+      "id": "Z6ojJoAXdIbQch00",
+      "name": "peter"
+    },
+    {
+      "updatedAt": "2025-07-03T08:16:57.943Z",
+      "createdAt": "2025-07-03T08:16:57.943Z",
+      "id": "lbqz5d3VOjEDwBqM",
+      "name": "transcript"
+    }
+  ],
+  "activeVersion": null
+}

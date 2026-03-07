@@ -1,0 +1,256 @@
+{
+  "id": "38YzK4oAEStn64mP",
+  "name": "addwii-即時讀值-20251009-v1-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1504,
+        432
+      ],
+      "id": "80e579d5-bb61-4e25-858b-2d2f8c0a677b",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Nh8EtGRaJdooDk9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Nh8EtGRaJdooDk9",
+          "cachedResultName": "subFlow-line-n8n-peter-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=\n\n\n以下來自資料庫資料:\nUpdate Time : {{ $json.updated_at }}\nPM 2.5         :  {{ $json.pm25 }}\n溫度            :  {{ $json.temperature }}\n濕度            :  {{ $json.humidity }}\nCO2            :  {{ $json.co2 }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -976,
+        672
+      ],
+      "id": "65406e72-01fe-4325-a374-76483a768acb",
+      "name": "Call 'subFlow-line-n8n-peter-v1'"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1504,
+        672
+      ],
+      "id": "790ac2c6-3151-4582-8c45-d3aa81a8d453",
+      "name": "every 1 minute"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/5 * * * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1504,
+        848
+      ],
+      "id": "7dc4bd2d-c077-4c4a-89fc-3fe4d9166a7e",
+      "name": "every 5s",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select *  from median m where room_id = 258 ORDER BY created_at DESC LIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1248,
+        672
+      ],
+      "id": "4feaf3d2-e9f7-4eb9-81a1-c43b54b00c4d",
+      "name": "get last 1 co2",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## select co2, m.created_at  from median m where room_id = 258 ORDER BY created_at DESC LIMIT 1",
+        "height": 80,
+        "width": 1280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        368
+      ],
+      "id": "e7d705e3-8010-418e-9956-46d1bedc059a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select co2, m.created_at  from median m where room_id = 258 ORDER BY created_at DESC LIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -1248,
+        448
+      ],
+      "id": "5d4bf283-a6d2-4642-b106-345985effbde",
+      "name": "get last 1 co",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "get last 1 co2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "every 1 minute": {
+      "main": [
+        [
+          {
+            "node": "get last 1 co2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get last 1 co2": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-line-n8n-peter-v1'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:every 1 minute": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-09T03:28:16.828Z",
+      "createdAt": "2025-10-09T03:28:16.828Z",
+      "role": "workflow:owner",
+      "workflowId": "38YzK4oAEStn64mP",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-10-09T03:44:18.643Z",
+      "createdAt": "2025-10-09T03:44:18.643Z",
+      "id": "X2HVoAhFyQMHpV4g",
+      "name": "即時讀值"
+    },
+    {
+      "updatedAt": "2025-07-14T07:25:46.329Z",
+      "createdAt": "2025-07-14T07:25:46.329Z",
+      "id": "rBu7KINmPwm4bhDL",
+      "name": "sql"
+    }
+  ],
+  "activeVersion": null
+}

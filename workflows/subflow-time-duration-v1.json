@@ -1,0 +1,176 @@
+{
+  "id": "4OBZxASFVlteSwaw",
+  "name": "subFlow-time-duration-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a57f7f8-3ff0-45c9-a635-bebe828f6c60",
+              "name": "time-start",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        180,
+        -100
+      ],
+      "id": "a70ca665-688c-4a72-94bd-0437aec5c57d",
+      "name": "Event-1"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        -100
+      ],
+      "id": "bc27aa6c-3deb-4394-9098-2ae97303baa6",
+      "name": "Wait",
+      "webhookId": "5d147739-a4b8-42fd-adf3-928d1ef28a8e"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9703846-8e1c-448a-b19d-00157af0c2e5",
+              "name": "time-end",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        620,
+        -100
+      ],
+      "id": "a085d33f-08f1-4ca9-8704-1c6dbec24c99",
+      "name": "Event-2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event1StartTime = $(\"Event-1\").all()[0]?.json[\"time-start\"];\nconst event2EndTime = $input.all()[0]?.json[\"time-end\"];\n\nconst startTime = new Date(event1StartTime);\nconst endTime = new Date(event2EndTime);\n\nconst diffMs = endTime - startTime;\nconst diffHrs = Math.floor((diffMs % 86400000) / 3600000);\nconst diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);\nconst diffSecs = Math.round((((diffMs % 86400000) % 3600000) % 60000) / 1000);\n\nreturn { duration: `${diffHrs}h-${diffMins}m-${diffSecs}s` };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        -100
+      ],
+      "id": "04c1a235-5f10-432f-928d-0fd3d27d7381",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        -100
+      ],
+      "id": "d63787d2-6a48-4f14-aca7-a98b4412d5cc",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Event-1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Event-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event-2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Event-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 5,
+  "shared": [
+    {
+      "updatedAt": "2025-06-05T00:30:10.840Z",
+      "createdAt": "2025-06-05T00:30:10.840Z",
+      "role": "workflow:owner",
+      "workflowId": "4OBZxASFVlteSwaw",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

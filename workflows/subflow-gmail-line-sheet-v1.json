@@ -1,0 +1,490 @@
+{
+  "id": "17Z53Guls3VUXYup",
+  "name": "subFlow-gmail-line-sheet-v1",
+  "description": "",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com",
+        "subject": "From n8n AI RSS Sentiment Analysis ",
+        "emailType": "text",
+        "message": "={{ $json.content }}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        464
+      ],
+      "id": "9469420a-3a30-4696-879e-bfc7c1229b54",
+      "name": "Gmail",
+      "webhookId": "a92c9bfc-1159-4a5e-b940-c6cf3b7b6097",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-2k3lsb57_r-7QPLgdl1jxGZ4V2r8h-m_3iqMiNxYIE",
+          "mode": "list",
+          "cachedResultName": "n8n-RSS-文章分析",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-2k3lsb57_r-7QPLgdl1jxGZ4V2r8h-m_3iqMiNxYIE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "finance",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-2k3lsb57_r-7QPLgdl1jxGZ4V2r8h-m_3iqMiNxYIE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content }}",
+            "time": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "result",
+              "displayName": "result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        384,
+        672
+      ],
+      "id": "4e685789-62f6-4de2-8c4a-5d820f62c264",
+      "name": "寫入 Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $now.format('yyyy-MM-dd-hh-mm-ss') }} : {{ $json.content }} \"\n    }\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "25cf6429-4b83-41e1-abe6-d96e114859dc",
+      "name": "Line : 推送訊息 Line使用者n8n-peter",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        384,
+        864
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        672
+      ],
+      "id": "d4ae7105-9040-42e1-8759-0ae777c8f5a8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        672
+      ],
+      "id": "d93ccc1a-8e10-44bd-bc64-e3e0ac234937",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "寫入 Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": "3c363f0c-bffd-4d27-8c8d-8cf694a99682",
+  "versionCounter": 18,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T01:06:10.368Z",
+      "createdAt": "2025-07-01T01:06:10.368Z",
+      "role": "workflow:owner",
+      "workflowId": "17Z53Guls3VUXYup",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    },
+    {
+      "updatedAt": "2025-07-01T08:14:11.963Z",
+      "createdAt": "2025-07-01T08:14:11.963Z",
+      "id": "QFvFTqOLs1VLlBts",
+      "name": "line"
+    },
+    {
+      "updatedAt": "2025-12-05T08:01:13.705Z",
+      "createdAt": "2025-12-05T07:58:08.966Z",
+      "id": "WHvPyMGwyMHAYeLP",
+      "name": "notify"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-05T08:03:04.317Z",
+    "createdAt": "2025-12-05T08:03:04.317Z",
+    "versionId": "3c363f0c-bffd-4d27-8c8d-8cf694a99682",
+    "workflowId": "17Z53Guls3VUXYup",
+    "nodes": [
+      {
+        "parameters": {
+          "sendTo": "chenghyang2001@gmail.com",
+          "subject": "From n8n AI RSS Sentiment Analysis ",
+          "emailType": "text",
+          "message": "={{ $json.content }}\n\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          384,
+          464
+        ],
+        "id": "9469420a-3a30-4696-879e-bfc7c1229b54",
+        "name": "Gmail",
+        "webhookId": "a92c9bfc-1159-4a5e-b940-c6cf3b7b6097",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1-2k3lsb57_r-7QPLgdl1jxGZ4V2r8h-m_3iqMiNxYIE",
+            "mode": "list",
+            "cachedResultName": "n8n-RSS-文章分析",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-2k3lsb57_r-7QPLgdl1jxGZ4V2r8h-m_3iqMiNxYIE/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "finance",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-2k3lsb57_r-7QPLgdl1jxGZ4V2r8h-m_3iqMiNxYIE/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "content": "={{ $json.content }}",
+              "time": "={{ $now }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "result",
+                "displayName": "result",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "content",
+                "displayName": "content",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "time",
+                "displayName": "time",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          384,
+          672
+        ],
+        "id": "4e685789-62f6-4de2-8c4a-5d820f62c264",
+        "name": "寫入 Google Sheets",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "enAfA1qiZmia6pvt",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/push",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" {{ $now.format('yyyy-MM-dd-hh-mm-ss') }} : {{ $json.content }} \"\n    }\n  ]\n}\n\n",
+          "options": {}
+        },
+        "id": "25cf6429-4b83-41e1-abe6-d96e114859dc",
+        "name": "Line : 推送訊息 Line使用者n8n-peter",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          384,
+          864
+        ],
+        "typeVersion": 4.2
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "content"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -64,
+          672
+        ],
+        "id": "d4ae7105-9040-42e1-8759-0ae777c8f5a8",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          160,
+          672
+        ],
+        "id": "d93ccc1a-8e10-44bd-bc64-e3e0ac234937",
+        "name": "Edit Fields"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Gmail",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "寫入 Google Sheets",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Line : 推送訊息 Line使用者n8n-peter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ChengHsien Yang",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2025-12-05T08:03:04.000Z",
+        "id": 81,
+        "workflowId": "17Z53Guls3VUXYup",
+        "versionId": "3c363f0c-bffd-4d27-8c8d-8cf694a99682",
+        "event": "activated",
+        "userId": null
+      }
+    ]
+  }
+}

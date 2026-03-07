@@ -1,0 +1,1181 @@
+{
+  "id": "83HueQF0fzNieqG5",
+  "name": "simon-full-seo-20250725-v1-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Receive webhook \nObtain Airtable record",
+        "height": 234,
+        "width": 392,
+        "color": 7
+      },
+      "id": "673e50c0-6f68-4fd1-bb81-4c8811b7ca34",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        368
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "path": "demo-interface",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        48,
+        448
+      ],
+      "id": "15f45b0e-c789-479c-b1eb-f89613fbab5c",
+      "name": "Webhook",
+      "webhookId": "53b019b9-0ea7-40f0-add3-68dc6e78fdb3"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appZx6OWphy0LudAx",
+          "mode": "list",
+          "cachedResultName": "Scrapes AI -peter0725- Interface",
+          "cachedResultUrl": "https://airtable.com/appZx6OWphy0LudAx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblCALxxpLQicYZar",
+          "mode": "list",
+          "cachedResultName": "Company",
+          "cachedResultUrl": "https://airtable.com/appZx6OWphy0LudAx/tblCALxxpLQicYZar"
+        },
+        "id": "={{ $json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        448
+      ],
+      "id": "718361b3-69fc-44d6-9bfe-b7fdd9f8563d",
+      "name": "GetRecord",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Simon-scrap-ai-20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6e5320f5-9681-4a50-85f4-3849bded95c7",
+              "leftValue": "={{ $json['Status'] }}",
+              "rightValue": "Incomplete",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        448
+      ],
+      "id": "a0bfd651-6c2c-4457-92b2-69f4daf38031",
+      "name": "IfIncomplete"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appZx6OWphy0LudAx",
+          "mode": "list",
+          "cachedResultName": "Scrapes AI -peter0725- Interface",
+          "cachedResultUrl": "https://airtable.com/appZx6OWphy0LudAx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblCALxxpLQicYZar",
+          "mode": "list",
+          "cachedResultName": "Company",
+          "cachedResultUrl": "https://airtable.com/appZx6OWphy0LudAx/tblCALxxpLQicYZar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Notes": "Already complete - switch 'Status' to incomplete and check 'Generate Info' to re-run"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Company name",
+              "displayName": "Company name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Website URL",
+              "displayName": "Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin",
+              "displayName": "Company Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Info",
+              "displayName": "Generate Info",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product description",
+              "displayName": "Product description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Who are the ICP?",
+              "displayName": "Who are the ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Pain points / Challenges",
+              "displayName": "Pain points / Challenges",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Key Goals / Objectives",
+              "displayName": "Key Goals / Objectives",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "How do they currently solve their problems?",
+              "displayName": "How do they currently solve their problems?",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incomplete",
+                  "value": "Incomplete"
+                },
+                {
+                  "name": "Complete",
+                  "value": "Complete"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        528,
+        944
+      ],
+      "id": "a4d7466d-a957-46ef-b66d-3400d21ece4a",
+      "name": "AddNotes",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Simon-scrap-ai-20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', `searchQuery`, 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        976,
+        656
+      ],
+      "id": "bf3615ed-b926-43ea-b5a6-c0788c8fbe50",
+      "name": "Perplexity",
+      "credentials": {
+        "perplexityApi": {
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Process\nOnly if information not complete",
+        "height": 234,
+        "width": 292,
+        "color": 7
+      },
+      "id": "db59598f-c547-4631-a211-3185a1fe9a2e",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        368
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "**Airtable webhook script**\nlet config = input.config();\nawait fetch(config.webhook + \"?recordId=\" + config.recordId + \"&anyInformation=\" + config.anyInformation);\n",
+        "height": 114,
+        "width": 452,
+        "color": 6
+      },
+      "id": "db888bc6-a4be-4e5d-ab33-601b5ed360a3",
+      "name": "Sticky Note14",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Generate ICP\nFrom company information",
+        "height": 394,
+        "width": 452,
+        "color": 7
+      },
+      "id": "e2d2ce1c-da12-4d36-8b6d-4b5aa02bc710",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        704,
+        368
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Return info\nUpdate notes to suggest already completed",
+        "height": 234,
+        "width": 452,
+        "color": 7
+      },
+      "id": "afcd9893-0554-4b6e-b56a-022276619d7d",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        704,
+        784
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-flash"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        752,
+        640
+      ],
+      "id": "30349ed7-7cc4-4aed-aceb-0059ee5f5b95",
+      "name": "Gemini-2.5-flash",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## Inputs\n- **Company Name** (required): {{ $('GetRecord').item.json['Company name'] }}\n- **Company URL** (required): {{ $('GetRecord').item.json['Website URL'] }}\n- **Company LinkedIn URL** (required): {{ $('GetRecord').item.json['Company Linkedin'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=## Role\nYou are an expert Business Intelligence Analyst specializing in creating comprehensive Ideal Customer Profile (ICP) analyses. Your purpose is to research and analyze companies to develop detailed customer personas, pain points, and market positioning insights for strategic business development.\n\n## Constraints\n- Must research all three provided inputs (company name, URL, LinkedIn URL) thoroughly\n- Generate specific, actionable ICP insights rather than generic business descriptions\n- Focus on B2B customer characteristics and pain points\n- Ensure all sections are completed with detailed, research-backed information\n- Maintain professional business analysis tone throughout\n- Base conclusions on actual company data found through research\n- If insufficient data is found, clearly indicate limitations and provide best estimates\n- Do not make assumptions about company operations without supporting evidence\n\n## Inputs\n- **Company Name** (required): The name of the target company to analyze\n- **Company URL** (required): Primary website URL for the company\n- **Company LinkedIn URL** (required): LinkedIn company page URL\n\n## Tools\n1. Perplexity - Searches the web using perplexity with parameters:\n   - searchTerm (required - query for researching company information)\n\n## Instructions\n\n### Research Phase:\n1. Search for comprehensive company information using the company name and URL using the Perplexity tool by passing in a relevant searchQuery to the Perplexity tool\n2. Analyze the company's website to understand their products, services, and target market\n3. Research the company's LinkedIn presence for additional business insights\n4. Gather information about company size, industry, and business model\n5. Identify key stakeholders and decision-makers from available sources\n\n### Analysis Phase:\n1. Synthesize research findings to create detailed ICP components\n2. Develop specific product/service descriptions based on actual offerings\n3. Identify target customer segments based on company positioning\n4. Analyze market challenges the company's customers likely face\n5. Determine customer objectives and current solution approaches\n\n### Output Generation:\n1. Structure findings into the five required ICP sections\n2. Ensure each section contains specific, actionable insights\n3. Use concrete examples and industry-specific details\n4. Maintain consistency across all sections of the analysis\n\n## Expected Outputs\n\n**Product Description**\n- Detailed explanation of the company's core product or service offering\n- Key features and benefits that differentiate the solution\n- Implementation approach and delivery method\n- Target use cases and applications\n\n**Who are the ICP?**\n- Specific business characteristics (size, revenue, industry)\n- Geographic and operational details\n- Key decision-maker roles and demographics\n- Organizational structure and team composition\n\n**Pain Points / Challenges**\n- Primary operational challenges faced by target customers\n- Technical or process limitations in current state\n- Resource constraints and capability gaps\n- Market or competitive pressures affecting the business\n\n**Key Goals / Objectives**\n- Strategic business objectives driving purchasing decisions\n- Operational improvements sought by target customers\n- Performance metrics and success criteria\n- Growth and scaling aspirations\n\n**How do they currently solve their problems?**\n- Existing tools, systems, and processes in use\n- Workarounds and manual solutions currently employed\n- Vendor relationships and technology stack\n- Budget allocation and resource deployment patterns\n\n## Solutions (Error Handling)\n- If company information is limited or unclear, indicate data limitations and provide analysis based on available information\n- If the company URL is inaccessible, focus research on company name and LinkedIn data\n- If LinkedIn URL provides minimal information, supplement with additional web searches\n- If the company operates in an unfamiliar industry, research industry standards and common practices\n- If conflicting information is found across sources, prioritize the most recent and authoritative data\n- If the company appears to serve multiple market segments, identify the primary ICP and note secondary segments"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        784,
+        448
+      ],
+      "id": "b8292cef-531c-407e-9ebb-a4fa38149193",
+      "name": "ICP_Research",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appZx6OWphy0LudAx",
+          "mode": "list",
+          "cachedResultName": "Scrapes AI -peter0725- Interface",
+          "cachedResultUrl": "https://airtable.com/appZx6OWphy0LudAx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblCALxxpLQicYZar",
+          "mode": "list",
+          "cachedResultName": "Company",
+          "cachedResultUrl": "https://airtable.com/appZx6OWphy0LudAx/tblCALxxpLQicYZar"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('GetRecord').item.json.id }}",
+            "Product description": "={{ $json.output.product_description }}",
+            "Who are the ICP?": "={{ $json.output.ideal_customer_profile }}",
+            "Pain points / Challenges": "={{ $json.output.pain_points_challenges }}",
+            "Key Goals / Objectives": "={{ $json.output.key_goals_objectives }}",
+            "How do they currently solve their problems?": "={{ $json.output.current_solutions }}",
+            "Status": "Complete"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Company name",
+              "displayName": "Company name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Website URL",
+              "displayName": "Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin",
+              "displayName": "Company Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Info",
+              "displayName": "Generate Info",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product description",
+              "displayName": "Product description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Who are the ICP?",
+              "displayName": "Who are the ICP?",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain points / Challenges",
+              "displayName": "Pain points / Challenges",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Key Goals / Objectives",
+              "displayName": "Key Goals / Objectives",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "How do they currently solve their problems?",
+              "displayName": "How do they currently solve their problems?",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incomplete",
+                  "value": "Incomplete"
+                },
+                {
+                  "name": "Complete",
+                  "value": "Complete"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1264,
+        448
+      ],
+      "id": "d6f69c86-47bb-47e2-9a70-2acabbf7c22a",
+      "name": "UpdateRecord",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Simon-scrap-ai-20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Update Company Info\nUpdate info",
+        "height": 234,
+        "width": 452,
+        "color": 7
+      },
+      "id": "37fd5282-afc4-43fd-b50a-99af8edfa763",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        368
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_site/live",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"target\": \"{{ $json['Website URL'] }}\",\n    \"sort_by\": \"relevance\"\n  }\n]",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        1280
+      ],
+      "id": "ad412a3c-1cee-4828-a7b3-6ee3b964b81a",
+      "name": "GetKeywords",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tasks[0].result",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        752,
+        1280
+      ],
+      "id": "f153bc21-49f1-4726-8860-12a953fc74c6",
+      "name": "Split Out",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "maxItems": 20
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        960,
+        1280
+      ],
+      "id": "855dc916-8843-4753-a0ba-27d61510a47e",
+      "name": "Limit",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "path": "demo-keywords",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        80,
+        1280
+      ],
+      "id": "efb024bf-b4b5-48b7-86a1-bc2206df8781",
+      "name": "Webhook1",
+      "webhookId": "53b019b9-0ea7-40f0-add3-68dc6e78fdb3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appcVojycMT2rJ07j",
+          "mode": "list",
+          "cachedResultName": "Scrapes AI - Interface",
+          "cachedResultUrl": "https://airtable.com/appcVojycMT2rJ07j"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblCALxxpLQicYZar",
+          "mode": "list",
+          "cachedResultName": "Company",
+          "cachedResultUrl": "https://airtable.com/appcVojycMT2rJ07j/tblCALxxpLQicYZar"
+        },
+        "id": "={{ $json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        1280
+      ],
+      "id": "fb259169-b4a6-483f-bc02-c82c442d69f7",
+      "name": "GetRecord1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Receive webhook \nObtain Airtable record",
+        "height": 234,
+        "width": 392,
+        "color": 7
+      },
+      "id": "30923cdf-f4e7-43fc-ba10-6431bf4abbdb",
+      "name": "Sticky Note13",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        48,
+        1200
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## GetKeywords\nTop 20 most relevant",
+        "height": 234,
+        "width": 692,
+        "color": 7
+      },
+      "id": "b449fc80-6fb9-4679-86b6-01a1f8584268",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        1200
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Update Keyword Info\nAdd keyword data",
+        "height": 234,
+        "width": 332,
+        "color": 7
+      },
+      "id": "8a26ecad-9e23-4644-8fdc-814f707e98f5",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        1200
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appcVojycMT2rJ07j",
+          "mode": "list",
+          "cachedResultName": "Scrapes AI - Interface",
+          "cachedResultUrl": "https://airtable.com/appcVojycMT2rJ07j"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKAxMOZuNXfGDXB",
+          "mode": "list",
+          "cachedResultName": "Keywords",
+          "cachedResultUrl": "https://airtable.com/appcVojycMT2rJ07j/tblKAxMOZuNXfGDXB"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CPC": "={{ $json.cpc }}",
+            "Competition": "={{ $json.competition_index }}",
+            "Primary Keyword": "={{ $json.keyword }}",
+            "Volume": "={{ $json.search_volume }}",
+            "KW Difficulty": "={{ $json.competition }}",
+            "Company": "={{ [$('GetRecord1').item.json.id] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Primary Keyword",
+              "displayName": "Primary Keyword",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Competition",
+              "displayName": "Competition",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Volume",
+              "displayName": "Volume",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CPC",
+              "displayName": "CPC",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "KW Difficulty",
+              "displayName": "KW Difficulty",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        1280
+      ],
+      "id": "d51a9f22-7c3c-4986-8b8b-1d56968f39db",
+      "name": "UpdateKeywords",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"product_description\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"ideal_customer_profile\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"pain_points_challenges\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"key_goals_objectives\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"current_solutions\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        864
+      ],
+      "id": "47e5b5be-5e0c-404f-8680-594877652f6b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## 1. 確定 AirTable 裡,  base xxxx 的 Automation 的 webhook url 使用的是 test 還是 production\n\n## 2. YouTube video :  https://www.youtube.com/watch?v=wgAOZEtzsuA&t=1s\n\n## 3. skoll url : https://www.skool.com/scrapes/classroom/5cb99289?md=e3e305f33725439e9d470b4ffc6e0c59",
+        "height": 180,
+        "width": 1120
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        144
+      ],
+      "id": "3bc7cdfb-6e05-4643-840f-5bce93a4c0b1",
+      "name": "Sticky Note6"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "GetRecord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetRecord": {
+      "main": [
+        [
+          {
+            "node": "IfIncomplete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfIncomplete": {
+      "main": [
+        [
+          {
+            "node": "ICP_Research",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AddNotes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "ICP_Research",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini-2.5-flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ICP_Research",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ICP_Research": {
+      "main": [
+        [
+          {
+            "node": "UpdateRecord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetKeywords": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "GetRecord1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetRecord1": {
+      "main": [
+        [
+          {
+            "node": "GetKeywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "UpdateKeywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "ICP_Research",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-x3ktx-u28170.vm.elestio.app",
+            "x-real-ip": "3.93.143.226",
+            "x-forwarded-for": "3.93.143.226",
+            "x-forwarded-proto": "https",
+            "x-forwarded-port": "443",
+            "connection": "close",
+            "user-agent": "Mozilla/5.0 (compatible; AirtableScripting; +https://airtable.com/developers/scripting;)",
+            "x-airtable-source": "appcVojycMT2rJ07j/wflfqSNyMZn87juM5",
+            "accept": "*/*",
+            "accept-encoding": "gzip,deflate"
+          },
+          "params": {},
+          "query": {
+            "recordId": "recn5An5fE6ohO0O0",
+            "anyInformation": ""
+          },
+          "body": {},
+          "webhookUrl": "https://n8n-x3ktx-u28170.vm.elestio.app/webhook-test/demo-keywords",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-25T05:16:38.012Z",
+      "createdAt": "2025-07-25T05:16:38.012Z",
+      "role": "workflow:owner",
+      "workflowId": "83HueQF0fzNieqG5",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-25T06:58:25.520Z",
+      "createdAt": "2025-07-25T06:58:25.520Z",
+      "id": "T3UMngUvJRe99xhe",
+      "name": "webhook"
+    },
+    {
+      "updatedAt": "2025-07-01T06:00:22.350Z",
+      "createdAt": "2025-07-01T06:00:22.350Z",
+      "id": "na0TxcppD9SBpFMo",
+      "name": "airtable"
+    }
+  ],
+  "activeVersion": null
+}

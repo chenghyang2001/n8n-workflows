@@ -1,0 +1,248 @@
+{
+  "id": "9hRms6iiHq4Ns6S3",
+  "name": "超級AI助理 Demo版 - P1 - 情報助理",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## n8n情報助理工作流 - 摘要說明\n\n- 每天早上 8:00 自動執行\n- 從 RSS 新聞來源抓取最新內容\n- AI助理自動整理重點、生成「30秒快讀」摘要\n- 推播摘要到 LINE 以及同步到 Notion DB\n\n***\n\n### 功能流程\n1. 定時觸發\n2. 取得新聞(RSS)\n3. 分析並整理重點\n4. 發送 LINE 卡片通知\n5. 寫入 Notion 資料庫\n\n***\n\n### 主要用途\n- 一鍵掌握當日時事重點\n- 內容即時推送到 LINE/Notion\n- 省去手動追新聞和手動整理的時間\n\n[1](https://n8n-alex.zeabur.app/workflow/D3sN6epGlJoVsPdS)",
+        "height": 496,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "302d69b1-48b2-4741-9aa3-481f621cb94f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        208
+      ],
+      "id": "3db5215f-16e0-45d2-bf92-6d92238b930d",
+      "name": "0800"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "skDz5DkAXZyNPIlc",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/skDz5DkAXZyNPIlc",
+          "cachedResultName": "@ Line卡片訊息通知"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        112
+      ],
+      "id": "7699969e-17c8-4bfd-a7ed-8c8e5a26657b",
+      "name": "Call '@ Line卡片訊息通知'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "0kaNTeVQudsWxYpu",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/0kaNTeVQudsWxYpu",
+          "cachedResultName": "@notion_note_workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1184,
+        304
+      ],
+      "id": "57369dd5-e726-4054-8d89-e2ee8ddee548",
+      "name": "Call Notion DB",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "RSILpBphCv4oZepl",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/RSILpBphCv4oZepl",
+          "cachedResultName": "@ RSS新聞_agent_經濟部"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        208
+      ],
+      "id": "77a6b4bc-e25c-4e4f-9632-2ef6a2cd1172",
+      "name": "Call '@ RSS新聞_agent_經濟部'",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1fdce7f-da00-4cf0-8fd8-4eaaab791983",
+              "name": "response",
+              "value": "={{ $json.response }}",
+              "type": "object"
+            },
+            {
+              "id": "d9ec8f5e-29b0-4604-a5f8-84535fbb0715",
+              "name": "context.line_uid",
+              "value": "=U8ca91ed1c30228e776d83179a1893fb0",
+              "type": "string"
+            },
+            {
+              "id": "fd81c8f9-7e1e-4775-b6ff-c49a82bc4ce2",
+              "name": "database",
+              "value": "https://www.notion.so/2bfca842df05818e9378cdbd7ce22e69?v=2bfca842df05817cbd37000c3f9bf7a5",
+              "type": "string"
+            },
+            {
+              "id": "281840d3-d204-4846-b366-f3b671bc1f7c",
+              "name": "category",
+              "value": "臺灣官方",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        208
+      ],
+      "id": "6d7c5084-cf2c-4326-bb68-513ab751c549",
+      "name": "整理訊息"
+    }
+  ],
+  "connections": {
+    "0800": {
+      "main": [
+        [
+          {
+            "node": "Call '@ RSS新聞_agent_經濟部'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '@ RSS新聞_agent_經濟部'": {
+      "main": [
+        [
+          {
+            "node": "整理訊息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "整理訊息": {
+      "main": [
+        [
+          {
+            "node": "Call '@ Line卡片訊息通知'",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call Notion DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:0800": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 21,
+  "shared": [
+    {
+      "updatedAt": "2025-12-04T08:34:34.487Z",
+      "createdAt": "2025-12-04T08:34:34.487Z",
+      "role": "workflow:owner",
+      "workflowId": "9hRms6iiHq4Ns6S3",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

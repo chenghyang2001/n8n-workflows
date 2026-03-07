@@ -1,0 +1,250 @@
+{
+  "id": "836EqMStz82PIias",
+  "name": "subflow-tts",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        448
+      ],
+      "id": "3a4005dd-1306-489d-b302-1c6249ba3f65",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## 產經證券：https://feeds.feedburner.com/rsscna/finance\n## 科技：https://feeds.feedburner.com/rsscna/technology\n## 生活：https://feeds.feedburner.com/rsscna/lifehealth\n## 運動：https://feeds.feedburner.com/rsscna/sport\n## 20251205",
+        "height": 208,
+        "width": 680,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        -32
+      ],
+      "id": "dc02697f-9183-4d69-b59d-86f2c08a78e6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/rsscna/technology",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -1408,
+        256
+      ],
+      "id": "73c1dd7a-8a10-42b1-bb22-b388d1628c6f",
+      "name": "Technology"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "kOFTVVCtCv4URnLI",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kOFTVVCtCv4URnLI",
+          "cachedResultName": "subFlow-line-4-methods"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content}}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        544
+      ],
+      "id": "48be7a20-ba7e-4ee6-8fd3-691786c71f8b",
+      "name": "Call 'subFlow-line-4-methods'",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        432
+      ],
+      "id": "4818d705-fa5a-47bd-9079-048453e82357",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "b7UpCE5zIQGzjTYA",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/b7UpCE5zIQGzjTYA",
+          "cachedResultName": "subFlow-tts"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -640,
+        256
+      ],
+      "id": "7dc23763-5336-4fbb-ac5a-2d25ead59062",
+      "name": "Call 'subFlow-tts'"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Technology",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technology": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Call 'subFlow-tts'",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call 'subFlow-line-4-methods'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'subFlow-tts'": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 10,
+  "shared": [
+    {
+      "updatedAt": "2025-12-05T06:19:52.255Z",
+      "createdAt": "2025-12-05T06:19:52.255Z",
+      "role": "workflow:owner",
+      "workflowId": "836EqMStz82PIias",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T08:02:43.130Z",
+      "createdAt": "2025-07-01T08:02:43.130Z",
+      "id": "0pO0wltN3PySrEYZ",
+      "name": "rss"
+    },
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    },
+    {
+      "updatedAt": "2025-12-05T06:20:11.829Z",
+      "createdAt": "2025-12-05T06:20:11.829Z",
+      "id": "ZfWT7N5uIUulzfy9",
+      "name": "subflow-tts"
+    }
+  ],
+  "activeVersion": null
+}

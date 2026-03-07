@@ -1,0 +1,996 @@
+{
+  "id": "1jCObxnuvI3Lx5FT",
+  "name": "聲音轉文字-語音摘要-影片摘要",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Step2 - 將 google drive 的音檔，利用 Chatgpt 的 Whisper 功能整理出逐字稿\n",
+        "height": 80,
+        "width": 874,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -16
+      ],
+      "id": "6794158a-b58a-47d5-8661-ea979c1505cf",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Step3 - 將逐字稿生成到 google 文件中，方便後續使用\n",
+        "height": 80,
+        "width": 500,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        -32
+      ],
+      "id": "157ac9fa-3aa0-49f1-8827-1ab94f0b0500",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "=zh"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1152,
+        96
+      ],
+      "id": "f7c3f5c0-ccda-409f-8e27-005729d2dc31",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1s6mRSVi-kyJ3G9ht-L5flxFyg3-p9qJl",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "5c787323-2d00-40aa-a72c-64e50dd09031",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        128,
+        112
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 5,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/1s6mRSVi-kyJ3G9ht-L5flxFyg3-p9qJl",
+          "mode": "url"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "id": "2060cc31-495a-4a6b-bdd4-9b7236dcef9e",
+      "name": "File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        128,
+        320
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "624c4468-652d-48e0-8fb4-ee65eb1cb786",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9c458103-e018-49a3-a760-6489e5acb280",
+      "name": "Set File ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "id": "f3442acc-e0de-4267-bcb3-b9d4f9a04509",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        752,
+        112
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "=19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+        "title": "=OpenAI-逐字稿-{{ $now.format('yyyy-MM-dd') }}-{{ $('Set File ID').item.json.file_name }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        96
+      ],
+      "id": "85e30bd2-40b5-4c19-8a9c-3ba597ab9f85",
+      "name": "Create Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('OpenAI Review').item.json.choices[0].message.content }}\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        96
+      ],
+      "id": "70283879-82c9-4967-961e-4cdc0b63bb50",
+      "name": "Update Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "=gpt-4o",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=您是繁體中文智能助理，您的任務是修正轉錄文本中的拼寫錯誤。\n回覆文字一律使用繁體中文。",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.text }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1376,
+        96
+      ],
+      "id": "d5812b91-f9f6-4909-974d-e929e4fd5f11",
+      "name": "OpenAI Review",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Step1 - 上傳音檔到 Google Drive，觸發動作產生文檔\n## https://drive.google.com/drive/folders/1s6mRSVi-kyJ3G9ht-L5flxFyg3-p9qJl\n\n\n",
+        "height": 120,
+        "width": 998,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -64
+      ],
+      "id": "f63c2a6b-8fe2-49d2-a3b2-41b0ff851051",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.file_id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/129GOquESlg3D28oA-sH5Jm9f9XAqCgEK",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=https://drive.google.com/drive/folders/129GOquESlg3D28oA-sH5Jm9f9XAqCgEK",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1168,
+        720
+      ],
+      "id": "5c37dc0f-adaf-4f40-a0c4-3303600ca611",
+      "name": "Done",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Step4 - 任務完成，將音檔放到完成作業資料夾\n",
+        "height": 264,
+        "width": 588,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        640
+      ],
+      "id": "40f4f558-aa03-4ce3-9077-4da3e4003ede",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "name": "=whisper-逐字稿-{{ $now.format('yyyy-MM-dd') }}-{{ $('Convert to Subtitle1').item.binary.data.fileName }}\n",
+        "driveId": {
+          "__rl": true,
+          "value": "19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+          "mode": "id"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1664,
+        352
+      ],
+      "id": "58d43dcf-1f87-4645-aa2f-d2788210de4d",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_OPENAI_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "whisper-1"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "response_format",
+              "value": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1152,
+        352
+      ],
+      "id": "6a357721-ad3b-4d65-9d12-36eb8f9932e0",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "unknown Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "data",
+        "binaryPropertyName": "=data",
+        "options": {
+          "fileName": "={{ $('Set File ID').item.json.file_name.replace('.mp3', '.txt')  }}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        352
+      ],
+      "id": "d5c012be-1bc1-4a1e-b22d-4f002f127e27",
+      "name": "Convert to Subtitle1"
+    },
+    {
+      "parameters": {
+        "folderId": "=19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+        "title": "=Gemini-2-5-pro-AI-逐字稿-{{ $now.format('yyyy-MM-dd') }}-{{ $('Set File ID').item.json.file_name }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        -288
+      ],
+      "id": "3335c474-d799-45dc-99d1-71ace861c91c",
+      "name": "Create Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('gemini-2-5-pro').item.json.content.parts[0].text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -288
+      ],
+      "id": "8f5acae7-7cd5-4493-bf64-b6c3ca07ee8d",
+      "name": "Update Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. Gemini 2.5 Pro\n## 2. Gemini 2.5 Flash",
+        "height": 96,
+        "width": 324,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        -288
+      ],
+      "id": "47e71f5d-3106-4a15-805e-5b1a2ba4e65d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 2. OpenAI LLM",
+        "height": 80,
+        "width": 324,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        128
+      ],
+      "id": "f139e0a3-e6d6-41c6-9291-126dd85570c4",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## 3. OpenAI whisper-1 API",
+        "height": 80,
+        "width": 324,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        432
+      ],
+      "id": "33a544de-9107-4fdc-8008-c395a90da547",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## 生成存放目錄: https://drive.google.com/drive/folders/10Ts-jUV4RrpboGbcNVKCbwjgVnxxADkV",
+        "width": 1392,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        672
+      ],
+      "id": "a6088a8a-cfbd-4c45-a8d0-2b645a27dca8",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "13b504e9-cc6e-4d33-b434-b167d4f9cff5",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "mp3",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "d74a64fe-cfe3-40bb-81b8-e6c95bde3a66",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "mp4",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "701a2fc8-85c4-4048-8087-090a6b67c01c",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "m4a",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "472e8f8e-f12b-48bb-935f-676683843110",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "wav",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "23d854f4-d3a2-46ff-b391-211840013d6b",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "aac",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        208
+      ],
+      "id": "a51c3c39-19d4-4959-a01c-d5f79b528d14",
+      "name": "check file type"
+    },
+    {
+      "parameters": {
+        "folderId": "=19SBK2ab-Qj_glDExXQzj3fD78I00Roix",
+        "title": "=Gemini-2-5-flash-AI-逐字稿-{{ $now.format('yyyy-MM-dd') }}-{{ $('Set File ID').item.json.file_name }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        -528
+      ],
+      "id": "5ca38302-28be-48e1-a373-88fbaed277a7",
+      "name": "Create Docs2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('gemini-2-5-flash').item.json.content.parts[0].text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -528
+      ],
+      "id": "e565fa9f-1b0d-4cae-a7a6-6b920b1e13e0",
+      "name": "Update Docs2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -528
+      ],
+      "id": "538c1f78-b356-45f7-aaf0-0a1a53dc4d42",
+      "name": "gemini-2-5-flash",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -288
+      ],
+      "id": "f4282055-12c0-4566-ac2b-ffdfab760d3f",
+      "name": "gemini-2-5-pro",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "check file type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated": {
+      "main": [
+        [
+          {
+            "node": "check file type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gemini-2-5-pro",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gemini-2-5-flash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Docs": {
+      "main": [
+        [
+          {
+            "node": "Update Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Review": {
+      "main": [
+        [
+          {
+            "node": "Create Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Convert to Subtitle1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Subtitle1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Docs1": {
+      "main": [
+        [
+          {
+            "node": "Update Docs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check file type": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Docs2": {
+      "main": [
+        [
+          {
+            "node": "Update Docs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini-2-5-flash": {
+      "main": [
+        [
+          {
+            "node": "Create Docs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini-2-5-pro": {
+      "main": [
+        [
+          {
+            "node": "Create Docs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "L9RQFagA7DehEy9F"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-09-09T00:46:45Z"
+    },
+    "node:File Updated": {
+      "lastTimeChecked": "2025-09-09T00:46:45Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "shared": [
+    {
+      "updatedAt": "2025-10-07T01:23:08.071Z",
+      "createdAt": "2025-10-07T01:23:08.071Z",
+      "role": "workflow:owner",
+      "workflowId": "1jCObxnuvI3Lx5FT",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-27T20:26:29.074Z",
+      "createdAt": "2025-09-27T20:26:29.074Z",
+      "id": "54N6TEMECt53kVqr",
+      "name": "whisper"
+    },
+    {
+      "updatedAt": "2025-10-07T01:03:33.794Z",
+      "createdAt": "2025-10-07T01:03:33.794Z",
+      "id": "FWnJ1SwnKoqVgR0Q",
+      "name": "影片摘要"
+    },
+    {
+      "updatedAt": "2025-10-07T00:38:35.482Z",
+      "createdAt": "2025-10-07T00:38:35.482Z",
+      "id": "XidjQBlJoltf7hDb",
+      "name": "mp4"
+    },
+    {
+      "updatedAt": "2025-10-07T00:38:41.545Z",
+      "createdAt": "2025-10-07T00:38:41.545Z",
+      "id": "ffkk0Pzq6OTleXKI",
+      "name": "m4a"
+    },
+    {
+      "updatedAt": "2025-10-07T00:41:37.350Z",
+      "createdAt": "2025-10-07T00:41:37.350Z",
+      "id": "hBPiEvFsZY9HouI9",
+      "name": "aac"
+    },
+    {
+      "updatedAt": "2025-10-07T01:03:22.962Z",
+      "createdAt": "2025-10-07T01:03:22.962Z",
+      "id": "jCaJGEWacSRMWW6R",
+      "name": "語音摘要"
+    },
+    {
+      "updatedAt": "2025-09-04T01:24:41.243Z",
+      "createdAt": "2025-09-04T01:24:41.243Z",
+      "id": "nez7NseJcSX5jswy",
+      "name": "聲音轉文字"
+    },
+    {
+      "updatedAt": "2025-10-07T00:42:02.211Z",
+      "createdAt": "2025-10-07T00:42:02.211Z",
+      "id": "q5Gj0xap0LTEngg4",
+      "name": "wav"
+    },
+    {
+      "updatedAt": "2025-10-07T00:41:46.116Z",
+      "createdAt": "2025-10-07T00:41:46.116Z",
+      "id": "vVGX847rSLvUWnzq",
+      "name": "mp3"
+    }
+  ],
+  "activeVersion": null
+}

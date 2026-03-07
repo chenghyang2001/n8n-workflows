@@ -1,0 +1,261 @@
+{
+  "id": "1Gi2YYDprchRQSrV",
+  "name": "peter-計算時間差-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -100
+      ],
+      "id": "10f42abd-2193-4e24-892f-7a1edc7e4d43",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        -100
+      ],
+      "id": "512b1f6f-25a1-4c15-afae-e7e52c745788",
+      "name": "Wait",
+      "webhookId": "565c06f8-2fb5-4eac-b8ed-a5899fe55836"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a57f7f8-3ff0-45c9-a635-bebe828f6c60",
+              "name": "time-start",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        180,
+        -100
+      ],
+      "id": "1b7c9bd7-20fe-43b5-a7bf-014066d90ec1",
+      "name": "time-start"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9703846-8e1c-448a-b19d-00157af0c2e5",
+              "name": "time-end",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        620,
+        -100
+      ],
+      "id": "d631abcd-07e4-4007-ae91-3dfd167d5b06",
+      "name": "time-end"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event1StartTime = $(\"time-start\").all()[0]?.json[\"time-start\"];\nconst event2EndTime = $input.all()[0]?.json[\"time-end\"];\n\nconst startTime = new Date(event1StartTime);\nconst endTime = new Date(event2EndTime);\n\nconst diffMs = endTime - startTime;\nconst diffHrs = Math.floor((diffMs % 86400000) / 3600000);\nconst diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);\nconst diffSecs = Math.round((((diffMs % 86400000) % 3600000) % 60000) / 1000);\n\nreturn { duration: `${diffHrs}h-${diffMins}m-${diffSecs}s` };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        -100
+      ],
+      "id": "6f9ec6aa-7264-4e61-91ec-27166c3d6877",
+      "name": "Calculate duration"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6278f340-6287-4e89-b774-f6c584954d5b",
+              "name": "line_uid",
+              "type": "string",
+              "value": "=U8ca91ed1c30228e776d83179a1893fb0"
+            },
+            {
+              "id": "9b22e735-4ab1-4346-88b6-6674bdf1147a",
+              "name": "=content",
+              "value": "={{ 'Time Duration : ' +  $json.duration}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b400b542-b31f-49df-8ecd-11b49d2a5488",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1060,
+        -100
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YZMkIYIoxkeTerTi",
+          "mode": "list",
+          "cachedResultName": "subFlow-line"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{'現在時間:'  + $now.format('yyyy/MM/dd hh:mm') + '\\\\n' +'內容:'  + $json.content + '\\\\n' + 'Hello World'      }}\n"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1260,
+        -100
+      ],
+      "id": "b94666bb-11ef-4420-9a53-cb2e62c51ebe",
+      "name": "Execute subFlow-line1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "time-start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "time-end",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "time-start": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "time-end": {
+      "main": [
+        [
+          {
+            "node": "Calculate duration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Execute subFlow-line1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate duration": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-03T07:27:23.550Z",
+      "createdAt": "2025-06-03T07:27:23.550Z",
+      "role": "workflow:owner",
+      "workflowId": "1Gi2YYDprchRQSrV",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

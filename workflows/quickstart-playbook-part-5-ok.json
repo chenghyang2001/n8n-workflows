@@ -1,0 +1,344 @@
+{
+  "id": "8Gvs3IQUvMNvYICx",
+  "name": "quickstart-playbook-part-5-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "t",
+        "toolDescription": "t"
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        900
+      ],
+      "id": "9caa6a65-01a5-4c8e-8893-40e683810c68",
+      "name": "In-Memory Vector Store"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2780,
+        1040
+      ],
+      "id": "f9320349-703c-4986-8047-91c9f587b2ed",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {
+        "name": "c",
+        "workflowId": {
+          "__rl": true,
+          "value": "7osgHxnOLhIko4ud",
+          "mode": "list",
+          "cachedResultName": "⭐ TEMPLATE: I Built +30 AI Agents with N8N, here’s what I learned…"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        3160,
+        1080
+      ],
+      "id": "7a871ac3-2ee4-4062-b214-03b7a8918a62",
+      "name": "EmailWorkflow"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "simon@scrapes.ai",
+          "mode": "list",
+          "cachedResultName": "simon@scrapes.ai"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3160,
+        920
+      ],
+      "id": "12fbffad-a0cf-4d0f-9b5e-763ee68a3d4b",
+      "name": "Google Calendar"
+    },
+    {
+      "parameters": {
+        "url": "ce"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        3160,
+        760
+      ],
+      "id": "8cb30194-3438-422c-96b1-1b28f3ecc058",
+      "name": "PDF.co"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "hello",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2700,
+        640
+      ],
+      "id": "eb48900a-f634-4cad-a737-eab03199bd48",
+      "name": "ToolsAgent"
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "Test",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        3380,
+        640
+      ],
+      "id": "9b0d07c4-7b5d-4c85-96ea-c9676ed1ff57",
+      "name": "ConversationAgent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        3500,
+        800
+      ],
+      "id": "9ace3fc1-495b-40c4-8848-41dc56a339b7",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        3620,
+        800
+      ],
+      "id": "5d0f0e85-7bd9-4217-a48d-8f51f5449ce3",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3380,
+        800
+      ],
+      "id": "5608af23-5751-4646-8a11-5c6d2b9ae470",
+      "name": "OpenAI"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2680,
+        820
+      ],
+      "id": "aca446f1-c820-415a-8b97-17c665f28d59",
+      "name": "OpenAI_"
+    },
+    {
+      "parameters": {
+        "content": "## AI AGENT NODES",
+        "height": 80,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2700,
+        520
+      ],
+      "id": "c581f47f-6aaa-43ac-b4f0-9d2d23b2fef4",
+      "name": "Sticky Note15"
+    }
+  ],
+  "connections": {
+    "In-Memory Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "ToolsAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "In-Memory Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EmailWorkflow": {
+      "ai_tool": [
+        [
+          {
+            "node": "ToolsAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "ToolsAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF.co": {
+      "ai_tool": [
+        [
+          {
+            "node": "ToolsAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "ConversationAgent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "ConversationAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ConversationAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI_": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ToolsAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-06-30T02:26:50.990Z",
+      "createdAt": "2025-06-30T02:26:50.990Z",
+      "role": "workflow:owner",
+      "workflowId": "8Gvs3IQUvMNvYICx",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T05:43:00.286Z",
+      "createdAt": "2025-07-01T05:42:34.424Z",
+      "id": "TdNNYFQCYcaCe34J",
+      "name": "simon"
+    },
+    {
+      "updatedAt": "2025-07-03T06:33:02.875Z",
+      "createdAt": "2025-07-03T06:33:02.875Z",
+      "id": "vi8JZyRsXg8gGLdk",
+      "name": "agent"
+    }
+  ],
+  "activeVersion": null
+}

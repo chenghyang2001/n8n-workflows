@@ -1,0 +1,427 @@
+{
+  "id": "5rlq9CZFfCQ2T1d4",
+  "name": "addwii-0711-getAtMinute30-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddba27a0-a26c-4835-814e-953dd1230165",
+              "name": "co2",
+              "value": "={{ $json.co2 }}",
+              "type": "number"
+            },
+            {
+              "id": "f8f2e71d-cc49-4ccd-8220-756bcfa3f9cb",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "1f077399-5a10-4099-a113-8b5185942d8a",
+              "name": "room_id",
+              "value": "={{ $('set room id').item.json.room_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        440
+      ],
+      "id": "c0db0f90-f0eb-484e-877d-80e5fc894cf7",
+      "name": "set co2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// CO2 資料轉換為 CSV 二進位檔案\n// 這個節點只執行一次，處理所有項目\n\n// 1. 從前一個節點取得所有項目\nconst allCO2Data = $input.all();\n\n// Check if all CO2 values are non-zero\nconst allNonZero = allCO2Data.every(item => {\n  const co2Value = item.json.co2;\n  return co2Value !== null && co2Value !== undefined && co2Value !== 0;\n});\n\n// Return result: \"yes\" if all are non-zero, \"no\" if any is zero\nconst checkResult = allNonZero ? \"yes\" : \"no\";\n\n// 2. 從資料創建 CSV 字串（移除 RecordedBy 欄位）\nlet csvContent = \"CO2,CreatedAt\\n\"; // CSV 標頭 - 只保留兩欄\n\nfor (const item of allCO2Data) {\n  const data = item.json;\n  // 處理 null 值：如果 co2 為 null 或 undefined，則使用 0\n  const co2Value = data.co2 !== null && data.co2 !== undefined ? data.co2 : 0;\n  // 處理 CSV 格式，確保日期時間正確格式化（移除第三欄）\n  const row = `${co2Value},\"${data.created_at}\"`;\n  csvContent += row + \"\\n\";\n}\n\n// 3. 取得 room_id 和 date 並組成動態檔案名稱（包含星期幾縮寫）\nconst roomId = $('set room id').first().json.room_id;\nconst date = $('set room id').first().json.query_date;\n\n// 計算星期幾（3字母縮寫）\nconst dateObj = new Date(date);\nconst dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];\nconst dayOfWeek = dayNames[dateObj.getDay()];\n\nconst fileName = `room_${roomId}_${date}_co2_report_${dayOfWeek}.csv`;\n\n// 4. 使用助手函數從字串創建二進位檔案\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(csvContent), \n  fileName\n);\n\n// Count how many zeros exist\nconst zeroCount = allCO2Data.filter(item => {\n  const co2Value = item.json.co2;\n  return co2Value === null || co2Value === undefined || co2Value === 0;\n}).length;\n\n// 5. 返回包含二進位資料的新項目\nreturn [\n  {\n    json: {\n      reportGenerated: new Date().toISOString(),\n      recordCount: allCO2Data.length,\n      allNonZeroCheck: checkResult,  // \"yes\" or \"no\"\n      zeroCount: zeroCount,  // Number of zero values\n      nonZeroCount: allCO2Data.length - zeroCount,  // Number of non-zero values\n      room_id: roomId,\n      query_date: date,\n      // 計算統計資料時也要處理 null 值\n      averageCO2: Math.round(allCO2Data.reduce((sum, item) => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return sum + co2Value;\n      }, 0) / allCO2Data.length),\n      minCO2: Math.min(...allCO2Data.map(item => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return co2Value;\n      })),\n      maxCO2: Math.max(...allCO2Data.map(item => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return co2Value;\n      })),\n      fileName: fileName,  // 新增檔案名稱到 JSON 輸出\n      dayOfWeek: dayOfWeek  // 新增星期幾資訊\n    },\n    binary: {\n      'co2_report': binaryData\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        440
+      ],
+      "id": "b06e4d97-464b-4d12-95ec-200cb2f48456",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        440
+      ],
+      "id": "7910a73f-f87f-4ffc-98f5-e42342c549f0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=20996475#gid=20996475",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=20996475#gid=20996475",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "getAtMinute10-40",
+              "lookupValue": "yes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -100,
+        440
+      ],
+      "id": "ace4611e-2f39-451e-a12f-cb41fa54c7e6",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a8328b0a-8b38-4680-8862-ff6a61d38697",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "401c563a-2bd1-4c42-b077-f45985f5524f",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "be629b8a-fa8b-4b7c-8960-60502a4c7949",
+              "name": "query_date",
+              "value": "={{ $now.minus(1,'days').format('yyyy-MM-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        120,
+        440
+      ],
+      "id": "4d978089-caa5-4acf-b73f-973af06cb728",
+      "name": "set room id"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT co2, m.created_at FROM median m WHERE  (m.room_id = '{{ $json.room_id }}' ) AND (DATE(m.created_at) = '{{ $json.query_date }}' )  AND MINUTE(m.created_at) in (10,40)\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        360,
+        440
+      ],
+      "id": "068cbdc2-14e2-427d-9a07-757e79627084",
+      "name": "query_at_minute_30",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4d1304ba-2040-496b-b1f4-8ab263c76244",
+              "name": "query_date",
+              "value": "={{ $json.query_date }}",
+              "type": "string"
+            },
+            {
+              "id": "2d88adc8-8de5-4914-9569-5300ce2207ae",
+              "name": "nonZeroCount",
+              "value": "={{ $json.nonZeroCount }}",
+              "type": "number"
+            },
+            {
+              "id": "830e81ce-09b1-4838-931f-bff3ec5759ed",
+              "name": "allNonZeroCheck",
+              "value": "={{ $json.allNonZeroCheck }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1000,
+        440
+      ],
+      "id": "dadc901c-bbf0-4b72-8588-69ec19d489bc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=20996475#gid=20996475",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=20996475#gid=20996475",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "room_id": "={{ $('Code').item.json.room_id }}",
+            "日期": "={{ $('Code').item.json.query_date }}",
+            "nonZeroCount": "={{ $('Code').item.json.nonZeroCount }}",
+            "全天開機": "={{ $('Code').item.json.allNonZeroCheck }}"
+          },
+          "matchingColumns": [
+            "room_id"
+          ],
+          "schema": [
+            {
+              "id": "getAtMinute10-40",
+              "displayName": "getAtMinute10-40",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "room_id",
+              "displayName": "room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nonZeroCount",
+              "displayName": "nonZeroCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "全天開機",
+              "displayName": "全天開機",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1220,
+        440
+      ],
+      "id": "54563e9d-330a-4eeb-82db-8102606aefef",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "set co2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "set room id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set room id": {
+      "main": [
+        [
+          {
+            "node": "query_at_minute_30",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "query_at_minute_30": {
+      "main": [
+        [
+          {
+            "node": "set co2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-11T05:32:21.451Z",
+      "createdAt": "2025-07-11T05:32:21.451Z",
+      "role": "workflow:owner",
+      "workflowId": "5rlq9CZFfCQ2T1d4",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    }
+  ],
+  "activeVersion": null
+}

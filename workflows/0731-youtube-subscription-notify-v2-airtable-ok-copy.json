@@ -1,0 +1,816 @@
+{
+  "id": "4o9mTHAkMD0BsZyq",
+  "name": "0731-youtube-subscription-notify-v2-airtable-ok-copy",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Get the list of videos from the input.\nconst allVideos = $input.item.json.videos;\n\n// If there are no videos, stop and don't send an email.\nif (!allVideos || allVideos.length === 0) {\n  return null;\n}\n\n// --- Start building the HTML table ---\nlet html = `\n<style>\n  body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; color: #333; }\n  .container { border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }\n  table { width: 100%; border-collapse: collapse; }\n  th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }\n  th { background-color: #f7f7f7; font-size: 12px; text-transform: uppercase; }\n  tr:last-child td { border-bottom: none; }\n  a { color: #1a73e8; text-decoration: none; }\n  a:hover { text-decoration: underline; }\n</style>\n<div class=\"container\">\n  <table>\n    <thead>\n      <tr>\n        <th>Channel</th>\n        <th>Video Title</th>\n      </tr>\n    </thead>\n    <tbody>\n`;\n\n// --- Loop through each video and add it to the table ---\nfor (const video of allVideos) {\n  const channelName = video.snippet.channelTitle;\n  const videoTitle = video.snippet.title;\n  const videoId = video.snippet.resourceId.videoId;\n  const videoLink = `https://www.youtube.com/watch?v=${videoId}`;\n\n  html += `\n    <tr>\n      <td>${channelName}</td>\n      <td><a href=\"${videoLink}\" target=\"_blank\">${videoTitle}</a></td>\n    </tr>\n  `;\n}\n\n// --- Add the closing HTML tags *after* the loop is finished ---\nhtml += `\n    </tbody>\n  </table>\n</div>\n`;\n\n// --- Return the final HTML for the email node ---\nreturn { json: { html: html } };"
+      },
+      "id": "ffd07a38-e468-4364-b522-a84f7ee764f1",
+      "name": "Build HTML Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{$json.uploadsPlaylistId}}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Get Latest Videos from Channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1536,
+        16
+      ],
+      "id": "e405dfa4-36ab-4308-867e-a38d366086e7",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "name": "Split Out Videos",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        16
+      ],
+      "id": "fb909bea-6ffe-4a37-8686-745a9107886a",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com",
+        "subject": "=New YouTube videos from the last 24 hours (videos)",
+        "message": "=airtable : YT_transcript \n\nhttps://airtable.com/appZx6OWphy0LudAx/tblJc21nI6OHHUed5/viwvyZ913WV4sAhYh?blocks=hide\n\n\n{{ $json.html }}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2752,
+        -208
+      ],
+      "id": "a38c9276-9b44-4308-ada6-6490476a87cc",
+      "name": "Send a message",
+      "webhookId": "9506f4e5-8cd7-4683-b282-75cbb5eec934",
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node gathers all video items and filters them by publication date.\nconst allVideos = $input.all().map(item => item.json);\n\n// Calculate the date and time from 24 hours ago.\nconst twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);\n\n// Filter the videos to keep only those published after that time.\nconst recentVideos = allVideos.filter(video => {\n  // Check if the video has a 'publishedAt' date to avoid errors.\n  if (!video.snippet || !video.snippet.publishedAt) {\n    return false;\n  }\n  \n  const publishedDate = new Date(video.snippet.publishedAt);\n  return publishedDate > twentyFourHoursAgo;\n});\n\n// Return a single item containing only the recent videos.\nreturn [{\n  json: {\n    videos: recentVideos,\n    videoCount: recentVideos.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        16
+      ],
+      "id": "826598e2-93c2-47b3-8e7a-cf7fa307bbb4",
+      "name": "Process & Limit Videos"
+    },
+    {
+      "parameters": {
+        "content": "### Built with Gemini\n2025-07-25 "
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "bc2d7e9c-0fa1-4c4e-8a3c-6d629b17d4d8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d8d2b9d-4e92-4f32-8e8e-c9b74070a72c",
+              "name": "nextPageToken",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "7b79663d-42ac-464a-95c5-8408470a256a",
+              "name": "allSubscriptions",
+              "value": "[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Initialize Loop",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "17dee16e-5aa8-40f1-8905-97a43c568716"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.nextPageToken ? 'https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50&pageToken=' + $json.nextPageToken : 'https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50' }}\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "options": {}
+      },
+      "name": "Fetch Subscriptions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        0
+      ],
+      "id": "580a1ba7-2b02-4028-a6da-060a4adca895",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "name": "YouTube account"
+        },
+        "httpHeaderAuth": {
+          "name": "Google Authorization"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "35805561-1250-4228-a3f1-d00d235c421f",
+              "leftValue": "={{$json.nextPageToken}}",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "More Pages?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1056,
+        0
+      ],
+      "id": "cf8706ab-f633-4c72-9e1e-ca90a1824d90"
+    },
+    {
+      "parameters": {
+        "jsCode": "const newItems = $('Fetch Subscriptions').item.json.items;\nconst oldItems = $('Loop Anchor').item.json.allSubscriptions;\nconst combinedItems = oldItems.concat(newItems);\n\nconst finalItem = $input.item.json;\nfinalItem.allSubscriptions = combinedItems;\n\nreturn finalItem;"
+      },
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        0
+      ],
+      "id": "9d201a9a-f264-4fa3-b06d-95dad235c59f"
+    },
+    {
+      "parameters": {},
+      "name": "Loop Anchor",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "7fac0e7e-a60d-42fe-9840-23fa111d303e"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node takes the final list of raw subscriptions from the loop.\nconst allRawSubscriptions = $input.item.json.allSubscriptions;\n\n// We will create a new array to hold the cleaned data.\nconst cleanedSubscriptions = allRawSubscriptions.map(sub => {\n  // Check if the item is a valid raw subscription object from the API.\n  if (sub.snippet?.resourceId?.channelId) {\n    const channelId = sub.snippet.resourceId.channelId;\n\n    // YouTube's convention: an uploads playlist ID is the channel ID with 'UC' replaced by 'UU'.\n    const uploadsPlaylistId = 'UU' + channelId.substring(2);\n\n    return {\n      channelId: channelId,\n      channelTitle: sub.snippet.title || 'No Title',\n      uploadsPlaylistId: uploadsPlaylistId\n    };\n  }\n\n  // Return null for any invalid items so they can be filtered out.\n  return null;\n}).filter(Boolean); // This removes any null items from the list.\n\n// Pass the final, cleaned list to the next node.\nreturn cleanedSubscriptions;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        16
+      ],
+      "id": "cd9f56ca-d933-4aba-8fe7-3e5f9f72c4e0",
+      "name": "Clean Subscription Data"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e780da76-a4ec-4bcc-a089-9547e7004b5e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4952d4c2-c3f0-48ac-9b62-46f8612d99bf",
+              "name": "yt_url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "5ebf63b4-6564-41c6-b3eb-3f6ef5fd3cc0",
+              "name": "yt_title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "4827c029-5002-4a49-9b20-b36d4902f0a5",
+              "name": "yt_channel",
+              "value": "={{ $json.channel }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3072,
+        192
+      ],
+      "id": "60786bef-90e1-41cf-a871-6732e3c16b8b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "https://airtable.com/appZx6OWphy0LudAx/tblJc21nI6OHHUed5/viwvyZ913WV4sAhYh?blocks=hide",
+          "mode": "url"
+        },
+        "table": {
+          "__rl": true,
+          "value": "https://airtable.com/appZx6OWphy0LudAx/tblJc21nI6OHHUed5/viwvyZ913WV4sAhYh?blocks=hide",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Generate Info": false,
+            "Youtube URL": "={{ $json.yt_url }}",
+            "Status": "Incomplete",
+            "YouTube Title": "={{ $json.yt_title }}",
+            "Create_Date": "={{ $now.plus(1,'day').format('yyyy-MM-dd') }}",
+            "YT_Channel": "={{ $json.yt_channel }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Company name",
+              "displayName": "Company name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Create_Date",
+              "displayName": "Create_Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Youtube URL",
+              "displayName": "Youtube URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Generate Info",
+              "displayName": "Generate Info",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Incomplete",
+                  "value": "Incomplete"
+                },
+                {
+                  "name": "Complete",
+                  "value": "Complete"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "YouTube Title",
+              "displayName": "YouTube Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notion DB url",
+              "displayName": "Notion DB url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Google Doc",
+              "displayName": "Google Doc",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "record_id",
+              "displayName": "record_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "n8n file url",
+              "displayName": "n8n file url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "YT_Channel",
+              "displayName": "YT_Channel",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3344,
+        304
+      ],
+      "id": "047add23-e7b6-467b-9df0-f0c1cc340ca2",
+      "name": "Create user",
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Simon-scrap-ai-20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得輸入的 HTML 內容\nconst htmlContent = $input.all()[0].json.html;\n\n// 使用正則表達式來匹配所有的表格行\nconst rowPattern = /<tr>[\\s\\S]*?<td>(.*?)<\\/td>[\\s\\S]*?<td><a href=\"(.*?)\".*?>(.*?)<\\/a><\\/td>[\\s\\S]*?<\\/tr>/g;\n\n// 儲存提取的資料\nconst extractedData = [];\n\n// 匹配所有的資料行\nlet match;\nwhile ((match = rowPattern.exec(htmlContent)) !== null) {\n  // 跳過表頭行\n  if (!match[1].includes('<th>')) {\n    extractedData.push({\n      channel: match[1].trim(),\n      url: match[2].trim(),\n      title: match[3].trim(),\n      // 從 URL 中提取 video ID\n      videoId: match[2].match(/v=([^&]+)/)?.[1] || ''\n    });\n  }\n}\n\n// 返回結果\n// 如果您想要每個項目作為獨立的輸出項\nreturn extractedData.map(item => ({\n  json: item\n}));\n\n// 或者，如果您想要所有資料作為單一輸出\n// return [{\n//   json: {\n//     videos: extractedData,\n//     totalCount: extractedData.length\n//   }\n// }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        176
+      ],
+      "id": "3037c4ad-6ba6-4ba1-9f69-db554b1c9730",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2768,
+        176
+      ],
+      "id": "1b9e2c3e-a1b1-47a6-bc61-8f04770ddfc5",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "Get Today YouTube new video URL Done."
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3168,
+        -256
+      ],
+      "id": "76ab8a38-a93d-4cf1-b1d5-d6276f6eac8c",
+      "name": "Execute Workflow",
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## airtable : https://airtable.com/appZx6OWphy0LudAx/tblJc21nI6OHHUed5/viwvyZ913WV4sAhYh?blocks=hide",
+        "width": 1440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -320
+      ],
+      "id": "672d9e1e-4372-48f4-b64b-a11fc7264f2f",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Build HTML Email": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Latest Videos from Channel": {
+      "main": [
+        [
+          {
+            "node": "Split Out Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Videos": {
+      "main": [
+        [
+          {
+            "node": "Process & Limit Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Limit Videos": {
+      "main": [
+        [
+          {
+            "node": "Build HTML Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Anchor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Subscriptions": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "More Pages?": {
+      "main": [
+        [
+          {
+            "node": "Loop Anchor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clean Subscription Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [
+          {
+            "node": "More Pages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Anchor": {
+      "main": [
+        [
+          {
+            "node": "Fetch Subscriptions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Subscription Data": {
+      "main": [
+        [
+          {
+            "node": "Get Latest Videos from Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Initialize Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create user": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-01T06:55:39.121Z",
+      "createdAt": "2025-08-01T06:55:39.121Z",
+      "role": "workflow:owner",
+      "workflowId": "4o9mTHAkMD0BsZyq",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-29T03:47:34.401Z",
+      "createdAt": "2025-07-29T03:47:34.401Z",
+      "id": "6t4eSWE69018E5yX",
+      "name": "YouTube"
+    },
+    {
+      "updatedAt": "2025-07-01T06:00:22.350Z",
+      "createdAt": "2025-07-01T06:00:22.350Z",
+      "id": "na0TxcppD9SBpFMo",
+      "name": "airtable"
+    }
+  ],
+  "activeVersion": null
+}

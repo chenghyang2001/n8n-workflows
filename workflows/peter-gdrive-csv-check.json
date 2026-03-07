@@ -1,0 +1,355 @@
+{
+  "id": "BX5KapZvogHJFolf",
+  "name": "peter-GDrive-csv-check",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f4536df5-d0b1-4392-bf17-b8137fb31a44",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "624c4468-652d-48e0-8fb4-ee65eb1cb786",
+              "name": "file_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "name": "file_extension",
+              "value": "={{ $json.name.split('.').pop().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "ff090c03-17fa-4301-86ab-17bf9bf15e35",
+              "name": "size",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5f6a635a-834e-4932-8a30-2f5d65f58d27",
+      "name": "Set File Info1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw",
+          "mode": "list",
+          "cachedResultName": "自律養生陳老師",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "8fabd184-fac7-4766-926a-a410a93a8513",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        280,
+        280
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 5,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw",
+          "mode": "list",
+          "cachedResultName": "自律養生陳老師",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JFefvurPciz9OVH7XmQ5cBGKa7cUiBfw"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "id": "73e1b6c1-c41f-41ac-9ac6-589fc3ab8714",
+      "name": "File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        280,
+        480
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        380
+      ],
+      "id": "566ceaea-e6d3-4822-82ba-cc3cec8fc5a7",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "doc-condition-1",
+              "leftValue": "={{ $json.file_type }}",
+              "rightValue": "text/csv",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "69615566-0584-47e7-973c-48c4187778bb",
+      "name": "If Google CSV",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.file_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "8594b1e5-f17d-463b-b7fa-549a933702ed",
+      "name": "Download csv File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        940,
+        380
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.file_id }}",
+        "options": {}
+      },
+      "id": "c5ac326c-e69a-478b-9254-c66bc24ccf2d",
+      "name": "Download CO2 CSV",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        940,
+        680
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lines = $input.first().json.data.toString().split('\\n');\nconst headers = lines[0].split(',');\nconst timeIndex = headers.indexOf('資料上傳時間');\nconst co2Index = headers.indexOf('CO2');\n\nconst result = lines.slice(1).map(line => {\n  const cols = line.split(',');\n  return {\n    time: cols[timeIndex],\n    co2: parseFloat(cols[co2Index])\n  };\n}).filter(item => !isNaN(item.co2));\n\nreturn result.map(row => ({ json: row }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        680
+      ],
+      "id": "80978050-4abd-416b-9cd2-045d21b04eaf",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "Set File Info1": {
+      "main": [
+        [
+          {
+            "node": "If Google CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Set File Info1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated": {
+      "main": [
+        [
+          {
+            "node": "Set File Info1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        []
+      ]
+    },
+    "If Google CSV": {
+      "main": [
+        [
+          {
+            "node": "Download csv File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download CO2 CSV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Download csv File": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download CO2 CSV": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-05-16T05:41:35Z"
+    },
+    "node:File Updated": {
+      "lastTimeChecked": "2025-05-16T05:41:35Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:22:25.275Z",
+      "createdAt": "2025-07-01T00:22:25.275Z",
+      "role": "workflow:owner",
+      "workflowId": "BX5KapZvogHJFolf",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-03T03:10:42.076Z",
+      "createdAt": "2025-07-01T06:55:58.835Z",
+      "id": "B7JmgQBPpNqnDc7Z",
+      "name": "gdrive"
+    }
+  ],
+  "activeVersion": null
+}

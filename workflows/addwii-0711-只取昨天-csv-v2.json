@@ -1,0 +1,609 @@
+{
+  "id": "9PSuFDKtylNAfPwx",
+  "name": "addwii-0711-只取昨天-csv-v2",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT co2, m.created_at FROM median m WHERE  (m.room_id = '{{ $json.room_id }}' ) AND (DATE(m.created_at) = '{{ $json.date_yesterday }}' )\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        1040,
+        1080
+      ],
+      "id": "c259e2c4-40cc-4bfd-a192-d5a4a9470a2d",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "maxItems": 1500
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        1080
+      ],
+      "id": "c088c42d-91ed-4e9f-bf42-0e38107855fd",
+      "name": "Limit 1500"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddba27a0-a26c-4835-814e-953dd1230165",
+              "name": "co2",
+              "value": "={{ $json.co2 }}",
+              "type": "number"
+            },
+            {
+              "id": "f8f2e71d-cc49-4ccd-8220-756bcfa3f9cb",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1240,
+        1080
+      ],
+      "id": "bbad68c4-aac4-4f3f-96c0-228e8c3823da",
+      "name": "set co2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// CO2 資料轉換為 CSV 二進位檔案\n// 這個節點只執行一次，處理所有項目\n\n// 1. 從前一個節點取得所有項目\nconst allCO2Data = $input.all();\n\n// 2. 從資料創建 CSV 字串（移除 RecordedBy 欄位）\nlet csvContent = \"CO2,CreatedAt\\n\"; // CSV 標頭 - 只保留兩欄\n\nfor (const item of allCO2Data) {\n  const data = item.json;\n  // 處理 null 值：如果 co2 為 null 或 undefined，則使用 0\n  const co2Value = data.co2 !== null && data.co2 !== undefined ? data.co2 : 0;\n  // 處理 CSV 格式，確保日期時間正確格式化（移除第三欄）\n  const row = `${co2Value},\"${data.created_at}\"`;\n  csvContent += row + \"\\n\";\n}\n\n// 3. 取得 room_id、user_name 和 date 並組成動態檔案名稱（包含星期幾縮寫和使用者名稱）\nconst roomId = $('config').first().json.room_id;\nconst userName = $('config').first().json.user_name;  // 取得使用者名稱\nconst date = $('config').first().json.date_yesterday;  // 使用 date_yesterday\n\n// 計算星期幾（3字母縮寫）\nconst dateObj = new Date(date);\nconst dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];\nconst dayOfWeek = dayNames[dateObj.getDay()];\n\n// 建立包含使用者名稱的檔案名稱\nconst fileName = `room_${roomId}_${userName}_${date}_co2_report_${dayOfWeek}.csv`;\n\n// 4. 使用助手函數從字串創建二進位檔案\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(csvContent), \n  fileName\n);\n\n// 5. 返回包含二進位資料的新項目\nreturn [\n  {\n    json: {\n      reportGenerated: new Date().toISOString(),\n      recordCount: allCO2Data.length,\n      // 計算統計資料時也要處理 null 值\n      averageCO2: Math.round(allCO2Data.reduce((sum, item) => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return sum + co2Value;\n      }, 0) / allCO2Data.length),\n      minCO2: Math.min(...allCO2Data.map(item => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return co2Value;\n      })),\n      maxCO2: Math.max(...allCO2Data.map(item => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return co2Value;\n      })),\n      fileName: fileName,  // 新增檔案名稱到 JSON 輸出\n      dayOfWeek: dayOfWeek,  // 新增星期幾資訊\n      date: date,  // 新增日期資訊\n      roomId: roomId,  // 新增房間ID資訊\n      userName: userName  // 新增使用者名稱資訊\n    },\n    binary: {\n      'co2_report': binaryData\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1740,
+        1080
+      ],
+      "id": "3b3b838b-d928-484c-a197-6f3fdc7661ea",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "co2_report",
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1s7iCJsRP0xFrWotZ7yClrLU0DMLMMu5K",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1940,
+        1080
+      ],
+      "id": "5926970a-c964-4c76-b882-8b06ebc627c5",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        980
+      ],
+      "id": "079a8770-d4a8-4dad-8b81-6c070ceb71fb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "85fd83c9-9cbf-4b3a-998c-e3de53061f96",
+              "name": "user_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "904ea8a3-e084-47f9-9f37-3a3d2223e42e",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "string"
+            },
+            {
+              "id": "704b112d-1f2f-471d-8b37-cc49e312e50a",
+              "name": "date_today",
+              "value": "={{ $now.format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "443a7b5e-3faa-43d2-8219-af2d60091ac9",
+              "name": "date_yesterday",
+              "value": "={{ $now.minus(1,'day').format('yyyy-MM-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        860,
+        1080
+      ],
+      "id": "0db1b01f-a48f-425f-8021-c5f4cd4a8b88",
+      "name": "config"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=78257618#gid=78257618",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=78257618#gid=78257618",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "todo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        980
+      ],
+      "id": "fc87dc99-5234-483b-a8ef-53b432848f92",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a8328b0a-8b38-4680-8862-ff6a61d38697",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "401c563a-2bd1-4c42-b077-f45985f5524f",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        980
+      ],
+      "id": "9d0b7c85-dc88-449e-952f-49ca91b21724",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        380,
+        980
+      ],
+      "id": "420c0570-be18-48ef-8c8e-0dbf75d81c88",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "88e992ff-cc94-4169-a52e-289e1bece7d7",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "348d1b79-d4b8-4276-9524-f35a96b3f832",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        1080
+      ],
+      "id": "e1bfd923-5957-49fa-aece-f61bd9383d22",
+      "name": "config-each"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "addwii-loop-user-co2-file-creation done"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        880
+      ],
+      "id": "585d674d-6d92-4d3f-80fb-032f5c9fd030",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=935659860#gid=935659860",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_RVxnwQYRsASOBpbYPtS21ZN0XwY9F_fkYq_QrRtG6g/edit?gid=935659860#gid=935659860",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $('Code').item.json.userName }}",
+            " room_id": "={{ $('Code').item.json.roomId }}",
+            "co2_max": "={{ $('Code').item.json.maxCO2 }}",
+            "co2_min": "={{ $('Code').item.json.minCO2 }}",
+            "co2_average": "={{ $('Code').item.json.averageCO2 }}",
+            "日期": "={{ $('Code').item.json.date }}",
+            "數據筆數": "={{ $('Code').item.json.recordCount }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " room_id",
+              "displayName": " room_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "co2_max",
+              "displayName": "co2_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "co2_min",
+              "displayName": "co2_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "co2_average",
+              "displayName": "co2_average",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "數據筆數",
+              "displayName": "數據筆數",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2140,
+        1080
+      ],
+      "id": "403625ab-d704-41d9-9c47-6186f064fc56",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "set co2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Limit 1500": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set co2": {
+      "main": [
+        [
+          {
+            "node": "Limit 1500",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "config-each",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config-each": {
+      "main": [
+        [
+          {
+            "node": "config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-11T00:27:20.505Z",
+      "createdAt": "2025-07-11T00:27:20.505Z",
+      "role": "workflow:owner",
+      "workflowId": "9PSuFDKtylNAfPwx",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    }
+  ],
+  "activeVersion": null
+}

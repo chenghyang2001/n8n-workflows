@@ -1,0 +1,442 @@
+{
+  "id": "BsaWS78OjKrCMPt9",
+  "name": "OCR-研能機器人-simon-pdf-ok",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## [Mistral OCR by file ](https://mistral.ai/news/mistral-ocr) \n\n## api key : https://console.mistral.ai/api-keys\n\n\n\n• Type: AI-powered OCR service\n• Features: Parses multi-page PDFs and images, performs document page splitting, markdown conversion\n• Integration: Accessible via API, can be used with n8n HTTP Request node\n• Notes: Free tier or trial available for testing; focused on document parsing workflows\n",
+        "height": 368,
+        "width": 1096
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        2032
+      ],
+      "id": "ee2aaf41-f5f3-4483-910a-b4779aacf64d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        2496
+      ],
+      "id": "afd04bcd-1b75-4f45-8078-360b9bb937b1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"{{ $json.url }}\"\n  },\n  \"include_image_base64\": true\n} ",
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        2192
+      ],
+      "id": "9c8cbf22-8b1a-4ec1-ad26-5954f9376d4f",
+      "name": "Mistral OCR - Document",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "purpose",
+              "value": "ocr"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        2192
+      ],
+      "id": "41320a23-3b50-4661-ac9a-96bed9ec7e46",
+      "name": "Mistral - Upload File1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mistral.ai/v1/files/{{ $json.id }}/url ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expiry",
+              "value": "24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        2192
+      ],
+      "id": "f5e4ef12-81cb-4544-959c-a9179da5fa87",
+      "name": "Get Signed Url1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Mistral-AI-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "files-api-2025-04-14"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -48,
+        2544
+      ],
+      "id": "c7125daf-c69f-4b34-8a75-23d9697851b7",
+      "name": "UploadImage",
+      "retryOnFail": true,
+      "credentials": {
+        "anthropicApi": {
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "files-api-2025-04-14"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-3-5-sonnet-20241022\",\n  \"max_tokens\": 2048,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"document\",\n          \"source\": {\n            \"type\": \"file\",\n            \"file_id\": \"{{ $json.id }}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": \"Extract all text from this image and infer information from the chart.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        2544
+      ],
+      "id": "8ae4afee-204b-4e3d-a1e3-9ab6df67515b",
+      "name": "RequestDocumentExtraction",
+      "retryOnFail": true,
+      "credentials": {
+        "anthropicApi": {
+          "name": "Anthropic account"
+        },
+        "httpHeaderAuth": {
+          "name": "Anthropic Header Auth 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# LLM Anthropic Claude 3 Opus by file : \n## Credit : https://console.anthropic.com/settings/billing\n## api key : https://console.anthropic.com/settings/keys\n## api key : https://console.mistral.ai/api-keys\n",
+        "height": 336,
+        "width": 1140
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        864,
+        2480
+      ],
+      "id": "fb7c9449-cdf2-40bc-b4c9-adc1f2ee2eed",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Download pdf file\n",
+        "height": 280,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        2416
+      ],
+      "id": "e355b684-bf2c-4066-8be5-3e0645c8de0d",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "https://drive.google.com/file/d/1N-uQ4ilxB4mNOmCFax48ExXwTf9lK9vI/view?usp=drive_link",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -576,
+        2496
+      ],
+      "id": "f200e85f-97c0-499d-a850-9c07e5089bd6",
+      "name": "OCR_pdf",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1BDtw7l3uHHHQfVDQg35-zkRhkF1ZVav20XPSquVjkMY/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=-----------------------------------------------------------\nBy OCR Mistral AI :\nfile : {{ $('Mistral - Upload File1').item.json.filename }}\n{{ $now.format('yyyy-MM-dd hh:mm:ss') }}\n\n{{ $json.pages[0].markdown }}\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        640,
+        2192
+      ],
+      "id": "a33dc10e-ed47-41d6-8f8a-d391dc2b6ab8",
+      "name": "Update Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1BDtw7l3uHHHQfVDQg35-zkRhkF1ZVav20XPSquVjkMY/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "=-----------------------------------------------------------\nBy LLM Anthropic Claude Opus 3 :\nfile : {{ $('UploadImage').item.json.filename }}\n{{ $now.format('yyyy-MM-dd hh:mm:ss') }}\n\n{{ $json.content[0].text }}\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        480,
+        2544
+      ],
+      "id": "1d04c1db-1fc4-4683-8970-47d7e1a02aa1",
+      "name": "Update Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "name": "Google Docs account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "OCR_pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral - Upload File1": {
+      "main": [
+        [
+          {
+            "node": "Get Signed Url1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Signed Url1": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR - Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UploadImage": {
+      "main": [
+        [
+          {
+            "node": "RequestDocumentExtraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR - Document": {
+      "main": [
+        [
+          {
+            "node": "Update Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RequestDocumentExtraction": {
+      "main": [
+        [
+          {
+            "node": "Update Docs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR_pdf": {
+      "main": [
+        [
+          {
+            "node": "Mistral - Upload File1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "UploadImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-08-07T01:58:22.650Z",
+      "createdAt": "2025-08-07T01:58:22.650Z",
+      "role": "workflow:owner",
+      "workflowId": "BsaWS78OjKrCMPt9",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

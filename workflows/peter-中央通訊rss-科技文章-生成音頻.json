@@ -1,0 +1,573 @@
+{
+  "id": "C1ADwxSMCBStBswU",
+  "name": "peter-中央通訊RSS 科技文章-生成音頻",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// 取得前五篇 RSS 文章\nconst articles = $input.all().slice(0, 15);\n\n// 提取標題並清理格式\nfunction cleanTitle(title) {\n  return title\n    .replace(/[\\r\\n\\t]/g, ' ')           // 移除換行和制表符\n    .replace(/\\s+/g, ' ')               // 合併多個空格\n    .replace(/[\"\"「」『』]/g, '\"')        // 統一引號\n    .trim();                            // 移除前後空格\n}\n\n// 建立標題列表\nconst titlesList = articles.map((item, index) => {\n  const cleanedTitle = cleanTitle(item.json.title || '無標題');\n  const pubDate = item.json.pubDate || '';\n  const link = item.json.link || '';\n  \n  return {\n    序號: index + 1,\n    標題: cleanedTitle,\n    發布時間: pubDate,\n    連結: link\n  };\n});\n\n// 建立純標題文字列表\nconst titlesOnly = titlesList.map(item => `${item.序號}. ${item.標題}`).join('\\n');\n\nreturn [\n  {\n    json: {\n      文章標題列表: titlesList,\n      純標題文字: titlesOnly,\n      總文章數: articles.length,\n      擷取時間: new Date().toLocaleString('zh-TW', {\n        timeZone: 'Asia/Taipei',\n        year: 'numeric',\n        month: '2-digit',\n        day: '2-digit',\n        hour: '2-digit',\n        minute: '2-digit',\n        second: '2-digit'\n      })\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1000,
+        480
+      ],
+      "id": "fd46d544-9705-4782-a3d2-7e1cf0286192",
+      "name": "提取標題"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "8d7c6b5a-4e3f-2g1h-9i0j-k1l2m3n4o5p6",
+              "leftValue": "={{ $json.總文章數 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        480
+      ],
+      "id": "47af20a2-ff3a-4fe6-b4d5-7be70538b192",
+      "name": "檢查是否有文章"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 格式化輸出結果\nconst data = $input.first().json;\n\nconsole.log('=== RSS 文章標題擷取結果 ===');\nconsole.log(`擷取時間: ${data.擷取時間}`);\nconsole.log(`總文章數: ${data.總文章數}`);\nconsole.log('\\n=== 文章標題列表 ===');\nconsole.log(data.純標題文字);\n\n// 顯示詳細資訊\nconsole.log('\\n=== 詳細資訊 ===');\ndata.文章標題列表.forEach(article => {\n  console.log(`${article.序號}. ${article.標題}`);\n  console.log(`   發布時間: ${article.發布時間}`);\n  console.log(`   連結: ${article.連結}`);\n  console.log('---');\n});\n\nreturn $input.all();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        400
+      ],
+      "id": "b5392136-19a6-44ca-a66c-7ca72b162ab5",
+      "name": "顯示結果"
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('⚠️ 沒有找到任何文章');\nconsole.log('請檢查 RSS 網址是否正確或網路連線狀態');\n\nreturn [{\n  json: {\n    錯誤訊息: '沒有找到任何文章',\n    建議: '請檢查 RSS 網址是否正確或網路連線狀態',\n    時間: new Date().toLocaleString('zh-TW', {\n      timeZone: 'Asia/Taipei'\n    })\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        560
+      ],
+      "id": "4a96afbd-0d88-47e5-9c2f-027a9e0d73ab",
+      "name": "錯誤處理"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1480,
+        480
+      ],
+      "id": "7d210377-6c1c-456a-9660-1042f4e8725e",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ee014af5-00a0-45ed-89ae-cd94f7b3bc7a",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "107ccf8b-85a5-43a1-90e1-4d4208d75807",
+              "name": "純標題文字",
+              "value": "={{ $json['純標題文字'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -340,
+        400
+      ],
+      "id": "cac5f59b-14e8-4ea1-88cb-c3d3afcbe3ec",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/nXpwpswrlUdg3EFKKuww",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": " sk_2863c46dd20e30bb5066dfd1532001349e62b69fd4dda4c5"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json['純標題文字'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -120,
+        400
+      ],
+      "id": "f8c770ae-db7a-4bef-b05d-448db4c7eb0c",
+      "name": "ElevenLabs Audio",
+      "credentials": {
+        "httpCustomAuth": {
+          "name": "Custom Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1177472123,
+          "mode": "list",
+          "cachedResultName": "elevenLabs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19mC_AnivJkncUEIfcc0jb4z6PWUhU5SiCcOz3v5zEak/edit#gid=1177472123"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.webContentLink }}",
+            "timestamp": "={{ $now.toFormat('yyyy-MM-dd-HH:mm:ss')  }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "aa4b2f42-20d6-44f7-b806-a074696462e0",
+      "name": "Sheets ElevenLabs",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        400,
+        400
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" ElevenLabs 產生音頻 : {{ $('Upload Audio').item.json.webContentLink }} \"\n    },\n{\n        \"type\": \"text\",\n        \"text\": \" {{ $('Edit Fields').item.json['純標題文字'].replace(/[^0-9a-zA-Z\\u4e00-\\u9fff .]/g, '') }} \"\n      }\n\n  ]\n}\n\n",
+        "options": {}
+      },
+      "id": "f1507068-b65b-4b4f-a12d-bdeb84516d17",
+      "name": "Line : 推送訊息 Line使用者n8n-peter5",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        620,
+        400
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "name": "={{ \"ElevenLabs-\" + $now.format('yyyy-MM-dd-hh-mm-ss') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1zFXQGKDgLQCQ0uPtzHOknaTt-o0Vcw7i",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1zFXQGKDgLQCQ0uPtzHOknaTt-o0Vcw7i",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        180,
+        400
+      ],
+      "id": "18af2d74-497b-403d-b4fa-23f5f51f54f6",
+      "name": "Upload Audio",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "{\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \" ElevenLabs 產生音頻 : {{ $('Upload Audio').item.json.webContentLink }} \"\n    },\n{\n        \"type\": \"text\",\n        \"text\": \" {{ $('Edit Fields').item.json['純標題文字'].replace(/[^0-9a-zA-Z\\u4e00-\\u9fff .]/g, '') }} \"\n      }\n\n  ]\n}\n\n",
+        "height": 400,
+        "width": 700
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        300,
+        760
+      ],
+      "id": "642ecd51-25e7-4810-9791-76ad1d867ce7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 政治：https://feeds.feedburner.com/rsscna/politics\n## 國際：https://feeds.feedburner.com/rsscna/intworld\n## 兩岸：https://feeds.feedburner.com/rsscna/mainland\n## 產經證券：https://feeds.feedburner.com/rsscna/finance\n## 科技：https://feeds.feedburner.com/rsscna/technology\n## 生活：https://feeds.feedburner.com/rsscna/lifehealth\n## 社會：https://feeds.feedburner.com/rsscna/social\n## 地方：https://feeds.feedburner.com/rsscna/local\n## 文化：https://feeds.feedburner.com/rsscna/culture\n## 運動：https://feeds.feedburner.com/rsscna/sport\n## 娛樂：https://feeds.feedburner.com/rsscna/stars",
+        "height": 480,
+        "width": 680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2200,
+        -80
+      ],
+      "id": "39036967-7822-45f0-8272-71bec3b5c1c0",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/rsscna/lifehealth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -1220,
+        260
+      ],
+      "id": "ea165328-3657-446a-9ff0-60d4a88f3544",
+      "name": "Lifehealth"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/rsscna/finance",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -1220,
+        480
+      ],
+      "id": "5e0052e2-82c0-44e4-bae9-fc4939019013",
+      "name": "Finance"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/rsscna/technology",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -1220,
+        700
+      ],
+      "id": "a7f953cf-1ebc-4a31-9638-6af3f770134e",
+      "name": "Technology"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 16,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1500,
+        720
+      ],
+      "id": "8e0bea76-a60f-4e50-903b-9e0bc0f2ea52",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "提取標題": {
+      "main": [
+        [
+          {
+            "node": "檢查是否有文章",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "檢查是否有文章": {
+      "main": [
+        [
+          {
+            "node": "顯示結果",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "錯誤處理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Finance",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Technology",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "顯示結果": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ElevenLabs Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets ElevenLabs": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio": {
+      "main": [
+        [
+          {
+            "node": "Sheets ElevenLabs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "ElevenLabs Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finance": {
+      "main": [
+        [
+          {
+            "node": "提取標題",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technology": {
+      "main": [
+        [
+          {
+            "node": "提取標題",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lifehealth": {
+      "main": [
+        [
+          {
+            "node": "提取標題",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Technology",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-05-23T03:58:27.180Z",
+      "createdAt": "2025-05-23T03:58:27.180Z",
+      "role": "workflow:owner",
+      "workflowId": "C1ADwxSMCBStBswU",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T03:40:24.997Z",
+      "createdAt": "2025-07-01T03:40:24.997Z",
+      "id": "Z6ojJoAXdIbQch00",
+      "name": "peter"
+    }
+  ],
+  "activeVersion": null
+}

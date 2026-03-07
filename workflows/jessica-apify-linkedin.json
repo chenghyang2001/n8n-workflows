@@ -1,0 +1,454 @@
+{
+  "id": "3JA7GfUNA3XpO8jD",
+  "name": "Jessica-ApiFy-LinkedIn",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vSEh2VvlaGd32hvVI",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "82c8ec12-02aa-4f8a-b70e-8963a15781ec",
+      "name": "Webhook",
+      "webhookId": "f0050677-a293-4469-a49d-9deefc5e83cd"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/datasets/{{ $json.body.resource.defaultDatasetId }}/items \n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_APIFY_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "5140b287-29e9-46b8-b00d-5f0ac3bfbdf5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1LaE_vzIlLEeBJnBEtis5zpckwdybS4_lBq0xkKPE56o/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "原始",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LaE_vzIlLEeBJnBEtis5zpckwdybS4_lBq0xkKPE56o/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "title": "={{ $json.title }}",
+            "companyName": "={{ $json.companyName }}",
+            "companyLogo": "={{ $json.companyLogo }}",
+            "location": "={{ $json.location }}",
+            "trackingId": "={{ $json.trackingId }}",
+            "refId": "={{ $json.refId }}",
+            "link": "={{ $json.link }}",
+            "descriptionText": "={{ $json.descriptionHtml }}",
+            "applyUrl": "={{ $json.companyWebsite }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "trackingId",
+              "displayName": "trackingId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "refId",
+              "displayName": "refId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyLinkedinUrl",
+              "displayName": "companyLinkedinUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companyLogo",
+              "displayName": "companyLogo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "salaryInfo",
+              "displayName": "salaryInfo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "postedAt",
+              "displayName": "postedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "benefits",
+              "displayName": "benefits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "descriptionText",
+              "displayName": "descriptionText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicantsCount",
+              "displayName": "applicantsCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applyUrl",
+              "displayName": "applyUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        440,
+        0
+      ],
+      "id": "ad68941d-0b66-4b20-a38a-4e1f637b6c26",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b5621afc-219d-4528-bc06-5d413d1564e0",
+              "leftValue": "={{ $json.descriptionText }}",
+              "rightValue": "remote",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b33bc190-b6ee-479b-901e-04816b4359ae",
+              "leftValue": "={{ $json.descriptionText }}",
+              "rightValue": "遠端",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        -220
+      ],
+      "id": "e61dfec2-bae7-455b-900a-2718578ad827",
+      "name": "Filter",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=你是一位專門為獵才公司進行職缺評估的 AI 助理。你的任務是分析職缺描述與公司資訊，判斷它們與以下關鍵評估標準的契合程度：\n\n評估標準：\n1. 自動化與 AI 工具：查看職缺描述中是否提及使用自動化工具或 AI 工具。\n2. 科技產業：判斷公司是否屬於科技產業。\n3. 提供簽證：確認此職缺是否提供簽證贊助。\n\n優先級判定規則：\n• 高優先級：同時符合三項標準。\n• 中優先級：符合其中一或兩項（請註明是哪些）。\n• 低優先級：三項皆不符合。\n\n請根據以下兩項資訊來決定優先級：\n• 職缺描述：{{ $('AI Transform').item.json.descriptionText }}\n"
+            },
+            {
+              "content": "你的回覆必須符合以下 JSON 格式：\n\n{\n\"priority\": \"high\",\n\"reason\": \"全符合\"\n}\n\n範例輸出：\n\n{\n\"priority\": \"high\",\n\"reason\": \"全符合\"\n}\n\n{\n\"priority\": \"Medium\",\n\"reason\": \"只一項 visa sponsor 符合\"\n}\n\n{\n\"priority\": \"Low\",\n\"reason\": \"均不符合\"\n}\n\n僅輸出有效的 JSON 格式。請勿包含額外文字、註解或說明。",
+              "role": "assistant"
+            },
+            {
+              "content": "回應規則：\n1.\t僅輸出 JSON 格式 — 不得加入額外說明。\n2.\t除了 JSON 結構外，不得包含多餘的格式或換行。\n3.\t確保職缺分類的準確性。",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        940,
+        0
+      ],
+      "id": "37d68dba-4634-4aac-a95d-9d2bbdfc44be",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "instructions": "Extract only the base URL from companyLinkedinUrl by removing everything after the first \"?\".\nExample:\nInput: https://www.linkedin.com/company/joinsquare?trk=public_jobs_jserp-result_job-search-card-subtitle\nOutput: https://www.linkedin.com/company/joinsquare/",
+        "codeGeneratedForPrompt": "Extract only the base URL from companyLinkedinUrl by removing everything after the first \"?\".\nExample:\nInput: https://www.linkedin.com/company/joinsquare?trk=public_jobs_jserp-result_job-search-card-subtitle\nOutput: https://www.linkedin.com/company/joinsquare/",
+        "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  const url = item?.json?.companyLinkedinUrl;\n  const baseUrl = url?.split(\"?\")[0];\n  item.json.companyLinkedinUrl = baseUrl;\n  return item;\n});\nreturn updatedItems;\n"
+      },
+      "type": "n8n-nodes-base.aiTransform",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "db62a3e5-b139-48d0-a749-cb577e73f0fe",
+      "name": "AI Transform"
+    },
+    {
+      "parameters": {
+        "content": "## Linked : https://www.linkedin.com/jobs/search/?currentJobId=4206420144&geoId=104187078&keywords=%E8%BB%9F%E9%AB%94%E5%B7%A5%E7%A8%8B%E5%B8%AB&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true&sortBy=R\n\n## Apify :  https://console.apify.com/actors/hKByXkMQaC5Qt9UMN/integrations   ( use actor LinkedIN PPR )\n## Input tab, Integrations Tab\n\n## Google Sheet :  https://docs.google.com/spreadsheets/d/1LaE_vzIlLEeBJnBEtis5zpckwdybS4_lBq0xkKPE56o/edit?gid=0#gid=0\n\n## YouTube : https://www.youtube.com/watch?v=leZBZO6Zgkg  ( part 2 )\n## YouTube : https://www.youtube.com/watch?v=MaWjnf2Aa2I&t=867s  ( part 1 )\n\n## REDACTED_APIFY_KEY   (20250704)",
+        "height": 460,
+        "width": 2200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        200
+      ],
+      "id": "70db05bc-59a1-4831-87c7-2159206ceef1",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "AI Transform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Transform": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-01T00:35:58.322Z",
+      "createdAt": "2025-07-01T00:35:58.322Z",
+      "role": "workflow:owner",
+      "workflowId": "3JA7GfUNA3XpO8jD",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T08:20:50.974Z",
+      "createdAt": "2025-07-01T08:20:50.974Z",
+      "id": "WbINTXJmDnPFqXny",
+      "name": "jessica"
+    },
+    {
+      "updatedAt": "2025-07-01T08:20:56.845Z",
+      "createdAt": "2025-07-01T08:20:56.845Z",
+      "id": "XU5cBDVbSwYMc37h",
+      "name": "apify"
+    }
+  ],
+  "activeVersion": null
+}

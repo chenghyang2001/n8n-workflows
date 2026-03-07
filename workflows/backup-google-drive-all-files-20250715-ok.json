@@ -1,0 +1,934 @@
+{
+  "id": "5YF7nN7BZUKoWe8L",
+  "name": "backup-Google-drive-all-files-20250715-ok",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "1aa106c6-1eb4-4d3f-bf4d-c2710d9cac52",
+      "name": "Return N8N Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        2048,
+        -752
+      ],
+      "typeVersion": 1,
+      "executeOnce": true,
+      "credentials": {
+        "n8nApi": {
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "binaryData": true,
+        "name": "={{ $('Return N8N Workflows').item.json.name }}.json\n\n",
+        "parents": [
+          "1U1StTeOU-KV0hoZyTgRc8NI5-SSCN5Aq"
+        ],
+        "options": {}
+      },
+      "id": "85088693-3605-42ac-8f72-bb7bfbf4b70e",
+      "name": "Upload workflows into N8N Backup",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2704,
+        -624
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "id": "0af76574-2ebc-4dd4-8f64-df0332bf0637",
+      "name": "Batch Upload",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2480,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "jsonToBinary",
+        "options": {
+          "useRawData": false
+        }
+      },
+      "id": "42034912-549d-43b0-addc-85a94aa6ae8e",
+      "name": "Move Binary Data1",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "position": [
+        2272,
+        -752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "c523b8ce-3a30-4264-b077-0440ce49046c",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        -688
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "DONE! Backup Google Drive. Folder https://drive.google.com/drive/folders/1_5y2-tGyb1kWedFbMeiVRF2p8OFDqW6t"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2704,
+        -816
+      ],
+      "id": "470e59cd-3bb1-4200-aeb1-c9c8a15b0ac5",
+      "name": "Execute Workflow",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "=Start Backup Google Drive. "
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        -544
+      ],
+      "id": "57b05627-bc67-45d7-b0e6-88a3c2bb7c1e",
+      "name": "Execute Workflow1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "content": "## Google Drive Folder n8n-backup-20250703 : # https://drive.google.com/drive/folders/1U1StTeOU-KV0hoZyTgRc8NI5-SSCN5Aq\n\n## Backup on Google by Solomon : https://www.youtube.com/watch?v=QP6kWRwHttI\n\n",
+        "height": 184,
+        "width": 1601,
+        "color": 7
+      },
+      "id": "ab23d349-50b2-43d9-85be-6deeadbe83b5",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -1056
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "list",
+        "useQueryString": true,
+        "queryString": "'1U1StTeOU-KV0hoZyTgRc8NI5-SSCN5Aq' in parents",
+        "limit": 1,
+        "options": {}
+      },
+      "id": "44f9003b-972f-4f42-8b3f-f6e6d3e10fc4",
+      "name": "列出資料夾中的檔案",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1600,
+        -544
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "delete",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        }
+      },
+      "id": "eaea6e5a-27fa-4f8d-8c4c-5faa68d7d46b",
+      "name": "刪除每個檔案",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2064,
+        -496
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "44adb1ca-36d5-4e82-a2c9-3978e423edb4",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1824,
+        -640
+      ],
+      "id": "72fceabe-664a-478d-9baf-73b905eb4e8e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "b7597db8-44a0-465e-b3d8-3c761767b267",
+      "name": "daily 5:30pm",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        -352
+      ]
+    }
+  ],
+  "connections": {
+    "Return N8N Workflows": {
+      "main": [
+        [
+          {
+            "node": "Move Binary Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload workflows into N8N Backup": {
+      "main": [
+        [
+          {
+            "node": "Batch Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Upload": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload workflows into N8N Backup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Binary Data1": {
+      "main": [
+        [
+          {
+            "node": "Batch Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow1": {
+      "main": [
+        [
+          {
+            "node": "列出資料夾中的檔案",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "列出資料夾中的檔案": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "刪除每個檔案": {
+      "main": [
+        [
+          {
+            "node": "列出資料夾中的檔案",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "刪除每個檔案",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return N8N Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "daily 5:30pm": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "L9RQFagA7DehEy9F",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:00:05 daily1": {
+      "recurrenceRules": []
+    },
+    "node:00:00 daily1": {
+      "recurrenceRules": []
+    },
+    "node:17:20 daily": {
+      "recurrenceRules": []
+    },
+    "node:17:20 daily1": {
+      "recurrenceRules": []
+    },
+    "node:17:15 daily1": {
+      "recurrenceRules": []
+    },
+    "node:daily 2am": {
+      "recurrenceRules": []
+    },
+    "node:daily 5:30pm": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": "28843309-1866-4c3e-b158-573fe6d2ecf4",
+  "versionCounter": 21,
+  "shared": [
+    {
+      "updatedAt": "2025-07-03T01:27:41.516Z",
+      "createdAt": "2025-07-03T01:27:41.516Z",
+      "role": "workflow:owner",
+      "workflowId": "5YF7nN7BZUKoWe8L",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-02T01:42:47.178Z",
+      "createdAt": "2025-07-02T01:42:47.178Z",
+      "id": "CGOOKAHvaKjDEAen",
+      "name": "backup"
+    },
+    {
+      "updatedAt": "2025-07-01T05:36:23.301Z",
+      "createdAt": "2025-07-01T05:36:23.301Z",
+      "id": "FPIxLa9hPU1IT4X5",
+      "name": "HC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-27T01:00:44.252Z",
+    "createdAt": "2025-11-27T01:00:44.252Z",
+    "versionId": "28843309-1866-4c3e-b158-573fe6d2ecf4",
+    "workflowId": "5YF7nN7BZUKoWe8L",
+    "nodes": [
+      {
+        "parameters": {
+          "filters": {},
+          "requestOptions": {}
+        },
+        "id": "1aa106c6-1eb4-4d3f-bf4d-c2710d9cac52",
+        "name": "Return N8N Workflows",
+        "type": "n8n-nodes-base.n8n",
+        "position": [
+          2048,
+          -752
+        ],
+        "typeVersion": 1,
+        "executeOnce": true,
+        "credentials": {
+          "n8nApi": {
+            "id": "0W24pCsi3DOytPwP",
+            "name": "n8n account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "binaryData": true,
+          "name": "={{ $('Return N8N Workflows').item.json.name }}.json\n\n",
+          "parents": [
+            "1U1StTeOU-KV0hoZyTgRc8NI5-SSCN5Aq"
+          ],
+          "options": {}
+        },
+        "id": "85088693-3605-42ac-8f72-bb7bfbf4b70e",
+        "name": "Upload workflows into N8N Backup",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2704,
+          -624
+        ],
+        "typeVersion": 1,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "jMSK2ewrCL2nyhcN",
+            "name": "Google Drive account 20250704"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "batchSize": 10,
+          "options": {}
+        },
+        "id": "0af76574-2ebc-4dd4-8f64-df0332bf0637",
+        "name": "Batch Upload",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          2480,
+          -752
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "jsonToBinary",
+          "options": {
+            "useRawData": false
+          }
+        },
+        "id": "42034912-549d-43b0-addc-85a94aa6ae8e",
+        "name": "Move Binary Data1",
+        "type": "n8n-nodes-base.moveBinaryData",
+        "position": [
+          2272,
+          -752
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {},
+        "id": "c523b8ce-3a30-4264-b077-0440ce49046c",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          1168,
+          -688
+        ]
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "5TgCpCi2jAUFV0lQ",
+            "mode": "list",
+            "cachedResultName": "subFlow-line-v1"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "content": "DONE! Backup Google Drive. Folder https://drive.google.com/drive/folders/1_5y2-tGyb1kWedFbMeiVRF2p8OFDqW6t"
+            },
+            "matchingColumns": [
+              "content"
+            ],
+            "schema": [
+              {
+                "id": "content",
+                "displayName": "content",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          2704,
+          -816
+        ],
+        "id": "470e59cd-3bb1-4200-aeb1-c9c8a15b0ac5",
+        "name": "Execute Workflow",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "5TgCpCi2jAUFV0lQ",
+            "mode": "list",
+            "cachedResultName": "subFlow-line-v1"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "content": "=Start Backup Google Drive. "
+            },
+            "matchingColumns": [
+              "content"
+            ],
+            "schema": [
+              {
+                "id": "content",
+                "displayName": "content",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.2,
+        "position": [
+          1392,
+          -544
+        ],
+        "id": "57b05627-bc67-45d7-b0e6-88a3c2bb7c1e",
+        "name": "Execute Workflow1",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "content": "## Google Drive Folder n8n-backup-20250703 : # https://drive.google.com/drive/folders/1U1StTeOU-KV0hoZyTgRc8NI5-SSCN5Aq\n\n## Backup on Google by Solomon : https://www.youtube.com/watch?v=QP6kWRwHttI\n\n",
+          "height": 184,
+          "width": 1601,
+          "color": 7
+        },
+        "id": "ab23d349-50b2-43d9-85be-6deeadbe83b5",
+        "name": "Sticky Note4",
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1200,
+          -1056
+        ]
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "operation": "list",
+          "useQueryString": true,
+          "queryString": "'1U1StTeOU-KV0hoZyTgRc8NI5-SSCN5Aq' in parents",
+          "limit": 1,
+          "options": {}
+        },
+        "id": "44f9003b-972f-4f42-8b3f-f6e6d3e10fc4",
+        "name": "列出資料夾中的檔案",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1600,
+          -544
+        ],
+        "typeVersion": 1,
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "jMSK2ewrCL2nyhcN",
+            "name": "Google Drive account 20250704"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "operation": "delete",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          }
+        },
+        "id": "eaea6e5a-27fa-4f8d-8c4c-5faa68d7d46b",
+        "name": "刪除每個檔案",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          2064,
+          -496
+        ],
+        "typeVersion": 1,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "jMSK2ewrCL2nyhcN",
+            "name": "Google Drive account 20250704"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "44adb1ca-36d5-4e82-a2c9-3978e423edb4",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1824,
+          -640
+        ],
+        "id": "72fceabe-664a-478d-9baf-73b905eb4e8e",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 17,
+                "triggerAtMinute": 30
+              }
+            ]
+          }
+        },
+        "id": "b7597db8-44a0-465e-b3d8-3c761767b267",
+        "name": "daily 5:30pm",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          1184,
+          -352
+        ]
+      }
+    ],
+    "connections": {
+      "Return N8N Workflows": {
+        "main": [
+          [
+            {
+              "node": "Move Binary Data1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload workflows into N8N Backup": {
+        "main": [
+          [
+            {
+              "node": "Batch Upload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Batch Upload": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Upload workflows into N8N Backup",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Move Binary Data1": {
+        "main": [
+          [
+            {
+              "node": "Batch Upload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Workflow1": {
+        "main": [
+          [
+            {
+              "node": "列出資料夾中的檔案",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "列出資料夾中的檔案": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "刪除每個檔案": {
+        "main": [
+          [
+            {
+              "node": "列出資料夾中的檔案",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "刪除每個檔案",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Return N8N Workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "daily 5:30pm": {
+        "main": [
+          [
+            {
+              "node": "Execute Workflow1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2025-09-05T08:20:48.000Z",
+        "id": 102,
+        "workflowId": "5YF7nN7BZUKoWe8L",
+        "versionId": "28843309-1866-4c3e-b158-573fe6d2ecf4",
+        "event": "activated",
+        "userId": null
+      }
+    ]
+  }
+}

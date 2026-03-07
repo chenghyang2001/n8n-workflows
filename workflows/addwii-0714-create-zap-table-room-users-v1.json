@@ -1,0 +1,188 @@
+{
+  "id": "3dcStPdqN6SwgqsI",
+  "name": "addwii-0714-create-zap-table-room-users-v1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        380
+      ],
+      "id": "c9c26c11-88f8-43b1-b8b2-b1aa82ab0593",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "230ca842-df05-8083-b90f-cbdaa76be668",
+          "mode": "list",
+          "cachedResultName": "zap_table_room_user",
+          "cachedResultUrl": "https://www.notion.so/230ca842df058083b90fcbdaa76be668"
+        },
+        "title": "zap Table Users",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "user_id|number",
+              "numberValue": "={{ $json.user_id }}"
+            },
+            {
+              "key": "room_id|number",
+              "numberValue": "={{ $json.room_id }}"
+            },
+            {
+              "key": "created_at_日期|date",
+              "includeTime": false,
+              "date": "={{ $json.created_at }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -300,
+        380
+      ],
+      "id": "5d1e400a-2df6-4add-aa38-1d2b740a642e",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "name": "Notion account 20250626"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM room_user",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -800,
+        380
+      ],
+      "id": "1e73e7ea-cf67-4234-b6ac-549458fa8e80",
+      "name": "Get table : room_user",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        380
+      ],
+      "id": "1bb56761-9010-46cb-bc0d-2ab831e5ada4",
+      "name": "Limit5"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get table : room_user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get table : room_user": {
+      "main": [
+        [
+          {
+            "node": "Limit5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit5": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-14T05:43:55.719Z",
+      "createdAt": "2025-07-14T05:43:55.719Z",
+      "role": "workflow:owner",
+      "workflowId": "3dcStPdqN6SwgqsI",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    },
+    {
+      "updatedAt": "2025-07-14T07:29:29.974Z",
+      "createdAt": "2025-07-14T07:29:29.974Z",
+      "id": "AFXjnq25FzE43zpj",
+      "name": "zap"
+    },
+    {
+      "updatedAt": "2025-07-01T07:12:46.672Z",
+      "createdAt": "2025-07-01T07:12:46.672Z",
+      "id": "Ao5a87WVlUcW26wm",
+      "name": "notion"
+    },
+    {
+      "updatedAt": "2025-07-14T07:25:46.329Z",
+      "createdAt": "2025-07-14T07:25:46.329Z",
+      "id": "rBu7KINmPwm4bhDL",
+      "name": "sql"
+    }
+  ],
+  "activeVersion": null
+}

@@ -1,0 +1,487 @@
+{
+  "id": "6fCvzT5S7AiqxIjs",
+  "name": "alex-ai-4國翻譯機",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        112
+      ],
+      "id": "a2548ee9-1624-4b23-8d32-532e57e7d436",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SQaDHWkcsLm5pOJ3AFut9wSvdJwFigCieNjhYH1AXZg/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SQaDHWkcsLm5pOJ3AFut9wSvdJwFigCieNjhYH1AXZg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "75771369-655c-4644-8d99-2dff5bb434f6",
+      "name": "Fetch data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        288,
+        112
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1SQaDHWkcsLm5pOJ3AFut9wSvdJwFigCieNjhYH1AXZg/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "工作表1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SQaDHWkcsLm5pOJ3AFut9wSvdJwFigCieNjhYH1AXZg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "中文": "={{ $json['中文'] }}",
+            "英文": "={{ $json['英文'] }}",
+            "日文": "={{ $json['日文'] }}",
+            "韓文": "={{ $json['韓文'] }}",
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "中文",
+              "displayName": "中文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "英文",
+              "displayName": "英文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "日文",
+              "displayName": "日文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "韓文",
+              "displayName": "韓文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "553f308e-05d2-4901-a6a0-d07907c4651c",
+      "name": "Update Content",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1488,
+        224
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Step1 - 讀取要翻譯的內容，並決定翻譯的方法\n",
+        "height": 420,
+        "width": 710,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0e3490f3-1c4e-4b21-813e-3d732747887c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Step2 - 使用 ChatGPT 來翻譯對應語言的內容",
+        "height": 420,
+        "width": 970
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "67dbe939-9d76-47cf-baaa-b73fa56563c3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        512,
+        112
+      ],
+      "id": "ae043ba3-5913-4859-acef-a31dbfc9140c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return $json.choices[0].message.content"
+      },
+      "id": "6f536d05-0071-41e5-a741-faed7c2381da",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1104,
+        224
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "26d57667-362b-45fa-8b87-628528788e64",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1280,
+        112
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=你是多國語言翻譯大師，請將下面的翻譯內容從指定語言轉換成目標語言\n\n1. 當無法辨認內容的指定語言時，請將內容預設翻譯成臺灣繁體中文\n2. 當沒有翻譯內容時，請再嘗試一次，最後回傳\"x\"\n3. 請不要亂翻譯\n\n預設JSON輸出\n{\n  \"中文\": \"我是翻譯機\",\n  \"英文\": \"I am a translator\",\n  \"韓文\": \"나는 번역가입니다\",\n  \"日文\": \"私は翻訳者です\",\n}",
+              "role": "system"
+            },
+            {
+              "content": "=請將內容翻譯成中文、英文、日文、韓文，等四種語言\n\n翻譯內容：{{ $json['中文'] }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        784,
+        224
+      ],
+      "id": "6de176aa-961f-4a10-ad04-efa1b5adaa27",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenRouter-API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "7b752d73-23c8-4df6-adcc-87b55de66be3",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1280,
+        -128
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## history : 20251204\n## Change : leave only 3 rows for debugging",
+        "width": 528,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -176
+      ],
+      "id": "d3644d49-6977-4ee6-95c0-1c00ea9b4c3f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        512,
+        -128
+      ],
+      "id": "1bd4e049-c001-4651-b349-26a8e57c9592",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1776,
+        320
+      ],
+      "id": "a71f7d1a-e0e3-4c87-8217-92d7c4c19713",
+      "name": "Wait10s",
+      "webhookId": "214f3204-6488-49a0-9c7a-95fdd48a11ac"
+    },
+    {
+      "parameters": {
+        "content": "## Enable wait node for debugging",
+        "height": 80,
+        "width": 496,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        208
+      ],
+      "id": "050bb74e-2897-4eb8-a609-0cac73eee0aa",
+      "name": "Sticky Note3"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Content": {
+      "main": [
+        [
+          {
+            "node": "Wait10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait10s": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 14,
+  "shared": [
+    {
+      "updatedAt": "2025-05-15T00:43:17.538Z",
+      "createdAt": "2025-05-15T00:43:17.538Z",
+      "role": "workflow:owner",
+      "workflowId": "6fCvzT5S7AiqxIjs",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-09-08T02:17:22.079Z",
+      "createdAt": "2025-09-08T02:17:22.079Z",
+      "id": "1BqMKb0yiXZpLrIt",
+      "name": "open-router"
+    },
+    {
+      "updatedAt": "2025-12-04T03:05:28.216Z",
+      "createdAt": "2025-12-04T03:05:28.216Z",
+      "id": "25qAnLqVUX1zkymC",
+      "name": "google-sheet"
+    },
+    {
+      "updatedAt": "2025-12-04T05:43:32.068Z",
+      "createdAt": "2025-12-04T05:43:32.068Z",
+      "id": "S0SzHTyU8VWtp5PY",
+      "name": "open-ai"
+    },
+    {
+      "updatedAt": "2025-12-04T05:43:21.000Z",
+      "createdAt": "2025-12-04T05:43:21.000Z",
+      "id": "fA0GRApEiCqCMuQA",
+      "name": "ai-chat"
+    },
+    {
+      "updatedAt": "2025-07-03T03:11:11.006Z",
+      "createdAt": "2025-07-01T08:26:49.709Z",
+      "id": "uCtYCA7Heh2wRkW2",
+      "name": "gsheet"
+    }
+  ],
+  "activeVersion": null
+}

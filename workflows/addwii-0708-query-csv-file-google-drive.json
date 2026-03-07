@@ -1,0 +1,358 @@
+{
+  "id": "BJU0u82csjb1Cl91",
+  "name": "addwii-0708-query-csv-file-google-drive",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1320,
+        80
+      ],
+      "id": "4846c5b1-29e5-4086-a1a5-88507d96b1f1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT co2, m.created_at FROM median m WHERE  (m.room_id = '{{ $json.room_id }}' ) AND (DATE(m.created_at) = '{{ $json.date }}' )\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -500,
+        80
+      ],
+      "id": "268c7ab3-b599-4858-94f7-343d220e2706",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "mySql": {
+          "name": "rd2 MySQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 1500
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        80
+      ],
+      "id": "7a7b2b31-05cc-48c5-9feb-f90ff8447dac",
+      "name": "Limit 1500"
+    },
+    {
+      "parameters": {
+        "content": "### SQL query :      SELECT co2, m.created_at FROM median m WHERE  (m.room_id = {{ $json.room_id }} ) AND (DATE(m.created_at) = '{{ $json.date }}' )\n\n###  1 day = 24 hours,  1 hour = 60 minutes,  1 day = 1440 records /per second.    return 1438 due to reset at 3:00 AM\n\n## 車診所 room_id 284 王協理 room_id 132 總經理 room_id 131\n\n## Google drive : https://drive.google.com/drive/folders/1s7iCJsRP0xFrWotZ7yClrLU0DMLMMu5K\n",
+        "height": 300,
+        "width": 1660
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        -380
+      ],
+      "id": "4383ad31-4104-4cb1-896b-f22a121b0807",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddba27a0-a26c-4835-814e-953dd1230165",
+              "name": "co2",
+              "value": "={{ $json.co2 }}",
+              "type": "number"
+            },
+            {
+              "id": "f8f2e71d-cc49-4ccd-8220-756bcfa3f9cb",
+              "name": "created_at",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -300,
+        80
+      ],
+      "id": "a3f0f0d3-5904-459a-a27b-8e516a5f990a",
+      "name": "set co2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// CO2 資料轉換為 CSV 二進位檔案\n// 這個節點只執行一次，處理所有項目\n\n// 1. 從前一個節點取得所有項目\nconst allCO2Data = $input.all();\n\n// 2. 從資料創建 CSV 字串\nlet csvContent = \"CO2,CreatedAt,RecordedBy\\n\"; // CSV 標頭\n\nfor (const item of allCO2Data) {\n  const data = item.json;\n  // 處理 null 值：如果 co2 為 null 或 undefined，則使用 0\n  const co2Value = data.co2 !== null && data.co2 !== undefined ? data.co2 : 0;\n  // 處理 CSV 格式，確保日期時間正確格式化\n  const row = `${co2Value},\"${data.created_at}\",n8n`;\n  csvContent += row + \"\\n\";\n}\n\n// 3. 取得 room_id 和 date 並組成動態檔案名稱\nconst roomId = $('config').first().json.room_id;\nconst date = $('config').first().json.date;\nconst fileName = `${roomId}_${date}_co2_report.csv`;\n\n// 4. 使用助手函數從字串創建二進位檔案\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(csvContent), \n  fileName\n);\n\n// 4. 返回包含二進位資料的新項目\nreturn [\n  {\n    json: {\n      reportGenerated: new Date().toISOString(),\n      recordCount: allCO2Data.length,\n      // 計算統計資料時也要處理 null 值\n      averageCO2: Math.round(allCO2Data.reduce((sum, item) => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return sum + co2Value;\n      }, 0) / allCO2Data.length),\n      minCO2: Math.min(...allCO2Data.map(item => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return co2Value;\n      })),\n      maxCO2: Math.max(...allCO2Data.map(item => {\n        const co2Value = item.json.co2 !== null && item.json.co2 !== undefined ? item.json.co2 : 0;\n        return co2Value;\n      })),\n      fileName: fileName  // 新增檔案名稱到 JSON 輸出\n    },\n    binary: {\n      'co2_report': binaryData\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        80
+      ],
+      "id": "b4d560f1-8901-4a8d-8da7-2d44046c9dfd",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "co2_report",
+        "name": "=room_{{ $('車參薇 set roomId').first().json.room_id }}_{{ $('車參薇 set roomId').first().json.date }}_co2_report",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1s7iCJsRP0xFrWotZ7yClrLU0DMLMMu5K",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        380,
+        80
+      ],
+      "id": "82760a24-81e1-4d9a-a537-4651f6083138",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "Google Drive account 20250704"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "904ea8a3-e084-47f9-9f37-3a3d2223e42e",
+              "name": "room_id",
+              "value": "131",
+              "type": "string"
+            },
+            {
+              "id": "704b112d-1f2f-471d-8b37-cc49e312e50a",
+              "name": "date",
+              "value": "2025-07-09",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1080,
+        80
+      ],
+      "id": "95d1d0a9-3bd0-4a98-b3b7-faf9cae0954f",
+      "name": "車參薇 set roomId"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddba27a0-a26c-4835-814e-953dd1230165",
+              "name": "room_id",
+              "value": "={{ $json.room_id }}",
+              "type": "number"
+            },
+            {
+              "id": "f8f2e71d-cc49-4ccd-8220-756bcfa3f9cb",
+              "name": "date",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -740,
+        80
+      ],
+      "id": "a8fc302b-f2f7-43ec-8522-83f8d56c2817",
+      "name": "config"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5TgCpCi2jAUFV0lQ",
+          "mode": "list",
+          "cachedResultName": "subFlow-line-v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "sql query error."
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -300,
+        280
+      ],
+      "id": "d0842ee6-aa3d-4b38-8acd-f2dc5b9580fb",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "車參薇 set roomId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "set co2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Limit 1500": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set co2": {
+      "main": [
+        [
+          {
+            "node": "Limit 1500",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "車參薇 set roomId": {
+      "main": [
+        [
+          {
+            "node": "config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-07-08T01:23:36.876Z",
+      "createdAt": "2025-07-08T01:23:36.876Z",
+      "role": "workflow:owner",
+      "workflowId": "BJU0u82csjb1Cl91",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-07T01:29:34.249Z",
+      "createdAt": "2025-07-07T01:29:34.249Z",
+      "id": "0iHwyB5DMdUXABT5",
+      "name": "addwii"
+    }
+  ],
+  "activeVersion": null
+}
