@@ -1,0 +1,429 @@
+{
+  "updatedAt": "2026-03-23T18:01:58.976Z",
+  "createdAt": "2026-03-23T05:42:22.860Z",
+  "id": "YtNnthPcJuByihWA",
+  "name": "peter-Gmail-自動清理-Webhook版",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "gmail-cleanup",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "n1",
+      "name": "Webhook",
+      "webhookId": "gmail-cleanup"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 500,
+        "filters": {
+          "q": "=((subject:Workflow subject:Failed) OR from:ebank@afisc.com.tw OR from:security-noreply@linkedin.com OR from:no-reply@e.udemymail.com OR from:in@life-alchemy05.in OR from:verify@x.com OR from:help@paddle.com OR from:no-reply@gogoro.com OR subject:外部使用者 OR subject:內部使用者 OR subject:\"Alex Hsieh posted\" OR before:2025/09/01) -is:starred"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "n2",
+      "name": "搜尋待刪郵件",
+      "webhookId": "cf7ee7f6-b360-4ca1-89af-fe3082b49b4a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cXobwkkgDTG4Y0ls",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "n4",
+      "name": "移到垃圾桶",
+      "webhookId": "30e800c6-decd-419a-8e81-5db276bf1e59",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cXobwkkgDTG4Y0ls",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const searchResults = $('搜尋待刪郵件').all();\nconst count = searchResults.length;\nconst ts = new Date().toLocaleString(\"zh-TW\", {timeZone: \"Asia/Taipei\"});\nconst lines = searchResults.slice(0, 30).map((item, i) => {\n  const d = item.json;\n  const subj = d.subject || d.Subject || d.snippet?.substring(0, 50) || \"(no subject)\";\n  const from = d.From || d.from || \"\";\n  return (i+1) + \". \" + subj + \" [\" + from + \"]\";\n});\nconst subjectList = lines.join(\"<BR>\");\nconst more = count > 30 ? \"<BR>... 及其他 \" + (count-30) + \" 封\" : \"\";\nconst summary = \"Gmail 自動清理完成<BR><BR>\" +\n  \"時間: \" + ts + \"<BR>\" +\n  \"刪除: \" + count + \" 封<BR><BR>\" +\n  \"條件:<BR>\" +\n  \"- 標題含 Workflow + Failed<BR>\" +\n  \"- 寄件人 ebank@afisc.com.tw<BR>- 寄件人 security-noreply@linkedin.com<BR>- 寄件人 no-reply@e.udemymail.com<BR>- 寄件人 in@life-alchemy05.in<BR>- 寄件人 verify@x.com<BR>- 寄件人 help@paddle.com<BR>- 寄件人 no-reply@gogoro.com<BR>\" +\n  \"- 標題含 外部使用者<BR>\" +\n  \"- 標題含 內部使用者<BR>- 標題含 Alex Hsieh posted<BR><BR>\" +\n  \"刪除清單:<BR>\" + subjectList + more;\nreturn [{json: {count, summary}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "n6",
+      "name": "產生摘要"
+    },
+    {
+      "parameters": {
+        "sendTo": "=chenghyang2001@gmail.com",
+        "subject": "=Gmail 自動清理報告 - 刪除 {{ $json.count }} 封",
+        "message": "={{ $json.summary }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "n7",
+      "name": "發送摘要",
+      "webhookId": "6fcdbd3a-5488-48e7-99d4-12cff4361519",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cXobwkkgDTG4Y0ls",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{json: {message: 'No emails to delete', count: 0}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        208
+      ],
+      "id": "n8",
+      "name": "無郵件"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Gmail cleanup started",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        112,
+        -144
+      ],
+      "id": "n9",
+      "name": "回應 Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "搜尋待刪郵件",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "回應 Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "搜尋待刪郵件": {
+      "main": [
+        [
+          {
+            "node": "移到垃圾桶",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "移到垃圾桶": {
+      "main": [
+        [
+          {
+            "node": "產生摘要",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "產生摘要": {
+      "main": [
+        [
+          {
+            "node": "發送摘要",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "339942ad-4859-42e7-ad48-2fc4c6411890",
+  "activeVersionId": "339942ad-4859-42e7-ad48-2fc4c6411890",
+  "versionCounter": 105,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-23T05:42:22.883Z",
+      "createdAt": "2026-03-23T05:42:22.883Z",
+      "role": "workflow:owner",
+      "workflowId": "YtNnthPcJuByihWA",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-03-23T18:01:58.976Z",
+    "createdAt": "2026-03-23T18:01:58.976Z",
+    "versionId": "339942ad-4859-42e7-ad48-2fc4c6411890",
+    "workflowId": "YtNnthPcJuByihWA",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "gmail-cleanup",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "n1",
+        "name": "Webhook",
+        "webhookId": "gmail-cleanup"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "limit": 500,
+          "filters": {
+            "q": "=((subject:Workflow subject:Failed) OR from:ebank@afisc.com.tw OR from:security-noreply@linkedin.com OR from:no-reply@e.udemymail.com OR from:in@life-alchemy05.in OR from:verify@x.com OR from:help@paddle.com OR from:no-reply@gogoro.com OR subject:外部使用者 OR subject:內部使用者 OR subject:\"Alex Hsieh posted\" OR before:2025/09/01) -is:starred"
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          224,
+          0
+        ],
+        "id": "n2",
+        "name": "搜尋待刪郵件",
+        "webhookId": "cf7ee7f6-b360-4ca1-89af-fe3082b49b4a",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "messageId": "={{ $json.id }}"
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          672,
+          0
+        ],
+        "id": "n4",
+        "name": "移到垃圾桶",
+        "webhookId": "30e800c6-decd-419a-8e81-5db276bf1e59",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const searchResults = $('搜尋待刪郵件').all();\nconst count = searchResults.length;\nconst ts = new Date().toLocaleString(\"zh-TW\", {timeZone: \"Asia/Taipei\"});\nconst lines = searchResults.slice(0, 30).map((item, i) => {\n  const d = item.json;\n  const subj = d.subject || d.Subject || d.snippet?.substring(0, 50) || \"(no subject)\";\n  const from = d.From || d.from || \"\";\n  return (i+1) + \". \" + subj + \" [\" + from + \"]\";\n});\nconst subjectList = lines.join(\"<BR>\");\nconst more = count > 30 ? \"<BR>... 及其他 \" + (count-30) + \" 封\" : \"\";\nconst summary = \"Gmail 自動清理完成<BR><BR>\" +\n  \"時間: \" + ts + \"<BR>\" +\n  \"刪除: \" + count + \" 封<BR><BR>\" +\n  \"條件:<BR>\" +\n  \"- 標題含 Workflow + Failed<BR>\" +\n  \"- 寄件人 ebank@afisc.com.tw<BR>- 寄件人 security-noreply@linkedin.com<BR>- 寄件人 no-reply@e.udemymail.com<BR>- 寄件人 in@life-alchemy05.in<BR>- 寄件人 verify@x.com<BR>- 寄件人 help@paddle.com<BR>- 寄件人 no-reply@gogoro.com<BR>\" +\n  \"- 標題含 外部使用者<BR>\" +\n  \"- 標題含 內部使用者<BR>- 標題含 Alex Hsieh posted<BR><BR>\" +\n  \"刪除清單:<BR>\" + subjectList + more;\nreturn [{json: {count, summary}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1104,
+          0
+        ],
+        "id": "n6",
+        "name": "產生摘要"
+      },
+      {
+        "parameters": {
+          "sendTo": "=chenghyang2001@gmail.com",
+          "subject": "=Gmail 自動清理報告 - 刪除 {{ $json.count }} 封",
+          "message": "={{ $json.summary }}",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          1328,
+          0
+        ],
+        "id": "n7",
+        "name": "發送摘要",
+        "webhookId": "6fcdbd3a-5488-48e7-99d4-12cff4361519",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{json: {message: 'No emails to delete', count: 0}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          672,
+          208
+        ],
+        "id": "n8",
+        "name": "無郵件"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "=Gmail cleanup started",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          112,
+          -144
+        ],
+        "id": "n9",
+        "name": "回應 Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "搜尋待刪郵件",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "回應 Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "搜尋待刪郵件": {
+        "main": [
+          [
+            {
+              "node": "移到垃圾桶",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "移到垃圾桶": {
+        "main": [
+          [
+            {
+              "node": "產生摘要",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "產生摘要": {
+        "main": [
+          [
+            {
+              "node": "發送摘要",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ChengHsien Yang",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-23T18:01:59.216Z",
+        "id": 644,
+        "workflowId": "YtNnthPcJuByihWA",
+        "versionId": "339942ad-4859-42e7-ad48-2fc4c6411890",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      },
+      {
+        "createdAt": "2026-03-23T18:01:59.100Z",
+        "id": 643,
+        "workflowId": "YtNnthPcJuByihWA",
+        "versionId": "339942ad-4859-42e7-ad48-2fc4c6411890",
+        "event": "deactivated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    ]
+  }
+}
