@@ -1,0 +1,2413 @@
+{
+  "updatedAt": "2026-03-21T21:23:52.992Z",
+  "createdAt": "2026-03-20T07:00:53.315Z",
+  "id": "Cl3TO2bCp99BM5iO",
+  "name": "LINE-Bot-命令調度器",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line-message",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        400
+      ],
+      "name": "LINE Webhook",
+      "webhookId": "line-cmd-dispatch-v2",
+      "id": "a5948404-b00f-4ece-926c-f561192b2485"
+    },
+    {
+      "parameters": {
+        "jsCode": "\ntry {\n  const data = $input.first().json;\n  const body = data.body || data;\n  const events = body.events || [];\n\n  if (!events.length) {\n    return [{ json: { command: \"none\", args: \"\", replyToken: \"\", rawText: \"\" } }];\n  }\n\n  const event = events[0];\n  const replyToken = event.replyToken || \"\";\n  const msgText = (event.message && event.message.text) || \"\";\n\n  let command = \"default\";\n  let args = msgText;\n\n  if (msgText.startsWith(\"/\")) {\n    const spaceIdx = msgText.indexOf(\" \");\n    if (spaceIdx > 0) {\n      command = msgText.substring(0, spaceIdx).toLowerCase();\n      args = msgText.substring(spaceIdx + 1).trim();\n    } else {\n      command = msgText.toLowerCase();\n      args = \"\";\n    }\n  }\n\n  return [{ json: { command, args, replyToken, rawText: msgText } }];\n} catch (e) {\n  return [{ json: { command: \"error\", args: e.message, replyToken: \"\", rawText: \"\" } }];\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        400
+      ],
+      "name": "Parse Command",
+      "id": "28121de7-9001-4ac5-b399-086a3d9b3eff"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/help",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        300
+      ],
+      "name": "Is Help?",
+      "id": "e563568d-12d8-43b6-a2e9-d2b1beb4b614"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/天氣",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "en-Is Weather?",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/weather",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        250,
+        500
+      ],
+      "name": "Is Weather?",
+      "id": "11d4b439-5d97-4326-874c-7fbf0ad06ebf"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        450,
+        100
+      ],
+      "name": "Reply Help",
+      "id": "4f356f71-7911-4580-84f1-90588d3599e5"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=25.0330&longitude=121.5654&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Taipei&forecast_days=1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        400
+      ],
+      "name": "Get Weather",
+      "id": "6be7edb8-16ab-4149-89a2-add1dccd104d"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $(\"Parse Command\").item.json.replyToken, messages: [{ type: \"text\", text: \"台北天氣預報\\n\\n溫度：\" + $json.current.temperature_2m + \"°C\\n濕度：\" + $json.current.relative_humidity_2m + \"%\\n風速：\" + $json.current.wind_speed_10m + \" km/h\\n最高：\" + $json.daily.temperature_2m_max[0] + \"°C\\n最低：\" + $json.daily.temperature_2m_min[0] + \"°C\\n降雨機率：\" + $json.daily.precipitation_probability_max[0] + \"%\\n\" + (Number($json.daily.precipitation_probability_max[0]) > 40 ? \"☔ 要帶傘\" : \"☀️ 不用帶傘\") }] }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        750,
+        400
+      ],
+      "name": "Reply Weather",
+      "id": "189959c0-1091-4bbe-9459-15744c8659d8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"目前支援命令：\\n/help - 說明\\n/天氣 - 台北天氣\\n\\n輸入 /help 查看更多\" }] }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        2700
+      ],
+      "name": "Reply Default",
+      "id": "c52a567b-6ea9-49a1-9a66-fa431685e525"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/新聞",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "en-Is News?",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/news",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "is-news",
+      "name": "Is News?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=artificial+intelligence+AI&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "get-news",
+      "name": "Get News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\nconst xml = $input.first().json.data || $input.first().json;\nconst text = typeof xml === 'string' ? xml : JSON.stringify(xml);\nconst titles = [];\nconst matches = text.match(/<title>([^<]+)<\\/title>/g) || [];\nfor (let i = 1; i <= Math.min(5, matches.length - 1); i++) {\n  const t = matches[i].replace(/<\\/?title>/g, '');\n  titles.push((i) + '. ' + t);\n}\nconst msg = 'AI 最新新聞 Top 5\\n━━━━━━━━━━\\n\\n' + titles.join('\\n\\n');\nreturn [{ json: { newsText: msg, replyToken: $('Parse Command').first().json.replyToken } }];\n"
+      },
+      "id": "format-news",
+      "name": "Format News",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: $json.newsText }] }) }}",
+        "options": {}
+      },
+      "id": "reply-news",
+      "name": "Reply News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1750,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c4",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/日報",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "en-Is Daily?",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/daily",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "is-daily",
+      "name": "Is Daily?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"日報生成中...請稍候，完成後會透過 LINE 通知你。\" }] }) }}",
+        "options": {}
+      },
+      "id": "reply-daily",
+      "name": "Reply Daily",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c5",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/圖表",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "en-Is Sketch?",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/sketch",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "is-sketch",
+      "name": "Is Sketch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"手繪圖表生成中...觸發 n8n 雲端工作流，完成後會收到通知。\" }] }) }}",
+        "options": {}
+      },
+      "id": "reply-sketch",
+      "name": "Reply Sketch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://chenghyang2001.app.n8n.cloud/webhook/yt-sketch-cloud",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "trigger-sketch",
+      "name": "Trigger Sketch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c6",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/訂閱",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "en-Is Subscribe?",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/schedule",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "is-sub",
+      "name": "Is Subscribe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"目前啟用的排程：\\n\\n1. 天氣預報 3/4/5 AM\\n2. AI 新聞 LINE 8 AM\\n3. yt-sketch 圖表 1:30/2:30/3:30 AM\\n4. 早安+日報提醒 7:50/8:30 AM\\n\\n共 4 個排程運行中\" }] }) }}",
+        "options": {}
+      },
+      "id": "reply-sub",
+      "name": "Reply Subscribe",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        1400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c7",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/n8n",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "is-n8n",
+      "name": "Is N8N?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        1800
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://chenghyang2001.app.n8n.cloud/api/v1/executions?limit=50",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-API-KEY",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzE1NWQ5OC0wNGFiLTQ1MzEtYTAxMS05OTNlZmY5YzUzNWYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMjI5OGI0YWItZWYxNy00MTA3LWFmOTYtMzk3ZTQ0N2I5MjYwIiwiaWF0IjoxNzcyOTUzMTM1fQ.0OUEEA1t-Pm_Rh_pu5jxMl-uFl6S0uRa50CLpNRvuBM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-n8n",
+      "name": "Get N8N Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        1700
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\nconst data = $input.first().json.data || [];\nconst total = data.length;\nconst success = data.filter(e => e.status === 'success').length;\nconst errors = data.filter(e => e.status === 'error').length;\nconst rate = total > 0 ? Math.round(success / total * 100) : 0;\nconst failed = data.filter(e => e.status === 'error').slice(0, 3).map(e => e.workflowId).join(', ');\nconst msg = 'n8n Cloud 狀態（最近 50 筆）\\n━━━━━━━━━━\\n\\n成功：' + success + '\\n失敗：' + errors + '\\n成功率：' + rate + '%\\n\\n' + (errors > 0 ? '最近失敗：' + failed : '全部成功！');\nreturn [{ json: { statsText: msg, replyToken: $('Parse Command').first().json.replyToken } }];\n"
+      },
+      "id": "format-n8n",
+      "name": "Format N8N",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        1700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: $json.statsText }] }) }}",
+        "options": {}
+      },
+      "id": "reply-n8n",
+      "name": "Reply N8N",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1750,
+        1700
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c8",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/找",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "en-Is Find?",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/find",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "is-find",
+      "name": "Is Find?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://ecshweb.pchome.com.tw/search/v3.3/all/results?q={{ encodeURIComponent($json.args) }}&page=1&sort=rnk/dc",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "search-pchome",
+      "name": "Search PChome",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const keyword = $(\"Parse Command\").first().json.args;\nlet text = '';\ntry {\n  const raw = $input.first().json;\n  let parsed = raw;\n  if (typeof raw.data === 'string') {\n    parsed = JSON.parse(raw.data);\n  }\n  const prods = parsed.prods || [];\n  const items = [];\n  const nl = String.fromCharCode(10);\n  for (let i = 0; i < Math.min(5, prods.length); i++) {\n    const name = (prods[i].name || '').substring(0, 35);\n    const price = prods[i].price || '?';\n    items.push((i+1) + '. ' + name + nl + '   $' + price);\n  }\n  text = 'PChome 搜尋：' + keyword + nl + '━━━━━━━━━━' + nl + nl + (items.length > 0 ? items.join(nl + nl) : '無結果');\n} catch(e) {\n  text = 'PChome 搜尋 ' + keyword + '：' + e.message;\n}\nreturn [{ json: { searchText: text, replyToken: $(\"Parse Command\").first().json.replyToken } }];"
+      },
+      "id": "format-pchome",
+      "name": "Format PChome",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: $json.searchText }] }) }}",
+        "options": {}
+      },
+      "id": "reply-find",
+      "name": "Reply Find",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1750,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c9-zh",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/研究",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c9-en",
+              "leftValue": "={{ $json.command }}",
+              "rightValue": "/research",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "is-research",
+      "name": "Is Research?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1000,
+        2400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"公司研究中：\" + $json.args + \" | 正在分析融資、競爭、成長信號... | 完成後透過 Telegram 和 Gmail 通知。\" }] }) }}",
+        "options": {}
+      },
+      "id": "reply-research",
+      "name": "Reply Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        2400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://chenghyang2001.app.n8n.cloud/webhook/company-research",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ company: $(\"Parse Command\").first().json.args }) }}",
+        "options": {}
+      },
+      "id": "trigger-research",
+      "name": "Trigger Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        2400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = $(\"Parse Command\").first().json.replyToken;\nconst nl = String.fromCharCode(10);\nconst lines = [\n  \"LINE Bot 命令列表\",\n  \"━━━━━━━━━━\",\n  \"\",\n  \"/help  顯示此說明\",\n  \"/天氣 /weather  台北天氣\",\n  \"/新聞 /news  AI 新聞 Top 5\",\n  \"/日報 /daily  觸發日報\",\n  \"/圖表 /sketch  手繪圖表\",\n  \"/訂閱 /schedule  查看排程\",\n  \"/n8n  n8n 執行狀態\",\n  \"/找 /find 關鍵字  PChome 搜尋\",\n  \"/研究 /research 公司名  公司研究\",\n  \"\",\n  \"範例：/find 充電器\",\n  \"範例：/research Anthropic\"\n];\nconst text = lines.join(nl);\nconst body = JSON.stringify({ replyToken: token, messages: [{ type: \"text\", text }] });\nreturn [{ json: { body } }];"
+      },
+      "id": "build-help",
+      "name": "Build Help Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "LINE Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Command": {
+      "main": [
+        [
+          {
+            "node": "Is Help?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Help?": {
+      "main": [
+        [
+          {
+            "node": "Build Help Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Weather?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Weather?": {
+      "main": [
+        [
+          {
+            "node": "Get Weather",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is News?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather": {
+      "main": [
+        [
+          {
+            "node": "Reply Weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is News?": {
+      "main": [
+        [
+          {
+            "node": "Get News",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Daily?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get News": {
+      "main": [
+        [
+          {
+            "node": "Format News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format News": {
+      "main": [
+        [
+          {
+            "node": "Reply News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Daily?": {
+      "main": [
+        [
+          {
+            "node": "Reply Daily",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Sketch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Sketch?": {
+      "main": [
+        [
+          {
+            "node": "Reply Sketch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Subscribe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Sketch": {
+      "main": [
+        [
+          {
+            "node": "Trigger Sketch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Subscribe?": {
+      "main": [
+        [
+          {
+            "node": "Reply Subscribe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is N8N?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is N8N?": {
+      "main": [
+        [
+          {
+            "node": "Get N8N Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Find?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get N8N Stats": {
+      "main": [
+        [
+          {
+            "node": "Format N8N",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format N8N": {
+      "main": [
+        [
+          {
+            "node": "Reply N8N",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Find?": {
+      "main": [
+        [
+          {
+            "node": "Search PChome",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Research?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search PChome": {
+      "main": [
+        [
+          {
+            "node": "Format PChome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format PChome": {
+      "main": [
+        [
+          {
+            "node": "Reply Find",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Research?": {
+      "main": [
+        [
+          {
+            "node": "Reply Research",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Research": {
+      "main": [
+        [
+          {
+            "node": "Trigger Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Help Text": {
+      "main": [
+        [
+          {
+            "node": "Reply Help",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "Asia/Taipei"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ffc602ac-d98b-4935-9900-3f5193884ace",
+  "activeVersionId": "ffc602ac-d98b-4935-9900-3f5193884ace",
+  "versionCounter": 46,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-20T07:00:53.324Z",
+      "createdAt": "2026-03-20T07:00:53.324Z",
+      "role": "workflow:owner",
+      "workflowId": "Cl3TO2bCp99BM5iO",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-03-21T21:23:52.993Z",
+    "createdAt": "2026-03-21T21:23:52.993Z",
+    "versionId": "ffc602ac-d98b-4935-9900-3f5193884ace",
+    "workflowId": "Cl3TO2bCp99BM5iO",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "line-message",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          400
+        ],
+        "name": "LINE Webhook",
+        "webhookId": "line-cmd-dispatch-v2",
+        "id": "a5948404-b00f-4ece-926c-f561192b2485"
+      },
+      {
+        "parameters": {
+          "jsCode": "\ntry {\n  const data = $input.first().json;\n  const body = data.body || data;\n  const events = body.events || [];\n\n  if (!events.length) {\n    return [{ json: { command: \"none\", args: \"\", replyToken: \"\", rawText: \"\" } }];\n  }\n\n  const event = events[0];\n  const replyToken = event.replyToken || \"\";\n  const msgText = (event.message && event.message.text) || \"\";\n\n  let command = \"default\";\n  let args = msgText;\n\n  if (msgText.startsWith(\"/\")) {\n    const spaceIdx = msgText.indexOf(\" \");\n    if (spaceIdx > 0) {\n      command = msgText.substring(0, spaceIdx).toLowerCase();\n      args = msgText.substring(spaceIdx + 1).trim();\n    } else {\n      command = msgText.toLowerCase();\n      args = \"\";\n    }\n  }\n\n  return [{ json: { command, args, replyToken, rawText: msgText } }];\n} catch (e) {\n  return [{ json: { command: \"error\", args: e.message, replyToken: \"\", rawText: \"\" } }];\n}\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -300,
+          400
+        ],
+        "name": "Parse Command",
+        "id": "28121de7-9001-4ac5-b399-086a3d9b3eff"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/help",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          0,
+          300
+        ],
+        "name": "Is Help?",
+        "id": "e563568d-12d8-43b6-a2e9-d2b1beb4b614"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/天氣",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "en-Is Weather?",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/weather",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          250,
+          500
+        ],
+        "name": "Is Weather?",
+        "id": "11d4b439-5d97-4326-874c-7fbf0ad06ebf"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.body }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          450,
+          100
+        ],
+        "name": "Reply Help",
+        "id": "4f356f71-7911-4580-84f1-90588d3599e5"
+      },
+      {
+        "parameters": {
+          "method": "GET",
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=25.0330&longitude=121.5654&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Taipei&forecast_days=1",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          500,
+          400
+        ],
+        "name": "Get Weather",
+        "id": "6be7edb8-16ab-4149-89a2-add1dccd104d"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $(\"Parse Command\").item.json.replyToken, messages: [{ type: \"text\", text: \"台北天氣預報\\n\\n溫度：\" + $json.current.temperature_2m + \"°C\\n濕度：\" + $json.current.relative_humidity_2m + \"%\\n風速：\" + $json.current.wind_speed_10m + \" km/h\\n最高：\" + $json.daily.temperature_2m_max[0] + \"°C\\n最低：\" + $json.daily.temperature_2m_min[0] + \"°C\\n降雨機率：\" + $json.daily.precipitation_probability_max[0] + \"%\\n\" + (Number($json.daily.precipitation_probability_max[0]) > 40 ? \"☔ 要帶傘\" : \"☀️ 不用帶傘\") }] }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          750,
+          400
+        ],
+        "name": "Reply Weather",
+        "id": "189959c0-1091-4bbe-9459-15744c8659d8"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"目前支援命令：\\n/help - 說明\\n/天氣 - 台北天氣\\n\\n輸入 /help 查看更多\" }] }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          2700
+        ],
+        "name": "Reply Default",
+        "id": "c52a567b-6ea9-49a1-9a66-fa431685e525"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c3",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/新聞",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "en-Is News?",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/news",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          }
+        },
+        "id": "is-news",
+        "name": "Is News?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          600
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://news.google.com/rss/search?q=artificial+intelligence+AI&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "id": "get-news",
+        "name": "Get News",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          500
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "\nconst xml = $input.first().json.data || $input.first().json;\nconst text = typeof xml === 'string' ? xml : JSON.stringify(xml);\nconst titles = [];\nconst matches = text.match(/<title>([^<]+)<\\/title>/g) || [];\nfor (let i = 1; i <= Math.min(5, matches.length - 1); i++) {\n  const t = matches[i].replace(/<\\/?title>/g, '');\n  titles.push((i) + '. ' + t);\n}\nconst msg = 'AI 最新新聞 Top 5\\n━━━━━━━━━━\\n\\n' + titles.join('\\n\\n');\nreturn [{ json: { newsText: msg, replyToken: $('Parse Command').first().json.replyToken } }];\n"
+        },
+        "id": "format-news",
+        "name": "Format News",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1500,
+          500
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: $json.newsText }] }) }}",
+          "options": {}
+        },
+        "id": "reply-news",
+        "name": "Reply News",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1750,
+          500
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c4",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/日報",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "en-Is Daily?",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/daily",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          }
+        },
+        "id": "is-daily",
+        "name": "Is Daily?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          900
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"日報生成中...請稍候，完成後會透過 LINE 通知你。\" }] }) }}",
+          "options": {}
+        },
+        "id": "reply-daily",
+        "name": "Reply Daily",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c5",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/圖表",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "en-Is Sketch?",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/sketch",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          }
+        },
+        "id": "is-sketch",
+        "name": "Is Sketch?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"手繪圖表生成中...觸發 n8n 雲端工作流，完成後會收到通知。\" }] }) }}",
+          "options": {}
+        },
+        "id": "reply-sketch",
+        "name": "Reply Sketch",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          1100
+        ]
+      },
+      {
+        "parameters": {
+          "method": "GET",
+          "url": "https://chenghyang2001.app.n8n.cloud/webhook/yt-sketch-cloud",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "id": "trigger-sketch",
+        "name": "Trigger Sketch",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1500,
+          1100
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c6",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/訂閱",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "en-Is Subscribe?",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/schedule",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          }
+        },
+        "id": "is-sub",
+        "name": "Is Subscribe?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          1500
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"目前啟用的排程：\\n\\n1. 天氣預報 3/4/5 AM\\n2. AI 新聞 LINE 8 AM\\n3. yt-sketch 圖表 1:30/2:30/3:30 AM\\n4. 早安+日報提醒 7:50/8:30 AM\\n\\n共 4 個排程運行中\" }] }) }}",
+          "options": {}
+        },
+        "id": "reply-sub",
+        "name": "Reply Subscribe",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          1400
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c7",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/n8n",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          }
+        },
+        "id": "is-n8n",
+        "name": "Is N8N?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          1800
+        ]
+      },
+      {
+        "parameters": {
+          "url": "=https://chenghyang2001.app.n8n.cloud/api/v1/executions?limit=50",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-N8N-API-KEY",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzE1NWQ5OC0wNGFiLTQ1MzEtYTAxMS05OTNlZmY5YzUzNWYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMjI5OGI0YWItZWYxNy00MTA3LWFmOTYtMzk3ZTQ0N2I5MjYwIiwiaWF0IjoxNzcyOTUzMTM1fQ.0OUEEA1t-Pm_Rh_pu5jxMl-uFl6S0uRa50CLpNRvuBM"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "get-n8n",
+        "name": "Get N8N Stats",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          1700
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "\nconst data = $input.first().json.data || [];\nconst total = data.length;\nconst success = data.filter(e => e.status === 'success').length;\nconst errors = data.filter(e => e.status === 'error').length;\nconst rate = total > 0 ? Math.round(success / total * 100) : 0;\nconst failed = data.filter(e => e.status === 'error').slice(0, 3).map(e => e.workflowId).join(', ');\nconst msg = 'n8n Cloud 狀態（最近 50 筆）\\n━━━━━━━━━━\\n\\n成功：' + success + '\\n失敗：' + errors + '\\n成功率：' + rate + '%\\n\\n' + (errors > 0 ? '最近失敗：' + failed : '全部成功！');\nreturn [{ json: { statsText: msg, replyToken: $('Parse Command').first().json.replyToken } }];\n"
+        },
+        "id": "format-n8n",
+        "name": "Format N8N",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1500,
+          1700
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: $json.statsText }] }) }}",
+          "options": {}
+        },
+        "id": "reply-n8n",
+        "name": "Reply N8N",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1750,
+          1700
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c8",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/找",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "en-Is Find?",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/find",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          }
+        },
+        "id": "is-find",
+        "name": "Is Find?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          2100
+        ]
+      },
+      {
+        "parameters": {
+          "url": "=https://ecshweb.pchome.com.tw/search/v3.3/all/results?q={{ encodeURIComponent($json.args) }}&page=1&sort=rnk/dc",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "id": "search-pchome",
+        "name": "Search PChome",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          2000
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const keyword = $(\"Parse Command\").first().json.args;\nlet text = '';\ntry {\n  const raw = $input.first().json;\n  let parsed = raw;\n  if (typeof raw.data === 'string') {\n    parsed = JSON.parse(raw.data);\n  }\n  const prods = parsed.prods || [];\n  const items = [];\n  const nl = String.fromCharCode(10);\n  for (let i = 0; i < Math.min(5, prods.length); i++) {\n    const name = (prods[i].name || '').substring(0, 35);\n    const price = prods[i].price || '?';\n    items.push((i+1) + '. ' + name + nl + '   $' + price);\n  }\n  text = 'PChome 搜尋：' + keyword + nl + '━━━━━━━━━━' + nl + nl + (items.length > 0 ? items.join(nl + nl) : '無結果');\n} catch(e) {\n  text = 'PChome 搜尋 ' + keyword + '：' + e.message;\n}\nreturn [{ json: { searchText: text, replyToken: $(\"Parse Command\").first().json.replyToken } }];"
+        },
+        "id": "format-pchome",
+        "name": "Format PChome",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1500,
+          2000
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: $json.searchText }] }) }}",
+          "options": {}
+        },
+        "id": "reply-find",
+        "name": "Reply Find",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1750,
+          2000
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c9-zh",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/研究",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "c9-en",
+                "leftValue": "={{ $json.command }}",
+                "rightValue": "/research",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          }
+        },
+        "id": "is-research",
+        "name": "Is Research?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          2400
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/reply",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: \"text\", text: \"公司研究中：\" + $json.args + \" | 正在分析融資、競爭、成長信號... | 完成後透過 Telegram 和 Gmail 通知。\" }] }) }}",
+          "options": {}
+        },
+        "id": "reply-research",
+        "name": "Reply Research",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1250,
+          2400
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://chenghyang2001.app.n8n.cloud/webhook/company-research",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ company: $(\"Parse Command\").first().json.args }) }}",
+          "options": {}
+        },
+        "id": "trigger-research",
+        "name": "Trigger Research",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1500,
+          2400
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const token = $(\"Parse Command\").first().json.replyToken;\nconst nl = String.fromCharCode(10);\nconst lines = [\n  \"LINE Bot 命令列表\",\n  \"━━━━━━━━━━\",\n  \"\",\n  \"/help  顯示此說明\",\n  \"/天氣 /weather  台北天氣\",\n  \"/新聞 /news  AI 新聞 Top 5\",\n  \"/日報 /daily  觸發日報\",\n  \"/圖表 /sketch  手繪圖表\",\n  \"/訂閱 /schedule  查看排程\",\n  \"/n8n  n8n 執行狀態\",\n  \"/找 /find 關鍵字  PChome 搜尋\",\n  \"/研究 /research 公司名  公司研究\",\n  \"\",\n  \"範例：/find 充電器\",\n  \"範例：/research Anthropic\"\n];\nconst text = lines.join(nl);\nconst body = JSON.stringify({ replyToken: token, messages: [{ type: \"text\", text }] });\nreturn [{ json: { body } }];"
+        },
+        "id": "build-help",
+        "name": "Build Help Text",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          200,
+          100
+        ]
+      }
+    ],
+    "connections": {
+      "LINE Webhook": {
+        "main": [
+          [
+            {
+              "node": "Parse Command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse Command": {
+        "main": [
+          [
+            {
+              "node": "Is Help?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Help?": {
+        "main": [
+          [
+            {
+              "node": "Build Help Text",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is Weather?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Weather?": {
+        "main": [
+          [
+            {
+              "node": "Get Weather",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is News?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Weather": {
+        "main": [
+          [
+            {
+              "node": "Reply Weather",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is News?": {
+        "main": [
+          [
+            {
+              "node": "Get News",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is Daily?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get News": {
+        "main": [
+          [
+            {
+              "node": "Format News",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format News": {
+        "main": [
+          [
+            {
+              "node": "Reply News",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Daily?": {
+        "main": [
+          [
+            {
+              "node": "Reply Daily",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is Sketch?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Sketch?": {
+        "main": [
+          [
+            {
+              "node": "Reply Sketch",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is Subscribe?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reply Sketch": {
+        "main": [
+          [
+            {
+              "node": "Trigger Sketch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Subscribe?": {
+        "main": [
+          [
+            {
+              "node": "Reply Subscribe",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is N8N?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is N8N?": {
+        "main": [
+          [
+            {
+              "node": "Get N8N Stats",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is Find?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get N8N Stats": {
+        "main": [
+          [
+            {
+              "node": "Format N8N",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format N8N": {
+        "main": [
+          [
+            {
+              "node": "Reply N8N",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Find?": {
+        "main": [
+          [
+            {
+              "node": "Search PChome",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Is Research?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search PChome": {
+        "main": [
+          [
+            {
+              "node": "Format PChome",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format PChome": {
+        "main": [
+          [
+            {
+              "node": "Reply Find",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Research?": {
+        "main": [
+          [
+            {
+              "node": "Reply Research",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Reply Default",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reply Research": {
+        "main": [
+          [
+            {
+              "node": "Trigger Research",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Help Text": {
+        "main": [
+          [
+            {
+              "node": "Reply Help",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ChengHsien Yang",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-21T21:23:53.274Z",
+        "id": 470,
+        "workflowId": "Cl3TO2bCp99BM5iO",
+        "versionId": "ffc602ac-d98b-4935-9900-3f5193884ace",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      },
+      {
+        "createdAt": "2026-03-21T21:23:53.146Z",
+        "id": 469,
+        "workflowId": "Cl3TO2bCp99BM5iO",
+        "versionId": "ffc602ac-d98b-4935-9900-3f5193884ace",
+        "event": "deactivated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    ]
+  }
+}

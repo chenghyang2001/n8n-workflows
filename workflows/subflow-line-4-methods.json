@@ -1,0 +1,454 @@
+{
+  "updatedAt": "2025-09-30T02:05:22.000Z",
+  "createdAt": "2025-09-30T01:58:06.922Z",
+  "id": "kOFTVVCtCv4URnLI",
+  "name": "subFlow-line-4-methods",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $now.format('yyyy/M/d') + ' at ' + $now.format('HH:mm:ss a') }}   {{ $json.content.replace(/\\n/g, '\\\\n') }} \" \n    }\n\n\n  ]\n}\n\n\n",
+        "options": {}
+      },
+      "id": "ad0ba551-09ef-497c-943f-8be105ddac4e",
+      "name": "Line : 推送訊息 Line使用者n8n-peter",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        384,
+        672
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        672
+      ],
+      "id": "6967fd95-d077-405c-b3a0-785dc98ca9d0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        672
+      ],
+      "id": "96f1b98a-7496-4285-8c50-92d33aa2cac9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "7292664350",
+        "text": "={{ $json.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        400
+      ],
+      "id": "4464bfd0-2643-4fb9-bc1f-d5fa023e1202",
+      "name": "Telegram",
+      "webhookId": "f5d52d99-c051-46a2-ad4e-be135c076d26",
+      "credentials": {
+        "telegramApi": {
+          "id": "MIqgUSnaZFAezCvt",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "=https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $json.content }}\n\n\n"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -64
+      ],
+      "id": "2bde95de-cf29-47af-befb-45e48576e19e",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "9MupwfNU1Pydd1oM",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "chenghyang2001@gmail.com",
+        "subject": "n8n-subflow-line-4-methods",
+        "message": "={{ $json.content }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        160
+      ],
+      "id": "757145d3-9f0b-4dfd-a5cf-cf6622708dea",
+      "name": "Send a message",
+      "webhookId": "219c86a5-d8c1-4711-9b6b-aba15b06154b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cXobwkkgDTG4Y0ls",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Line : 推送訊息 Line使用者n8n-peter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:RSS Feed Trigger": {
+      "lastItemDate": "2025-05-16T17:20:35.000Z"
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "011d8d52-6731-4cab-a652-48d64e390481",
+  "activeVersionId": "011d8d52-6731-4cab-a652-48d64e390481",
+  "versionCounter": 3,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-09-30T01:58:06.927Z",
+      "createdAt": "2025-09-30T01:58:06.927Z",
+      "role": "workflow:owner",
+      "workflowId": "kOFTVVCtCv4URnLI",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-07-01T02:35:59.378Z",
+      "createdAt": "2025-07-01T02:35:59.378Z",
+      "id": "HiiXf23hUcSshbxD",
+      "name": "subflow"
+    },
+    {
+      "updatedAt": "2025-07-01T08:14:11.963Z",
+      "createdAt": "2025-07-01T08:14:11.963Z",
+      "id": "QFvFTqOLs1VLlBts",
+      "name": "line"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-11-27T01:00:44.252Z",
+    "createdAt": "2025-11-27T01:00:44.252Z",
+    "versionId": "011d8d52-6731-4cab-a652-48d64e390481",
+    "workflowId": "kOFTVVCtCv4URnLI",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.line.me/v2/bot/message/push",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer  loGRufQo05yExhEUN4KACsX/BfEgh8ae0pHO2FJj3xyHUk4BuCBoPhzuVW3hNV8aHHtjgUY4D37roXhmTd9VEu+mC3hxzqjnmIGzrEg5mZl66uq2uNND0pwwQEs8sAI8dkcWD26YjijDYSppwJzWkwdB04t89/1O/w1cDnyilFU="
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"to\": \"U8ca91ed1c30228e776d83179a1893fb0\",\n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $now.format('yyyy/M/d') + ' at ' + $now.format('HH:mm:ss a') }}   {{ $json.content.replace(/\\n/g, '\\\\n') }} \" \n    }\n\n\n  ]\n}\n\n\n",
+          "options": {}
+        },
+        "id": "ad0ba551-09ef-497c-943f-8be105ddac4e",
+        "name": "Line : 推送訊息 Line使用者n8n-peter",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          384,
+          672
+        ],
+        "typeVersion": 4.2
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "content"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -400,
+          672
+        ],
+        "id": "6967fd95-d077-405c-b3a0-785dc98ca9d0",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "deee3538-b23d-4ebc-94be-ae6f7934f7b2",
+                "name": "content",
+                "value": "={{ $json.content }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -176,
+          672
+        ],
+        "id": "96f1b98a-7496-4285-8c50-92d33aa2cac9",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "chatId": "7292664350",
+          "text": "={{ $json.content }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          384,
+          400
+        ],
+        "id": "4464bfd0-2643-4fb9-bc1f-d5fa023e1202",
+        "name": "Telegram",
+        "webhookId": "f5d52d99-c051-46a2-ad4e-be135c076d26",
+        "credentials": {
+          "telegramApi": {
+            "id": "MIqgUSnaZFAezCvt",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentURL": "=https://docs.google.com/document/d/1lGKxomn5UQdixr4eMycN5k_lQDBt3oFQ4BqEJ2ernHA/edit?tab=t.0",
+          "actionsUi": {
+            "actionFields": [
+              {
+                "action": "insert",
+                "text": "={{ $json.content }}\n\n\n"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.googleDocs",
+        "typeVersion": 2,
+        "position": [
+          384,
+          -64
+        ],
+        "id": "2bde95de-cf29-47af-befb-45e48576e19e",
+        "name": "Update a document",
+        "credentials": {
+          "googleDocsOAuth2Api": {
+            "id": "9MupwfNU1Pydd1oM",
+            "name": "Google Docs account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sendTo": "chenghyang2001@gmail.com",
+          "subject": "n8n-subflow-line-4-methods",
+          "message": "={{ $json.content }}",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          384,
+          160
+        ],
+        "id": "757145d3-9f0b-4dfd-a5cf-cf6622708dea",
+        "name": "Send a message",
+        "webhookId": "219c86a5-d8c1-4711-9b6b-aba15b06154b",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "cXobwkkgDTG4Y0ls",
+            "name": "Gmail account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Line : 推送訊息 Line使用者n8n-peter",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Telegram",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Update a document",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-22T20:25:34.427Z",
+        "id": 509,
+        "workflowId": "kOFTVVCtCv4URnLI",
+        "versionId": "011d8d52-6731-4cab-a652-48d64e390481",
+        "event": "activated",
+        "userId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    ]
+  }
+}

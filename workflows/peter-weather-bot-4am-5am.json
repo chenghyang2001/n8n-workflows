@@ -1,0 +1,160 @@
+{
+  "updatedAt": "2026-03-16T01:38:47.460Z",
+  "createdAt": "2026-03-16T01:38:47.460Z",
+  "id": "xcnopcKhnwuMSu3b",
+  "name": "peter-weather-bot-4am-5am",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 4,5 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-1",
+      "name": "Schedule 4AM 5AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://wttr.in/Taipei?format=j1",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "weather-1",
+      "name": "Get Weather Taipei",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst current = data.current_condition[0];\nconst today = data.weather[0];\nconst hourly = today.hourly;\n\nconst tempC = current.temp_C;\nconst feelsLike = current.FeelsLikeC;\nconst humidity = current.humidity;\nconst desc = current.weatherDesc[0].value;\nconst windSpeed = current.windspeedKmph;\n\nconst maxTemp = today.maxtempC;\nconst minTemp = today.mintempC;\n\n// Check rain probability for next hours\nconst now = new Date();\nconst currentHour = now.getHours();\nconst upcomingHours = hourly.filter(h => parseInt(h.time) / 100 >= currentHour);\nconst rainChances = upcomingHours.map(h => ({\n  time: String(parseInt(h.time) / 100).padStart(2, '0') + ':00',\n  chance: parseInt(h.chanceofrain),\n  desc: h.weatherDesc[0].value\n}));\n\nconst maxRainChance = Math.max(...rainChances.map(r => r.chance));\nconst willRain = maxRainChance >= 40;\nconst rainEmoji = willRain ? '🌧️' : '☀️';\nconst umbrella = willRain ? '\n\n☂️ 建議攜帶雨具！' : '\n\n😎 今天不需要帶傘。';\n\nconst rainDetail = rainChances\n  .filter(r => r.chance > 0)\n  .map(r => '  ' + r.time + ': ' + r.chance + '% (' + r.desc + ')')\n  .join('\n');\n\nconst msg = rainEmoji + ' 台北天氣預報\n'\n  + '━━━━━━━━━━━━━━━━\n'\n  + '🌡️ 目前溫度：' + tempC + '°C（體感 ' + feelsLike + '°C）\n'\n  + '📊 今日高低：' + maxTemp + '°C / ' + minTemp + '°C\n'\n  + '💧 濕度：' + humidity + '%\n'\n  + '🌬️ 風速：' + windSpeed + ' km/h\n'\n  + '🌤️ 天氣狀況：' + desc + '\n'\n  + '━━━━━━━━━━━━━━━━\n'\n  + '🌧️ 降雨機率（接下來幾小時）：\n'\n  + (rainDetail || '  無降雨預報')\n  + umbrella;\n\nreturn [{ json: { message: msg } }];"
+      },
+      "id": "format-1",
+      "name": "Format Weather Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot8750486517:AAHJ-1BMOqc0HP8uPgLi0EdCz6If1lCvsEc/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "7292664350"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram-1",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule 4AM 5AM": {
+      "main": [
+        [
+          {
+            "node": "Get Weather Taipei",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather Taipei": {
+      "main": [
+        [
+          {
+            "node": "Format Weather Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Weather Message": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Taipei",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule 4AM 5AM": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": null,
+  "versionId": "67122778-a8de-4bd8-9846-f72fb4339ee6",
+  "activeVersionId": null,
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-16T01:38:47.471Z",
+      "createdAt": "2026-03-16T01:38:47.471Z",
+      "role": "workflow:owner",
+      "workflowId": "xcnopcKhnwuMSu3b",
+      "projectId": "0liZARjPSF29Xm7S",
+      "project": {
+        "updatedAt": "2025-05-09T03:15:11.991Z",
+        "createdAt": "2025-05-09T03:15:09.651Z",
+        "id": "0liZARjPSF29Xm7S",
+        "name": "ChengHsien Yang <chenghyang2001@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "67155d98-04ab-4531-a011-993eff9c535f"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
